@@ -1,3 +1,7 @@
+.gitignore
+.bash_history
+compile.sh
+
 #Binary Files
 *.bin
 *.sys

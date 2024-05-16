@@ -12,7 +12,6 @@ EXTERN exceptionDispatcher
 SECTION .text
 
 %macro pushState 0
-	push rax
 	push rbx
 	push rcx
 	push rdx
@@ -27,9 +26,11 @@ SECTION .text
 	push r13
 	push r14
 	push r15
+	push rax
 %endmacro
 
 %macro popState 0
+	pop rax
 	pop r15
 	pop r14
 	pop r13
@@ -44,7 +45,6 @@ SECTION .text
 	pop rdx
 	pop rcx
 	pop rbx
-	pop rax
 %endmacro
 
 %macro irqHandlerMaster 1
@@ -113,6 +113,7 @@ _irq01Handler:
 ;Syscalls
 _irq80Handler:
 	pushState
+	pop rax ; No preservamos rax
 	; Habria que pasar los parametros rax, rdi, rsi, rdx, r10, r8, r9
 	push r9
 	mov r9, r8
@@ -123,6 +124,7 @@ _irq80Handler:
 	mov rdi, rax
 	call softIrqDispatcher
 	add rsp, 8
+	push rax
 	popState
 	iretq
 

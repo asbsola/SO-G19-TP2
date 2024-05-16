@@ -30,11 +30,14 @@ void load_idt() {
   setup_IDT_entry (0x80, (uint64_t)&_irq80Handler);
 
 
-	//Solo interrupcion timer tick habilitadas
-	picMasterMask(0xFE); 
+	
+	picMasterMask(0xFE); //Timer tick mask 
 	picSlaveMask(0xFF);
-        
-	_sti();
+  
+	picMasterMask(0xFE); //Keyboard mask 
+	picSlaveMask(0xFF);
+	
+  _sti();
 }
 
 static void setup_IDT_entry (int index, uint64_t offset) {

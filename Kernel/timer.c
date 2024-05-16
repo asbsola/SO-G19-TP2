@@ -1,4 +1,4 @@
-#include <time.h>
+#include <timer.h>
 #include <videoDriver.h>
 
 static unsigned long ticks = 0;

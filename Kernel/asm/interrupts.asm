@@ -6,6 +6,7 @@ GLOBAL _irq00Handler, _irq01Handler, _irq80Handler
 GLOBAL _exception0Handler, _exception1Handler
 
 EXTERN irqDispatcher
+EXTERN softIrqDispatcher
 EXTERN exceptionDispatcher
 
 SECTION .text
@@ -55,16 +56,6 @@ SECTION .text
 	; signal pic EOI (End of Interrupt)
 	mov al, 20h
 	out 20h, al
-
-	popState
-	iretq
-%endmacro
-
-%macro softIrqHandler 1
-	pushState
-
-	mov rdi, %1 ; pasaje de parametro
-	call irqDispatcher
 
 	popState
 	iretq
@@ -121,7 +112,19 @@ _irq01Handler:
 
 ;Syscalls
 _irq80Handler:
-	softIrqHandler 80
+	pushState
+	; Habria que pasar los parametros rax, rdi, rsi, rdx, r10, r8, r9
+	push r9
+	mov r9, r8
+	mov r8, r10
+	mov rcx, rdx
+	mov rdx, rsi
+	mov rsi, rdi
+	mov rdi, rax
+	call softIrqDispatcher
+	add rsp, 8
+	popState
+	iretq
 
 ;Zero Division Exception
 _exception0Handler:

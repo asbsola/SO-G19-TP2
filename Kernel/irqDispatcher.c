@@ -8,7 +8,7 @@ static void int_21();
 
 static uint64_t int_80(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9);
 
-void (*interrupts[])() = {int_20, int_21};
+static void (*interrupts[2])(void) = {int_20, int_21};
 
 void irqDispatcher(uint64_t irq) {
 	interrupts[irq]();

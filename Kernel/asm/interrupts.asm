@@ -1,7 +1,7 @@
 
 GLOBAL _cli, _sti, picMasterMask, picSlaveMask, haltcpu, _hlt
 
-GLOBAL _irq00Handler, _irq01Handler
+GLOBAL _irq00Handler, _irq01Handler, _irq80Handler
 
 GLOBAL _exception0Handler, _exception1Handler
 
@@ -60,6 +60,16 @@ SECTION .text
 	iretq
 %endmacro
 
+%macro softIrqHandler 1
+	pushState
+
+	mov rdi, %1 ; pasaje de parametro
+	call irqDispatcher
+
+	popState
+	iretq
+%endmacro
+
 %macro exceptionHandler 1
 	pushState
 
@@ -108,6 +118,10 @@ _irq00Handler:
 ;Keyboard
 _irq01Handler:
 	irqHandlerMaster 1
+
+;Syscalls
+_irq80Handler:
+	softIrqHandler 80
 
 ;Zero Division Exception
 _exception0Handler:

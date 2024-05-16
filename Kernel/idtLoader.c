@@ -29,13 +29,8 @@ void load_idt() {
   setup_IDT_entry (0x21, (uint64_t)&_irq01Handler);
   setup_IDT_entry (0x80, (uint64_t)&_irq80Handler);
 
-
-	
-	picMasterMask(0xFE); //Timer tick mask 
-	picSlaveMask(0xFF);
-  
-	picMasterMask(0xFE); //Keyboard mask 
-	picSlaveMask(0xFF);
+	picMasterMask(0xFC); //1111 1100 (Timer tick and Keyboard unmasked)
+	picSlaveMask(0xFF); //1111 1111 (fully masked)
 	
   _sti();
 }

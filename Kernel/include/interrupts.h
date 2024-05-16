@@ -12,7 +12,7 @@
 
 void _irq00Handler(void);
 void _irq01Handler(void);
-void _irq80Handler(void);
+void _int80Handler(void);
 
 void _exception0Handler(void);
 void _exception1Handler(void);

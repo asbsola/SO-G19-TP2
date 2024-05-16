@@ -1,12 +1,12 @@
 
 GLOBAL _cli, _sti, picMasterMask, picSlaveMask, haltcpu, _hlt
 
-GLOBAL _irq00Handler, _irq01Handler, _irq80Handler
+GLOBAL _irq00Handler, _irq01Handler, _int80Handler
 
 GLOBAL _exception0Handler, _exception1Handler
 
 EXTERN irqDispatcher
-EXTERN softIrqDispatcher
+EXTERN softIntDispatcher
 EXTERN exceptionDispatcher
 
 SECTION .text
@@ -111,7 +111,7 @@ _irq01Handler:
 	irqHandlerMaster 1
 
 ;Syscalls
-_irq80Handler:
+_int80Handler:
 	pushState
 	pop rax ; No preservamos rax
 	; Habria que pasar los parametros rax, rdi, rsi, rdx, r10, r8, r9
@@ -122,7 +122,7 @@ _irq80Handler:
 	mov rdx, rsi
 	mov rsi, rdi
 	mov rdi, rax
-	call softIrqDispatcher
+	call softIntDispatcher
 	add rsp, 8
 	push rax
 	popState

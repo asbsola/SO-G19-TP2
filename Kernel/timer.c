@@ -1,11 +1,11 @@
 #include <timer.h>
-#include <videoDriver.h>
+#include <drivers/videoDriver.h>
 
 static unsigned long ticks = 0;
 
 void timer_handler() {
 	ticks++;
-	putPixel(0xFFFFFF, 100+ticks, 50);
+	//putPixel(0xFFFFFF, 100+ticks, 50);
 }
 
 int ticks_elapsed() {

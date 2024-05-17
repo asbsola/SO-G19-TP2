@@ -1,4 +1,4 @@
-GCC=gcc-5
+GCC=gcc
 LD=ld
 AR=ar
 ASM=nasm

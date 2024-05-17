@@ -64,8 +64,79 @@ SECTION .text
 %macro exceptionHandler 1
 	pushState
 
+	; rax		<- rsp
+	; r15
+	; r14
+	; r13
+	; r12
+	; r11
+	; r10
+	; r9
+	; r8
+	; rsi
+	; rdi
+	; rbp
+	; rdx
+	; rcx
+	; rbx
+
+	; rip
+	; cs
+	; rflags
+	; ss:rsp
+
+	; Quiero pasar todos los registros como argumentos
+	; exceptionDispatcher(exceptionCode, rax, rbx, rcx, rdx, rsi, rdi, rbp, r8, r9, r10, r11, r12, r13, r14, r15, rip, ss_rsp)
+
+
+	mov rax, rsp
+	
 	mov rdi, %1 ; pasaje de parametro
+	mov rsi, [rax]			; Pasaje de rax
+	mov rdx, [rax+8*14] 	; Pasaje de rbx
+	mov rcx, [rax+8*13]		; Pasaje de rcx
+	mov r8, [rax+8*12]		; Pasaje de rdx
+	mov r9, [rax+8*9]		; Pasaje de rsi
+	
+	mov rbx, [rax+8*10]
+	push rbx				; Pasaje de rdi
+
+	mov rbx, [rax+8*11]		; Pasaje de rbp
+	push rbx
+
+	mov rbx, [rax+8*8]		; Pasaje de r8
+	push rbx
+
+	mov rbx, [rax+8*7]		; Pasaje de r9
+	push rbx
+
+	mov rbx, [rax+8*6]		; Pasaje de r10
+	push rbx
+
+	mov rbx, [rax+8*5]		; Pasaje de r11
+	push rbx
+
+	mov rbx, [rax+8*4]		; Pasaje de r12
+	push rbx
+
+	mov rbx, [rax+8*3]		; Pasaje de r13
+	push rbx
+
+	mov rbx, [rax+8*2]		; Pasaje de r14
+	push rbx
+
+	mov rbx, [rax+8*1]		; Pasaje de r15
+	push rbx
+
+	mov rbx, [rax+8*15]		; Pasaje de rip
+	push rbx
+
+	mov rbx, [rax+8*18]		; Pasaje de ss:rsp
+	push rbx
+
 	call exceptionDispatcher
+
+	add rsp, 96				; 12 registros * 8 bytes
 
 	popState
 	iretq
@@ -133,8 +204,8 @@ _exception0Handler:
 	exceptionHandler 0
 
 ;Invalid Op Code Exception
-_exception1Handler:
-	exceptionHandler 1
+_exception6Handler:
+	exceptionHandler 6
 
 haltcpu:
 	cli

@@ -3,7 +3,7 @@
 #include <lib.h>
 #include <moduleLoader.h>
 #include <naiveConsole.h>
-#include <videoDriver.h>
+#include <drivers/videoDriver.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -85,7 +85,10 @@ void * initializeKernelBinary()
 int main()
 {	
 	load_idt();
-	putPixel(0xFF0000, 50, 50);
+    setFontSize(2);
+    clearVideoTextBuffer();
+    writeToVideoTextBuffer("Niggas :)", 9, 0xFFFFFFFF);
+
 	while(1);
 	ncPrint("[Kernel Main]");
 	ncNewline();

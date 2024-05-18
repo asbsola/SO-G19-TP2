@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <drivers/videoDriver.h>
+#include <lib.h>
 
 struct vbe_mode_info_structure {
 	uint16_t attributes;		// deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.
@@ -43,27 +44,61 @@ typedef struct vbe_mode_info_structure * VBEInfoPtr;
 
 VBEInfoPtr VBE_mode_info = (VBEInfoPtr) 0x0000000000005C00;
 
+uint8_t video_buffer[MAX_VIDEO_BUFFER_WIDTH * MAX_VIDEO_BUFFER_HEIGHT * MAX_VIDEO_BUFFER_BYTES_PER_PIXEL];
+
+uint32_t get_video_buffer_width() {
+    return (MAX_VIDEO_BUFFER_WIDTH > VBE_mode_info->width) ? VBE_mode_info->width : MAX_VIDEO_BUFFER_WIDTH;
+}
+
+uint32_t get_video_buffer_height() {
+    return (MAX_VIDEO_BUFFER_HEIGHT > VBE_mode_info->height) ? VBE_mode_info->height : MAX_VIDEO_BUFFER_HEIGHT;
+}
+
+uint32_t get_video_buffer_bytes_per_pixel() {
+    uint32_t bytesPerPixel = VBE_mode_info->bpp / 8;
+    return (MAX_VIDEO_BUFFER_BYTES_PER_PIXEL > bytesPerPixel) ? bytesPerPixel : MAX_VIDEO_BUFFER_BYTES_PER_PIXEL;
+}
+
+void update_frame_buffer() {
+    memcpy(VBE_mode_info->framebuffer, video_buffer, get_video_buffer_width() * get_video_buffer_height() * get_video_buffer_bytes_per_pixel());
+}
+
 void put_pixel(uint32_t hexColor, uint64_t x, uint64_t y) {
-    if (y > VBE_mode_info->height || x > VBE_mode_info->width)
+    if (y > get_video_buffer_height() || x > get_video_buffer_width())
         return;
 
-    uint8_t * framebuffer = (uint8_t *) VBE_mode_info->framebuffer;
-    uint64_t offset = (x * ((VBE_mode_info->bpp)/8)) + (y * VBE_mode_info->pitch);
-    framebuffer[offset]     =  (hexColor) & 0xFF;
-    framebuffer[offset+1]   =  (hexColor >> 8) & 0xFF; 
-    framebuffer[offset+2]   =  (hexColor >> 16) & 0xFF;
+    uint64_t offset = (x * get_video_buffer_bytes_per_pixel()) + (y * VBE_mode_info->pitch);
+    video_buffer[offset]     =  (hexColor) & 0xFF;
+    video_buffer[offset+1]   =  (hexColor >> 8) & 0xFF; 
+    video_buffer[offset+2]   =  (hexColor >> 16) & 0xFF;
+}
+
+void draw_rect(uint32_t hexColor, uint32_t posX, uint32_t posY, uint32_t width, uint32_t height) {
+    if (posX + width > get_video_buffer_width() || posY + height > get_video_buffer_height())
+        return;
+
+    uint8_t r = (hexColor) & 0xFF;
+    uint8_t g = (hexColor >> 8) & 0xFF;
+    uint8_t b = (hexColor >> 16) & 0xFF;
+
+    uint32_t bytesPerPixel = get_video_buffer_bytes_per_pixel();
+
+    for (uint32_t y = posY; y < posY + height; y++) {
+        for (uint32_t x = posX; x < posX + width; x++) {
+            uint64_t offset = (x * bytesPerPixel) + (y * VBE_mode_info->pitch);
+            video_buffer[offset]     =  r;
+            video_buffer[offset+1]   =  g; 
+            video_buffer[offset+2]   =  b;
+        }
+    }
 }
 
 void draw_square(uint32_t hexColor, uint32_t posX, uint32_t posY, uint32_t size) {
-    for (uint32_t y = posY; y < posY + size; y++)
-        for (uint32_t x = posX; x < posX + size; x++)
-            put_pixel(hexColor, x, y);
+    draw_rect(hexColor, posX, posY, size, size);
 }
 
 void clear_screen(uint32_t clearColor) {
-    for (uint32_t y = 0; y < VBE_mode_info->height; y++)
-        for (uint32_t x = 0; x < VBE_mode_info->width; x++)
-            put_pixel(clearColor, x, y);
+    draw_rect(clearColor, 0, 0, get_video_buffer_width(), get_video_buffer_height());
 }
 
 typedef struct {
@@ -72,10 +107,10 @@ typedef struct {
 } ScreenTextChar;
 
 struct ScreenTextInfo {
-    uint32_t index;
+    uint32_t indexX;
+    uint32_t indexY;
     uint32_t fontSize;
-    uint32_t lastStartPos;
-    ScreenTextChar buffer[SCREEN_TEXT_BUFFER_SIZE];
+    ScreenTextChar buffer[SCREEN_TEXT_BUFFER_HEIGHT][SCREEN_TEXT_BUFFER_WIDTH];
 } screenTextInfo;
 
 uint32_t get_font_width() {
@@ -87,7 +122,7 @@ uint32_t get_font_height() {
 }
 
 uint32_t get_chars_per_line() {
-    return VBE_mode_info->width / get_font_width();
+    return get_video_buffer_width() / get_font_width();
 }
 
 void set_font_size(uint32_t fontSize) {
@@ -97,11 +132,10 @@ void set_font_size(uint32_t fontSize) {
     }
 }
 
-
 void draw_char(char c, uint32_t hexColor, uint32_t posX, uint32_t posY) {
     for (uint32_t y = 0; y < CHAR_BIT_HEIGHT; y++) {
         for (uint32_t x = 0; x < CHAR_BIT_WIDTH; x++) {
-            uint8_t bit = font_bitmap[c * CHAR_BIT_HEIGHT + y] & (0x80 >> x);
+            uint8_t bit = font_bitmap[c * CHAR_BIT_HEIGHT + y] & (1 << (CHAR_BIT_WIDTH - x));
             if (bit) 
                 draw_square(hexColor, posX + x * screenTextInfo.fontSize, posY + y * screenTextInfo.fontSize, screenTextInfo.fontSize);
         }
@@ -115,80 +149,51 @@ void draw_string(const char* str, uint32_t len, uint32_t hexColor, uint32_t posX
 }
 
 void clear_video_text_buffer() {
-    for (uint32_t i = 0; i < SCREEN_TEXT_BUFFER_SIZE; i++) {
-        screenTextInfo.buffer[i].c = ' ';
-        screenTextInfo.buffer[i].hexColor = 0xFFFFFFFF;
+    for (uint32_t y = 0; y < SCREEN_TEXT_BUFFER_HEIGHT; y++) {
+        for (uint32_t x = 0; x < SCREEN_TEXT_BUFFER_WIDTH; x++) {
+            screenTextInfo.buffer[y][x].c = ' ';
+            screenTextInfo.buffer[y][x].hexColor = 0xFFFFFFFF;
+        }
     }
 
-    screenTextInfo.index = 0;
+    screenTextInfo.indexX = 0;
+    screenTextInfo.indexY = 0;
     clear_screen(0);
 }
 
 void write_to_video_text_buffer(const char* data, uint32_t data_len, uint32_t hexColor) {
-    uint32_t i;
+    for (uint32_t i = 0; i < data_len; i++) {
+        if (data[i] == '\n') {
+            screenTextInfo.indexY += 1;
+            screenTextInfo.indexY %= SCREEN_TEXT_BUFFER_HEIGHT;
 
-    for (i = 0; i < data_len; i++) {
-        uint32_t pos = (i + screenTextInfo.index) % SCREEN_TEXT_BUFFER_SIZE;
-        screenTextInfo.buffer[pos].c = data[i];
-        screenTextInfo.buffer[pos].hexColor = hexColor;
+            screenTextInfo.indexX = 0;
+        }
+        else {
+            screenTextInfo.buffer[screenTextInfo.indexY][screenTextInfo.indexX].c = data[i];
+            screenTextInfo.buffer[screenTextInfo.indexY][screenTextInfo.indexX].hexColor = hexColor;
+
+            screenTextInfo.indexX += 1;
+            screenTextInfo.indexY += screenTextInfo.indexX / SCREEN_TEXT_BUFFER_WIDTH;
+            screenTextInfo.indexX %= SCREEN_TEXT_BUFFER_WIDTH;
+        }
     }
-
-    screenTextInfo.index += i;
-    screenTextInfo.index %= SCREEN_TEXT_BUFFER_SIZE;
 
     update_screen_text_buffer();
 }
 
-uint32_t get_buffer_start_pos() {
-    uint32_t fontWidth = screenTextInfo.fontSize * (CHAR_BIT_WIDTH + CHAR_BIT_X_SPACING);
-    uint32_t fontHeight = screenTextInfo.fontSize * (CHAR_BIT_HEIGHT + CHAR_BIT_Y_SPACING);
-    uint32_t charsPerLine = VBE_mode_info->width / fontWidth;
-
-    uint32_t j = 0;
-    uint32_t out = 0;
-
-    for (uint32_t i = 0; i < screenTextInfo.index; i++) {
-        uint32_t posX = j % charsPerLine;
-        uint32_t posY = j / charsPerLine;
-
-        if (posY * fontHeight >= VBE_mode_info->height) {
-            out = i;
-            j = 0;
-        }
-        else {
-            j += (screenTextInfo.buffer[i].c == '\n') ? (charsPerLine - (j % charsPerLine)) : 1;
-        }
-    }
-
-    return out;
-}
-
 void update_screen_text_buffer() {
+    clear_screen(0);
+
     uint32_t fontWidth = get_font_width();
     uint32_t fontHeight = get_font_height();
     uint32_t charsPerLine = get_chars_per_line();
+    uint32_t linesPerScreen = get_video_buffer_height() / fontHeight;
 
-    uint32_t j = 0;
+    uint32_t lower_y_limit = (linesPerScreen <= screenTextInfo.indexY) ? screenTextInfo.indexY  - linesPerScreen : 0;
+    uint32_t upper_x_limit = (charsPerLine <= SCREEN_TEXT_BUFFER_WIDTH) ? charsPerLine : SCREEN_TEXT_BUFFER_WIDTH;
 
-    uint32_t start_pos = get_buffer_start_pos();
-
-    if (start_pos != screenTextInfo.lastStartPos) {
-        clear_screen(0);
-        screenTextInfo.lastStartPos = start_pos;
-    }
-
-    for (uint32_t i = start_pos; i < screenTextInfo.index; i++) {
-        uint32_t posX = j % charsPerLine;
-        uint32_t posY = j / charsPerLine;
-
-        if (posY * fontHeight >= VBE_mode_info->height) return;
-
-        if (screenTextInfo.buffer[i].c == '\n') {
-            j += charsPerLine - posX;
-        }
-        else {
-            draw_char(screenTextInfo.buffer[i].c, screenTextInfo.buffer[i].hexColor, posX * fontWidth, posY * fontHeight);
-            j++;
-        }
-    }
+    for (uint32_t y = screenTextInfo.indexY; y + 1 > lower_y_limit; y--)
+        for (uint32_t x = 0; x < upper_x_limit; x++)
+            draw_char(screenTextInfo.buffer[y][x].c, screenTextInfo.buffer[y][x].hexColor, x * fontWidth, (y - lower_y_limit) * fontHeight);
 }

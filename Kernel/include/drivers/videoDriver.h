@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 
-#define SCREEN_TEXT_BUFFER_SIZE 4096
+#define SCREEN_TEXT_BUFFER_HEIGHT 1000
+#define SCREEN_TEXT_BUFFER_WIDTH 200
 
 #define MIN_FONT_SIZE 4
 #define CHAR_BIT_WIDTH 8
@@ -14,7 +15,13 @@
 #define HEX_WHITE 0x00FFFFFF
 #define HEX_RED 0x00FF0000
 
+#define MAX_VIDEO_BUFFER_WIDTH 1200
+#define MAX_VIDEO_BUFFER_HEIGHT 1200
+#define MAX_VIDEO_BUFFER_BYTES_PER_PIXEL 3
+
 extern unsigned char font_bitmap[4096];
+
+void update_frame_buffer();
 
 void put_pixel(uint32_t hexColor, uint64_t x, uint64_t y);
 void clear_screen(uint32_t clearColor);

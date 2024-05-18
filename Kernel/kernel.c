@@ -14,8 +14,8 @@ extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
 
-static void * const userCodeModuleAddress = (void*)0x400000;
-static void * const userDataModuleAddress = (void*)0x500000;
+static void * const userCodeModuleAddress = (void*)0x700000;
+static void * const userDataModuleAddress = (void*)0x800000;
 
 typedef int (*EntryPoint)();
 
@@ -55,9 +55,8 @@ int main()
     set_font_size(1);
     clear_video_text_buffer();
     write_to_video_text_buffer("Hola Mundo :)\nHola mundo en otra LINEA\n", 39, HEX_WHITE);
-    //writeToVideoTextBuffer("hey\n", 4, HEX_RED);
 
-	((EntryPoint)userCodeModuleAddress)();
+    ((EntryPoint)userCodeModuleAddress)();
 
 	while(1);
 

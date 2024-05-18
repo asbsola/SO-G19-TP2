@@ -10,7 +10,6 @@ int main() {
 
     // __asm__ volatile ("ud2");
 
-
     int a = 1;
     int b = 0;
     int c = a / b;

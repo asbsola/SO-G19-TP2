@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <drivers/videoDriver.h>
+#include <lib.h>
 
 void * memset(void * destination, int32_t c, uint64_t length)
 {
@@ -95,7 +96,7 @@ void uint64_to_hex_string(uint64_t num, char *buffer, uint16_t buffer_size) {
         return;
     }
 
-    const char hex_digits[] = "0123456789abcdef";
+    const char hex_digits[] = "0123456789ABCDEF";
 
     // Empieza desde el final del buffer
     buffer[16] = '\0';  // Terminador nulo

@@ -6,7 +6,6 @@ static unsigned long ticks = 0;
 void timer_handler() {
 	ticks++;
     update_frame_buffer();
-	//putPixel(0xFFFFFF, 100+ticks, 50);
 }
 
 int ticks_elapsed() {

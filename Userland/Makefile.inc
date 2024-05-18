@@ -1,4 +1,4 @@
-GCC=gcc-5
+GCC=gcc
 GPP=g++
 LD=ld
 AR=ar

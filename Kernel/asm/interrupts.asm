@@ -3,7 +3,7 @@ GLOBAL _cli, _sti, picMasterMask, picSlaveMask, haltcpu, _hlt
 
 GLOBAL _irq00Handler, _irq01Handler, _int80Handler
 
-GLOBAL _exception0Handler, _exception1Handler
+GLOBAL _exception0Handler, _exception6Handler
 
 EXTERN irqDispatcher
 EXTERN softIntDispatcher
@@ -97,41 +97,41 @@ SECTION .text
 	mov rcx, [rax+8*13]		; Pasaje de rcx
 	mov r8, [rax+8*12]		; Pasaje de rdx
 	mov r9, [rax+8*9]		; Pasaje de rsi
+
+	mov rbx, [rax+8*18]		; Pasaje de ss:rsp
+	push rbx
 	
-	mov rbx, [rax+8*10]
-	push rbx				; Pasaje de rdi
-
-	mov rbx, [rax+8*11]		; Pasaje de rbp
-	push rbx
-
-	mov rbx, [rax+8*8]		; Pasaje de r8
-	push rbx
-
-	mov rbx, [rax+8*7]		; Pasaje de r9
-	push rbx
-
-	mov rbx, [rax+8*6]		; Pasaje de r10
-	push rbx
-
-	mov rbx, [rax+8*5]		; Pasaje de r11
-	push rbx
-
-	mov rbx, [rax+8*4]		; Pasaje de r12
-	push rbx
-
-	mov rbx, [rax+8*3]		; Pasaje de r13
-	push rbx
-
-	mov rbx, [rax+8*2]		; Pasaje de r14
-	push rbx
-
-	mov rbx, [rax+8*1]		; Pasaje de r15
-	push rbx
-
 	mov rbx, [rax+8*15]		; Pasaje de rip
 	push rbx
 
-	mov rbx, [rax+8*18]		; Pasaje de ss:rsp
+	mov rbx, [rax+8*1]      ; Pasaje de r15
+	push rbx
+
+	mov rbx, [rax+8*2]      ; Pasaje de r14
+	push rbx
+
+	mov rbx, [rax+8*3]      ; Pasaje de r13
+	push rbx
+
+	mov rbx, [rax+8*4]      ; Pasaje de r12
+	push rbx
+
+	mov rbx, [rax+8*5]      ; Pasaje de r11
+	push rbx
+
+	mov rbx, [rax+8*6]      ; Pasaje de r10
+	push rbx
+
+	mov rbx, [rax+8*7]      ; Pasaje de r9
+	push rbx
+
+	mov rbx, [rax+8*8]      ; Pasaje de r8
+	push rbx
+
+	mov rbx, [rax+8*11]     ; Pasaje de rbp
+	push rbx
+
+	mov rbx, [rax+8*10]     ; Pasaje de rdi
 	push rbx
 
 	call exceptionDispatcher

@@ -74,12 +74,44 @@ typedef struct {
 struct ScreenTextInfo {
     uint32_t index;
     uint32_t fontSize;
+    uint32_t lastStartPos;
     ScreenTextChar buffer[SCREEN_TEXT_BUFFER_SIZE];
 } screenTextInfo;
 
+uint32_t get_font_width() {
+    return screenTextInfo.fontSize * (CHAR_BIT_WIDTH + CHAR_BIT_X_SPACING);
+}
+
+uint32_t get_font_height() {
+    return screenTextInfo.fontSize * (CHAR_BIT_HEIGHT + CHAR_BIT_Y_SPACING);
+}
+
+uint32_t get_chars_per_line() {
+    return VBE_mode_info->width / get_font_width();
+}
+
 void set_font_size(uint32_t fontSize) {
-    screenTextInfo.fontSize = fontSize;
-    update_screen_text_buffer();
+    if (fontSize > 0 && fontSize < 6) {
+        screenTextInfo.fontSize = fontSize;
+        update_screen_text_buffer();
+    }
+}
+
+
+void draw_char(char c, uint32_t hexColor, uint32_t posX, uint32_t posY) {
+    for (uint32_t y = 0; y < CHAR_BIT_HEIGHT; y++) {
+        for (uint32_t x = 0; x < CHAR_BIT_WIDTH; x++) {
+            uint8_t bit = font_bitmap[c * CHAR_BIT_HEIGHT + y] & (0x80 >> x);
+            if (bit) 
+                draw_square(hexColor, posX + x * screenTextInfo.fontSize, posY + y * screenTextInfo.fontSize, screenTextInfo.fontSize);
+        }
+    }
+}
+
+void draw_string(const char* str, uint32_t len, uint32_t hexColor, uint32_t posX, uint32_t posY) {
+    uint32_t fontWidth = get_font_width();
+
+    for (int i = 0; i < len; i++) draw_char(str[i], hexColor, posX + i * fontWidth, posY);
 }
 
 void clear_video_text_buffer() {
@@ -89,7 +121,7 @@ void clear_video_text_buffer() {
     }
 
     screenTextInfo.index = 0;
-    update_screen_text_buffer();
+    clear_screen(0);
 }
 
 void write_to_video_text_buffer(const char* data, uint32_t data_len, uint32_t hexColor) {
@@ -107,31 +139,55 @@ void write_to_video_text_buffer(const char* data, uint32_t data_len, uint32_t he
     update_screen_text_buffer();
 }
 
-void update_screen_text_buffer() {
-    clear_screen(0);
+uint32_t get_buffer_start_pos() {
     uint32_t fontWidth = screenTextInfo.fontSize * (CHAR_BIT_WIDTH + CHAR_BIT_X_SPACING);
     uint32_t fontHeight = screenTextInfo.fontSize * (CHAR_BIT_HEIGHT + CHAR_BIT_Y_SPACING);
     uint32_t charsPerLine = VBE_mode_info->width / fontWidth;
 
     uint32_t j = 0;
+    uint32_t out = 0;
 
-    for (uint32_t i = 0; i < SCREEN_TEXT_BUFFER_SIZE; i++) {
+    for (uint32_t i = 0; i < screenTextInfo.index; i++) {
         uint32_t posX = j % charsPerLine;
         uint32_t posY = j / charsPerLine;
 
-        if (posY * fontHeight >= VBE_mode_info->height - CHAR_BIT_HEIGHT) break;
+        if (posY * fontHeight >= VBE_mode_info->height) {
+            out = i;
+            j = 0;
+        }
+        else {
+            j += (screenTextInfo.buffer[i].c == '\n') ? (charsPerLine - (j % charsPerLine)) : 1;
+        }
+    }
+
+    return out;
+}
+
+void update_screen_text_buffer() {
+    uint32_t fontWidth = get_font_width();
+    uint32_t fontHeight = get_font_height();
+    uint32_t charsPerLine = get_chars_per_line();
+
+    uint32_t j = 0;
+
+    uint32_t start_pos = get_buffer_start_pos();
+
+    if (start_pos != screenTextInfo.lastStartPos) {
+        clear_screen(0);
+        screenTextInfo.lastStartPos = start_pos;
+    }
+
+    for (uint32_t i = start_pos; i < screenTextInfo.index; i++) {
+        uint32_t posX = j % charsPerLine;
+        uint32_t posY = j / charsPerLine;
+
+        if (posY * fontHeight >= VBE_mode_info->height) return;
 
         if (screenTextInfo.buffer[i].c == '\n') {
             j += charsPerLine - posX;
         }
         else {
-            for (uint32_t y = 0; y < CHAR_BIT_HEIGHT; y++) {
-                for (uint32_t x = 0; x < CHAR_BIT_WIDTH; x++) {
-                    uint8_t bit = font_bitmap[screenTextInfo.buffer[i].c * CHAR_BIT_HEIGHT + y] & (0x80 >> x);
-                    if (bit) 
-                        draw_square(screenTextInfo.buffer[i].hexColor, posX * fontWidth + x * screenTextInfo.fontSize, posY * fontHeight + y * screenTextInfo.fontSize, screenTextInfo.fontSize);
-                }
-            }
+            draw_char(screenTextInfo.buffer[i].c, screenTextInfo.buffer[i].hexColor, posX * fontWidth, posY * fontHeight);
             j++;
         }
     }

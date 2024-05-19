@@ -23,6 +23,8 @@
 extern unsigned char font_bitmap[4096];
 
 void update_frame_buffer();
+uint32_t get_video_buffer_width();
+uint32_t get_video_buffer_height();
 
 void put_pixel(uint32_t hexColor, uint64_t x, uint64_t y);
 void clear_screen(uint32_t clearColor);

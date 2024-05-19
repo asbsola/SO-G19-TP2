@@ -4,6 +4,8 @@ global sys_write
 global sys_set_font_size
 global sys_put_text
 global sys_draw_square
+global sys_get_screen_width
+global sys_get_screen_height
 
 sys_write:
     push rbp
@@ -45,6 +47,28 @@ sys_draw_square:
 
     mov rax, 4
     mov r10, rcx
+    int 0x80
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+sys_get_screen_width:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 5
+    int 0x80
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+sys_get_screen_height:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 6
     int 0x80
 
     mov rsp, rbp

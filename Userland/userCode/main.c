@@ -4,7 +4,10 @@
 int main() {
     sys_set_font_size(1); 
 
-    for (uint32_t i = 0; i < 50; i++)
+    printf("screen width: %d, ", sys_get_screen_width());
+    printf("screen height: %d\n", sys_get_screen_height());
+
+    for (uint32_t i = 0; i < 10; i++)
         printf("count: %d\n", i);
 
     int a = 1;

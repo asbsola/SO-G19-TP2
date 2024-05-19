@@ -1,12 +1,11 @@
 #include <syscall_adapters.h>
+#include <std.h>
 
 int main() {
     sys_set_font_size(1); 
 
-    char text[39] = "Desde user space mande este mensaje \2\n";
-
-    for (int i = 0; i < 30; i++)
-        sys_write(2, text, 38); 
+    for (uint32_t i = 0; i < 50; i++)
+        printf("count: %d\n", i);
 
     // __asm__ volatile ("ud2");
 

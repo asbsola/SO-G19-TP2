@@ -7,8 +7,6 @@ int main() {
     for (uint32_t i = 0; i < 50; i++)
         printf("count: %d\n", i);
 
-    // __asm__ volatile ("ud2");
-
     int a = 1;
     int b = 0;
     int c = a / b;

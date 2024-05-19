@@ -12,7 +12,14 @@ int main() {
 
     int a = 1;
     int b = 0;
-    int c = a / b;
+    //int c = a / b;
+
+    while(1){
+        uint8_t c = sys_get_key_pressed();
+        if(c != 0){
+            printf("%d", c);
+        }
+    }
 
 	return 0xDEADBEEF;
 }

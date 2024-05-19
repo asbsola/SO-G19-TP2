@@ -9,5 +9,6 @@ void sys_set_font_size(uint32_t font_size);
 void sys_draw_square(uint32_t hexColor, uint32_t posX, uint32_t posY, uint32_t size);
 uint32_t sys_get_screen_width();
 uint32_t sys_get_screen_height();
+uint8_t sys_get_key_pressed();
 
 #endif

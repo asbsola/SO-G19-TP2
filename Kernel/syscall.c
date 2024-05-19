@@ -1,7 +1,7 @@
-#include "include/drivers/videoDriver.h"
 #include <stdint.h>
 #include <syscall.h>
 #include <drivers/videoDriver.h>
+#include <drivers/keyboardDriver.h>
 
 uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
     return 0;
@@ -45,8 +45,12 @@ uint64_t sys_get_screen_height(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_
     return get_video_buffer_height();
 }
 
+uint64_t sys_get_key_pressed(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
+    return get_key_pending();
+}
+
 uint64_t (*syscalls[])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t) = {
-    sys_read, sys_write, sys_put_text, sys_set_font_size, sys_draw_square, sys_get_screen_width, sys_get_screen_height
+    sys_read, sys_write, sys_put_text, sys_set_font_size, sys_draw_square, sys_get_screen_width, sys_get_screen_height, sys_get_key_pressed
 };
 
 uint64_t syscall_handler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){

@@ -99,8 +99,8 @@ number_to_char:
     push rbp
     mov rbp, rsp
 
-    mov byte [rbx], '0'
-    add [rbx], al
+    mov byte [rdx], '0'
+    add [rdx], al
 
     mov rsp, rbp
     pop rbp

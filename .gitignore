@@ -1,5 +1,6 @@
 .gitignore
 .bash_history
+.vscode
 compile.sh
 
 #Binary Files

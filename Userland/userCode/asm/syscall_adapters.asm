@@ -6,6 +6,7 @@ global sys_put_text
 global sys_draw_square
 global sys_get_screen_width
 global sys_get_screen_height
+global sys_get_time
 global sys_get_key_pressed
 
 sys_write:
@@ -76,11 +77,22 @@ sys_get_screen_height:
     pop rbp
     ret
 
-sys_get_key_pressed:
+sys_get_time:
     push rbp
     mov rbp, rsp
 
     mov rax, 7
+    int 0x80
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+sys_get_key_pressed:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 8
     int 0x80
 
     mov rsp, rbp

@@ -1,8 +1,9 @@
 #include <syscall_adapters.h>
 #include <std.h>
+#include <keyboard.h>
 
 int main() {
-    sys_set_font_size(1); 
+    sys_set_font_size(2); 
 
     printf("screen width: %d, ", sys_get_screen_width());
     printf("screen height: %d\n", sys_get_screen_height());
@@ -15,9 +16,9 @@ int main() {
     //int c = a / b;
 
     while(1){
-        uint8_t c = sys_get_key_pressed();
+        char c = get_pressed_character();
         if(c != 0){
-            printf("%d", c);
+            putchar(c);
         }
     }
 

@@ -9,6 +9,7 @@ global sys_get_screen_width
 global sys_get_screen_height
 global sys_get_time
 global sys_get_key_pressed
+global sys_get_character_pressed
 
 sys_read:
     push rbp

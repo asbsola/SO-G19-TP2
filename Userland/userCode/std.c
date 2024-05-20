@@ -1,6 +1,26 @@
 #include <std.h>
 #include <syscall_adapters.h>
 
+uint32_t strcmp(const char* s1, const char* s2) {
+    uint32_t i;
+    for (i = 0; s1[i] != '\0' && s2[i] != '\0'; i++)
+        if (s1[i] != s2[i])
+            return s1[i] - s2[i];
+
+    if (s1[i] == '\0' && s2[i] == '\0') return 0;
+
+    return s1[i] - s2[i];
+}
+
+void strcpy(char* dest, const char* src) {
+    uint32_t i;
+
+    for (i = 0; src[i] != '\0'; i++)
+        dest[i] = src[i];
+
+    dest[i] = '\0';
+}
+
 uint32_t strlen(const char* s) {
     uint32_t i;
 
@@ -36,8 +56,9 @@ char* itoa(uint64_t num, char* dest, uint32_t dest_max_len) {
     return dest;
 }
 
-char printf_buff[PRINTF_PRINT_BUFF_MAX_SIZE];
 void printf(const char* fmt, uint64_t arg) {
+    char printf_buff[PRINTF_PRINT_BUFF_MAX_SIZE];
+
     uint32_t k = 0;
     for (uint32_t i = 0; k < PRINTF_PRINT_BUFF_MAX_SIZE && fmt[i] != '\0'; i++) {
         if (fmt[i] == '%' && fmt[i + 1] == 's') {
@@ -65,4 +86,31 @@ void printf(const char* fmt, uint64_t arg) {
     }
     printf_buff[k] = '\0';
     puts(printf_buff);
+}
+
+char getchar() {
+    return sys_get_character_pressed();
+}
+
+uint32_t atoi(const char* s) {
+    uint32_t out = 0;
+
+    for (uint32_t i = 0; s[i] != '\0'; i++)
+        out = out * 10 + (s[i] - '0');
+
+    return out;
+}
+
+void scanf(const char* fmt, void* ptr) {
+    char scan_buff[SCANF_BUFF_MAX_SIZE];
+
+    uint32_t len = sys_read(scan_buff, SCANF_BUFF_MAX_SIZE);
+    scan_buff[len - 1] = '\0';
+
+    if (strcmp(fmt, "%d") == 0)
+        *((uint32_t*)ptr) = atoi(scan_buff);
+    else if (strcmp(fmt, "%s") == 0)
+        strcpy((char*)ptr, scan_buff);
+    else if (strcmp(fmt, "%c") == 0)
+        *((char*)ptr) = scan_buff[0];
 }

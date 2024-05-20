@@ -188,7 +188,7 @@ void update_screen_text_buffer() {
     uint32_t fontWidth = get_font_width();
     uint32_t fontHeight = get_font_height();
     uint32_t charsPerLine = get_chars_per_line();
-    uint32_t linesPerScreen = get_video_buffer_height() / fontHeight;
+    uint32_t linesPerScreen = get_video_buffer_height() / fontHeight - 1;
 
     uint32_t lower_y_limit = (linesPerScreen <= screenTextInfo.indexY) ? screenTextInfo.indexY  - linesPerScreen : 0;
     uint32_t upper_x_limit = (charsPerLine <= SCREEN_TEXT_BUFFER_WIDTH) ? charsPerLine : SCREEN_TEXT_BUFFER_WIDTH;

@@ -1,6 +1,5 @@
 #include <syscall_adapters.h>
 #include <std.h>
-#include <keyboard.h>
 
 int main() {
     sys_set_font_size(2); 
@@ -16,11 +15,11 @@ int main() {
     //int c = a / b;
 
     while(1){
-        char c = get_pressed_character();
-        if(c != 0){
-            putchar(c);
-        }
+        char str[200] = "hello";
+        int len = sys_read(str, 200);
+        str[len] = 0;
+        puts(str);
     }
-
+    while(1);
 	return 0xDEADBEEF;
 }

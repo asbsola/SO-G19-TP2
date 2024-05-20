@@ -4,6 +4,15 @@
 uint8_t key_buffer[MAX_SIZE_KEY_BUFFER];
 static int first_key_index = 0;
 static int buffer_size = 0;
+static char map_to_ascii[256] = {
+    0, '~', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', '\t', 
+    'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\n', 'c', 
+    'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', '\'', '`', 's', '\\',
+    'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/', 's', '*', 'a', ' ', 'l',
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'n', 's', '7', '8', '9',
+    '-', '4', '5', '6', '+', '1', '2', '3', '0', '.', '1', '2'
+};
+
 
 void keyboard_handler(){
     uint8_t scan_code = get_scan_code();
@@ -21,4 +30,8 @@ uint8_t get_key_pending(){
     first_key_index = (first_key_index + 1) % MAX_SIZE_KEY_BUFFER;
     buffer_size--;
     return key;
+}
+
+char get_pressed_character(){
+    return map_to_ascii[get_key_pending()];
 }

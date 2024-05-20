@@ -3,7 +3,7 @@
 
 static unsigned long ticks = 0;
 
-void timer_handler() {
+void timer_handler(const registers64_t * registers) {
 	ticks++;
     update_frame_buffer();
 }

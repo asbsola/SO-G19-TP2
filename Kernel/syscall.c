@@ -74,9 +74,9 @@ uint64_t (*syscalls[])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_
     sys_get_screen_height, sys_get_time, sys_get_key_pressed, sys_get_character_pressed
 };
 
-uint64_t syscall_handler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
-    if (rax >= sizeof(syscalls) / sizeof(syscalls[0]))
+uint64_t syscall_handler(const registers64_t *registers){
+    if (registers->rax >= sizeof(syscalls) / sizeof(syscalls[0]))
             return 0;
 
-    return syscalls[rax](rdi, rsi, rdx, r10, r8, r9);
+    return syscalls[registers->rax](registers->rdi, registers->rsi, registers->rdx, registers->r10, registers->r8, registers->r9);
 }

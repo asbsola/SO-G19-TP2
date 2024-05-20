@@ -3,15 +3,15 @@
 #include <syscall.h>
 #include <stdint.h>
 
-static void (*interrupts[])(void) = {timer_handler, keyboard_handler};
+static void (*interrupts[])(const registers64_t *) = {timer_handler, keyboard_handler};
 
-void irqDispatcher(uint64_t irq) {
+void irqDispatcher(uint64_t irq, const registers64_t *registers) {
     if (irq >= sizeof(interrupts) / sizeof(interrupts[0]))
         return;
 
-    interrupts[irq]();
+    interrupts[irq](registers);
 }
 
-uint64_t softIntDispatcher(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
-    return syscall_handler(rax, rdi, rsi, rdx, r10, r8, r9);
+uint64_t softIntDispatcher(const registers64_t *registers){
+    return syscall_handler(registers);
 }

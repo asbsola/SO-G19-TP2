@@ -7,7 +7,7 @@ int main() {
     printf("screen width: %d, ", sys_get_screen_width());
     printf("screen height: %d\n", sys_get_screen_height());
 
-    for (uint32_t i = 0; i < 100; i++)
+    for (uint32_t i = 0; i < 10; i++)
         printf("count: %d\n", i);
 
     int a = 1;

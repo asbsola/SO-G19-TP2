@@ -193,6 +193,7 @@ _int80Handler:
 	mov rdx, rsi
 	mov rsi, rdi
 	mov rdi, rax
+	sti
 	call softIntDispatcher
 	add rsp, 8
 	push rax

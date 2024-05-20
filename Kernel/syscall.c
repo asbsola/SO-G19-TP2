@@ -7,7 +7,6 @@
 #include <interrupts.h>
 
 uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-    _sti();
     char c = 0;
     int i = 0;
     char* out_buffer = (char*) rdi;

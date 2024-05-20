@@ -16,7 +16,7 @@ int main() {
 
     while(1){
         uint8_t c = sys_get_key_pressed();
-        if(c != 0){
+        if(c != 0) {
             printf("%d", c);
         }
     }

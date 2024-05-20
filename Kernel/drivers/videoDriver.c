@@ -125,6 +125,11 @@ uint32_t get_chars_per_line() {
     return get_video_buffer_width() / get_font_width();
 }
 
+uint32_t get_chars_per_buff_line() {
+    uint32_t charsPerLine = get_chars_per_line();
+    return (charsPerLine <= SCREEN_TEXT_BUFFER_WIDTH) ? charsPerLine : SCREEN_TEXT_BUFFER_WIDTH;
+}
+
 void set_font_size(uint32_t fontSize) {
     if (fontSize > 0 && fontSize < 6) {
         screenTextInfo.fontSize = fontSize;
@@ -174,8 +179,8 @@ void write_to_video_text_buffer(const char* data, uint32_t data_len, uint32_t he
             screenTextInfo.buffer[screenTextInfo.indexY][screenTextInfo.indexX].hexColor = hexColor;
 
             screenTextInfo.indexX += 1;
-            screenTextInfo.indexY += screenTextInfo.indexX / SCREEN_TEXT_BUFFER_WIDTH;
-            screenTextInfo.indexX %= SCREEN_TEXT_BUFFER_WIDTH;
+            screenTextInfo.indexY += screenTextInfo.indexX / get_chars_per_buff_line();
+            screenTextInfo.indexX %= get_chars_per_buff_line();
         }
     }
 
@@ -187,11 +192,10 @@ void update_screen_text_buffer() {
 
     uint32_t fontWidth = get_font_width();
     uint32_t fontHeight = get_font_height();
-    uint32_t charsPerLine = get_chars_per_line();
     uint32_t linesPerScreen = get_video_buffer_height() / fontHeight - 1;
 
     uint32_t lower_y_limit = (linesPerScreen <= screenTextInfo.indexY) ? screenTextInfo.indexY  - linesPerScreen : 0;
-    uint32_t upper_x_limit = (charsPerLine <= SCREEN_TEXT_BUFFER_WIDTH) ? charsPerLine : SCREEN_TEXT_BUFFER_WIDTH;
+    uint32_t upper_x_limit = get_chars_per_buff_line();
 
     for (uint32_t y = screenTextInfo.indexY; y + 1 > lower_y_limit; y--)
         for (uint32_t x = 0; x < upper_x_limit; x++)

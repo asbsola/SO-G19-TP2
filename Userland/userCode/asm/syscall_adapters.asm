@@ -110,3 +110,14 @@ sys_get_key_pressed:
     mov rsp, rbp
     pop rbp
     ret
+
+sys_get_character_pressed:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 9
+    int 0x80
+
+    mov rsp, rbp
+    pop rbp
+    ret

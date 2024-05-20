@@ -168,19 +168,30 @@ void clear_video_text_buffer() {
 
 void write_to_video_text_buffer(const char* data, uint32_t data_len, uint32_t hexColor) {
     for (uint32_t i = 0; i < data_len; i++) {
-        if (data[i] == '\n') {
-            screenTextInfo.indexY += 1;
-            screenTextInfo.indexY %= SCREEN_TEXT_BUFFER_HEIGHT;
+        switch (data[i]) {
+            case '\n':
+                screenTextInfo.indexY += 1;
+                screenTextInfo.indexY %= SCREEN_TEXT_BUFFER_HEIGHT;
 
-            screenTextInfo.indexX = 0;
-        }
-        else {
-            screenTextInfo.buffer[screenTextInfo.indexY][screenTextInfo.indexX].c = data[i];
-            screenTextInfo.buffer[screenTextInfo.indexY][screenTextInfo.indexX].hexColor = hexColor;
+                screenTextInfo.indexX = 0;
+                break;
+            case '\t':
+                write_to_video_text_buffer("    ", 4, hexColor);
+                break;
+            case '\b':
+                if (screenTextInfo.indexX > 0) {
+                    screenTextInfo.indexX -= 1;
+                    screenTextInfo.buffer[screenTextInfo.indexY][screenTextInfo.indexX].c = ' ';
+                }
+                break;
+            default:
+                screenTextInfo.buffer[screenTextInfo.indexY][screenTextInfo.indexX].c = data[i];
+                screenTextInfo.buffer[screenTextInfo.indexY][screenTextInfo.indexX].hexColor = hexColor;
 
-            screenTextInfo.indexX += 1;
-            screenTextInfo.indexY += screenTextInfo.indexX / get_chars_per_buff_line();
-            screenTextInfo.indexX %= get_chars_per_buff_line();
+                screenTextInfo.indexX += 1;
+                screenTextInfo.indexY += screenTextInfo.indexX / get_chars_per_buff_line();
+                screenTextInfo.indexX %= get_chars_per_buff_line();
+                break;
         }
     }
 

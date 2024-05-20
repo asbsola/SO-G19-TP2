@@ -1,5 +1,6 @@
 section .text
 
+global sys_read
 global sys_write
 global sys_set_font_size
 global sys_put_text
@@ -8,6 +9,17 @@ global sys_get_screen_width
 global sys_get_screen_height
 global sys_get_time
 global sys_get_key_pressed
+
+sys_read:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 0
+    int 0x80
+
+    mov rsp, rbp
+    pop rbp
+    ret
 
 sys_write:
     push rbp

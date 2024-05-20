@@ -7,19 +7,23 @@ int main() {
     printf("screen width: %d, ", sys_get_screen_width());
     printf("screen height: %d\n", sys_get_screen_height());
 
-    for (uint32_t i = 0; i < 10; i++)
+    for (uint32_t i = 0; i < 100; i++)
         printf("count: %d\n", i);
 
     int a = 1;
     int b = 0;
     //int c = a / b;
 
+    puts("test\b\n");
+    puts("test2\n");
+    /*
     while(1){
         uint8_t c = sys_get_key_pressed();
         if(c != 0) {
             printf("%d", c);
         }
     }
+    */
 
 	return 0xDEADBEEF;
 }

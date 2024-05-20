@@ -1,4 +1,5 @@
 #include <drivers/keyboardDriver.h>
+#include <registers.h>
 #include <lib.h>
 
 uint8_t key_buffer[MAX_SIZE_KEY_BUFFER];
@@ -21,7 +22,7 @@ static char map_to_ascii[256] = {
     '-', '4', '5', '6', '+', '1', '2', '3', '0', '.'
 };
 
-void keyboard_handler(){
+void keyboard_handler(const registers64_t * registers){
     uint8_t scan_code = get_scan_code();
     if(scan_code == CAPS_LOCK_CODE || scan_code == LEFT_SHIFT_CODE || scan_code == RIGHT_SHIFT_CODE){
         caps_enabled = 1 - caps_enabled;

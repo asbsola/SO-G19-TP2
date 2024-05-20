@@ -7,7 +7,7 @@ int main() {
     printf("screen width: %d, ", sys_get_screen_width());
     printf("screen height: %d\n", sys_get_screen_height());
 
-    for (uint32_t i = 0; i < 10; i++)
+    for (uint32_t i = 0; i < 100; i++)
         printf("count: %d\n", i);
 
     int a = 1;
@@ -15,11 +15,11 @@ int main() {
     //int c = a / b;
 
     while(1){
-        char str[200] = "hello";
+        char str[200];
         int len = sys_read(str, 200);
         str[len] = 0;
         puts(str);
     }
-    while(1);
+
 	return 0xDEADBEEF;
 }

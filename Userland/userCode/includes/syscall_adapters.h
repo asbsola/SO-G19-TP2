@@ -1,7 +1,7 @@
 #ifndef __syscall_adapters__
 #define __syscall_adapters__
 
-#include <int_types.h>
+#include <stdint.h>
 
 uint64_t sys_read(const char* buff, uint64_t len);
 void sys_write(uint64_t fd, const char* buff, uint64_t len);

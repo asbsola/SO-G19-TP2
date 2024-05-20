@@ -1,7 +1,7 @@
 #ifndef __STD__
 #define __STD__
 
-#include <int_types.h>
+#include <stdint.h>
 
 uint32_t strlen(const char* s);
 void putchar(char c);

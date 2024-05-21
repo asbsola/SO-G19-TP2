@@ -4,6 +4,7 @@ section .text
 play_sound:
     push rbp
     mov rbp, rsp
+    cli
 
     mov rax, 1193180
     mov rdx, 0
@@ -19,7 +20,8 @@ play_sound:
     in al, 0x61
     or al, 3
     out 0x61, al
-
+    
+    sti
     mov rsp, rbp
     pop rbp
     ret

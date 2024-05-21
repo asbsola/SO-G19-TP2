@@ -3,9 +3,9 @@
 #include <drivers/soundDriver.h>
 #include <lib.h>
 
-void beep(uint64_t freq, uint64_t secs) {
+void beep(uint64_t freq, uint64_t milis) {
     play_sound(freq);
     int start = ticks_elapsed();
-    while(ticks_elapsed() - start < secs*TICKS_PER_SECOND);
+    while(ticks_elapsed() - start < TICKS_PER_SECOND * milis / 1000);
     stop_sound();
 }

@@ -19,7 +19,7 @@ void run_shell() {
     char shell_input[MAX_SHELL_INPUT];
     shell_input[0] = 0;
 
-    while (strcmp(shell_input, "exit") != 0) { 
+    while (1) { 
         puts("shell> ");
         scanf("%s", shell_input);
         for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++) 

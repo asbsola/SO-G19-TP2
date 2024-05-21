@@ -62,8 +62,6 @@ int main()
 
     start_shell();
 
-    write_to_video_text_buffer("shell exited, back in system kernel\n", 36, HEX_GRAY);
-
 	while(1);
 
 	return 0;

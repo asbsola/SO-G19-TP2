@@ -13,7 +13,6 @@ int _start() {
 	memset(&bss, 0, &endOfBinary - &bss);
 
 	return main();
-
 }
 
 void * memset(void * destiation, int32_t c, uint64_t length) {

@@ -94,7 +94,6 @@ SECTION .text
 	iretq
 %endmacro
 
-
 _hlt:
 	sti
 	hlt

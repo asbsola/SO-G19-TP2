@@ -82,7 +82,7 @@ void print_register(char * name, uint32_t nameDim, uint64_t value) {
 }
 
 void print_tab() {
-	write_to_video_text_buffer("    ", 4, HEX_WHITE);
+	write_to_video_text_buffer("\t", 1, HEX_WHITE);
 }
 
 void print_enter() {

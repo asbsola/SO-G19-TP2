@@ -5,6 +5,7 @@
 #include <drivers/timeDriver.h>
 #include <drivers/keyboardDriver.h>
 #include <interrupts.h>
+#include <lib.h>
 
 uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
     char c = 0;
@@ -68,10 +69,21 @@ uint64_t sys_get_character_pressed(uint64_t rdi, uint64_t rsi, uint64_t rdx, uin
     return get_pressed_character();
 }
 
+uint64_t sys_clear_text_buffer(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
+    clear_video_text_buffer();
+    return 0;
+}
+
+uint64_t sys_get_cpu_vendor(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
+    cpuVendor(rdi);
+    return 0;
+}
+
 uint64_t (*syscalls[])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t) = {
     sys_read, sys_write, sys_put_text, 
     sys_set_font_size, sys_draw_square, sys_get_screen_width, 
-    sys_get_screen_height, sys_get_time, sys_get_key_pressed, sys_get_character_pressed
+    sys_get_screen_height, sys_get_time, sys_get_key_pressed, sys_get_character_pressed,
+    sys_clear_text_buffer, sys_get_cpu_vendor
 };
 
 uint64_t syscall_handler(const registers64_t *registers){

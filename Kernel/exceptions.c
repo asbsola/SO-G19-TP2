@@ -4,6 +4,9 @@
 #include <lib.h>
 #include <exceptions.h>
 
+//defined in kernel.c
+void start_shell();
+
 void exceptionDispatcher(int id, const registers64_t *registers) {
 	print_enter();
 	write_to_video_text_buffer("Exception caught: ", 18, HEX_RED);
@@ -25,5 +28,5 @@ void exceptionDispatcher(int id, const registers64_t *registers) {
 
     update_frame_buffer();
 
-	haltcpu();
+	start_shell();
 }

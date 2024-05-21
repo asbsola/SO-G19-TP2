@@ -10,6 +10,8 @@ global sys_get_screen_height
 global sys_get_time
 global sys_get_key_pressed
 global sys_get_character_pressed
+global sys_clear_text_buffer
+global sys_get_cpu_vendor
 
 sys_read:
     push rbp
@@ -117,6 +119,28 @@ sys_get_character_pressed:
     mov rbp, rsp
 
     mov rax, 9
+    int 0x80
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+sys_clear_text_buffer:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 10 
+    int 0x80
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+sys_get_cpu_vendor:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 11 
     int 0x80
 
     mov rsp, rbp

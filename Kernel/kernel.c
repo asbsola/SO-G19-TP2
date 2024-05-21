@@ -49,6 +49,10 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
+void start_shell() {
+    ((EntryPoint)userCodeModuleAddress)();
+}
+
 int main()
 {	
 	load_idt();
@@ -56,7 +60,9 @@ int main()
     clear_video_text_buffer();
     write_to_video_text_buffer("Kernel initialized\nRunning user code...\n\n", 41, HEX_GRAY);
 
-    ((EntryPoint)userCodeModuleAddress)();
+    start_shell();
+
+    write_to_video_text_buffer("shell exited, back in system kernel\n", 36, HEX_GRAY);
 
 	while(1);
 

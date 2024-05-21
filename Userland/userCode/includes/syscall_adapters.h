@@ -13,5 +13,7 @@ uint32_t sys_get_screen_width();
 uint32_t sys_get_screen_height();
 uint8_t sys_get_key_pressed();
 char sys_get_character_pressed();
+void sys_clear_text_buffer();
+void sys_get_cpu_vendor(char* buff);
 
 #endif

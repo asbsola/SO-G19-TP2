@@ -89,14 +89,14 @@ get_seconds:
 	and cl, 0b00001111			; guardamos la unidad
 
 	mov rdx, time
-	add rdx, 5
+	add rdx, 6
 
-    call number_to_char         ; en time[5] = decena segundo		
+    call number_to_char         ; en time[6] = decena segundo		
 
 	inc rdx
     mov al, cl
 
-	call number_to_char         ; en time[6] = unidad segundo	
+	call number_to_char         ; en time[7] = unidad segundo	
 
 	pop rax
     pop rdx
@@ -129,6 +129,8 @@ get_time:
 	add rax, 8
 
 	mov byte [rax], 0
+
+	mov rax, time
 
 	mov rsp, rbp
 	pop rbp

@@ -14,8 +14,10 @@ uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64
     while(c != '\n' && i + 1 < rsi){
         if(keys_pending()){
             c = get_pressed_character();
-            write_to_video_text_buffer(&c, 1, HEX_WHITE);
-            out_buffer[i++] = c;
+            if(c == '\b') i--;
+            else out_buffer[i++] = c;
+            if(i < 0) i = 0;
+            else write_to_video_text_buffer(&c, 1, HEX_WHITE);
         }
     }
     return i;

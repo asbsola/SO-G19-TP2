@@ -6,6 +6,7 @@
 void help();
 void cls();
 void sys_info();
+void beep();
 
 void run_shell();
 

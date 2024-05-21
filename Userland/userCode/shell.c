@@ -11,7 +11,9 @@ typedef struct {
 ModuleDescriptor modules[] = {
     {"help", "displays available modules", help}, 
     {"clear", "clears the screens text buffer", cls}, 
-    {"sysinfo", "displays system information", sys_info}};
+    {"sysinfo", "displays system information", sys_info},
+    {"beep", "beeps", beep}
+    };
 
 void run_shell() {
     char shell_input[MAX_SHELL_INPUT];
@@ -52,4 +54,8 @@ void sys_info() {
     char cpu_vendor_buff[200];
     sys_get_cpu_vendor(cpu_vendor_buff);
     printf("cpu vendor: %s\n\n", cpu_vendor_buff);
+}
+
+void beep() {
+    sys_beep(1000, 1);
 }

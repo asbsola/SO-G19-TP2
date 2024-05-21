@@ -19,4 +19,8 @@ void print_enter();
 
 void uint64_to_hex_string(uint64_t num, char *buffer, uint16_t buffer_size);
 
+void outb(uint8_t dir, uint8_t val);
+
+uint8_t inb(uint8_t dir);
+
 #endif

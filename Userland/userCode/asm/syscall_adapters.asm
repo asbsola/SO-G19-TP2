@@ -12,6 +12,7 @@ global sys_get_key_pressed
 global sys_get_character_pressed
 global sys_clear_text_buffer
 global sys_get_cpu_vendor
+global sys_beep
 
 sys_read:
     push rbp
@@ -140,7 +141,18 @@ sys_get_cpu_vendor:
     push rbp
     mov rbp, rsp
 
-    mov rax, 11 
+    mov rax, 11
+    int 0x80
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+sys_beep:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 12
     int 0x80
 
     mov rsp, rbp

@@ -29,20 +29,20 @@ int main() {
     // __asm__("movq $16, %r15");
     // int c = a / b;
     // __asm__("ud2");
-    // while(1){
-    //     uint32_t num;
-    //     puts("Enter num: ");
-    //     scanf("%d", &num);
-    //     printf("num: %d\n", num);
-    //     sys_set_font_size(num); 
-    // }
-    
     while(1){
-        char str[200];
-        int len = sys_read(str, 200);
-        str[len] = 0;
-        puts(str);
+        uint32_t num;
+        puts("Enter num: ");
+        scanf("%d", &num);
+        printf("num: %d\n", num);
+        sys_set_font_size(num); 
     }
+    
+    // while(1){
+    //     char str[200];
+    //     int len = sys_read(str, 200);
+    //     str[len] = 0;
+    //     puts(str);
+    // }
     
 
 	return 0xDEADBEEF;

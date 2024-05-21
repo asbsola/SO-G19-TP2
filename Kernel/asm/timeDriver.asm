@@ -1,8 +1,8 @@
-GLOBAL getTime
+GLOBAL get_time
 
 section .text
 
-getHour:
+get_hour:
 	push rbp
 	mov rbp, rsp			    ; armado del stack frame
 	
@@ -37,7 +37,7 @@ getHour:
 
 	ret
 
-getMinute:
+get_minute:
 	push rbp
 	mov rbp, rsp			; armado del stack frame
 
@@ -74,17 +74,17 @@ getMinute:
 
 	ret
 
-getTime:
+get_time:
 	push rbp
 	mov rbp, rsp
 
-	call getHour
+	call get_hour
 
 	mov rax, time
 	add rax, 2
 	mov byte [rax], ':'				; ponemos en time[2] = ':'
 	
-	call getMinute
+	call get_minute
 
 	mov rax, time
 

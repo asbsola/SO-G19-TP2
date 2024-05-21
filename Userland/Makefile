@@ -15,5 +15,4 @@ clean:
 	cd userCode; make clean
 	rm -rf *.bin
 
-
 .PHONY: userCode all clean

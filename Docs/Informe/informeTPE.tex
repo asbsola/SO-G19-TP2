@@ -1,0 +1,136 @@
+\documentclass{article}
+\title{\textbf{Trabajo Práctico Especial (TPE)} \\ [1ex]
+\large Instituto Tecnológico de Buenos Aires - Arquitectura de las computadoras (72.08) \\ [1ex]
+\large Grupo 21 }
+\date{4 de junio de 2024}
+\author{
+\textbf{Ignacio Searles}\\
+isearles@itba.edu.ar\\
+64.536
+\and
+\textbf{Augusto Barthelemy Solá}\\
+abarthelemysola@itba.edu.ar\\
+64.502
+\and
+\textbf{Lautaro Paletta}\\
+lapaletta@itba.edu.ar\\
+64.449
+\and
+\textbf{Agustín Ronda}\\
+aronda@itba.edu.ar\\
+64.507
+}
+
+\usepackage{multicol}
+\usepackage{graphicx, wrapfig}
+\graphicspath{ {imagenes/} }
+
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\usepackage{hyperref}
+
+\usepackage{caption, threeparttable}
+\usepackage{hyperref}
+
+\usepackage[margin=1.3in]{geometry}
+
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabla}
+\renewcommand*\abstractname{Resumen}
+
+\begin{document}
+\maketitle
+
+\begin {abstract}
+
+El presente informe trata sobre el desarrollo de un kernel que administra los recursos de hardware de una computadora y que tiene una API para interaccionar con el espacio de usuario. En el espacio de usuario se desarrolló un shell que permite ejecutar diferentes módulos que tienen el objetivo de mostrar el funcionamiento del sistema.
+
+\end {abstract}
+
+\section {Kernel}
+
+\subsection {Video driver}
+
+El trabajo se desarrolló en modo video.
+
+Además del buffer principal de pantalla, se dispuso de un buffer intermedio de pantalla. Este buffer sobreescribe el buffer principal de pantalla cuando se produce una interrupción timer tick. Todas las routinas de video escriben a este buffer intermedio, en vez de escribir al buffer principal. Se tomó la decisión de usar este buffer intermedio para evitar efectos de "flickering" que se experimentaban.
+
+Para el manejo de texto en la pantalla se decidió utilizar una matriz que almacena los caracteres en cada línea, junto con su color. Cuando se escribe texto a pantalla, el mismo es almacenado en está matriz, al almacenarlo en la matriz se manejan los salto de linea, tabulaciones y borrados. Se utiliza un puntero que apunta a la proximación posición en la matriz donde se debe escribir el texto. Luego de escribir el texto en la matriz se lo imprime en el buffer intermedio de pantalla, donde se maneja el scrolling del texto en la pantalla. La utilización de esta matriz es lo que permite tanto el scrolling del texto en pantalla, como el ajuste dinámico del tamaño del texto. Ambas operaciones requieren hacer un clear de la pantalla, que sin el buffer intermedio de pantalla generaba el efecto de "flickering".
+
+La utilización de tanto el buffer intermedio de pantalla, como la matriz de caracteres, implicó que tuviesemos que mover donde empieza el código en userpace para que el kernel tenga más espacio en memoria.
+
+Para la impresión de caracterés se utilizó una tipografía en formato bitmap. Cada caractér es de 8x16 cuadrados. Para el ajuste del tamaño de los caracterés cambiamos el tamaño de cada cuadrado. Esto implica que podemos cambiar el tamaño del texto por múltiplos enteros. La tipografía utilizada se extrajo de \url{http://www.helenos.org/doc/refman/uspace-ia32/font-8x16_8c-source.html}.
+
+\subsection {Keyboard driver}
+
+Para manejar el teclado se dispuso de una queue de tecladas. Cuando se genera la interrupción de teclado (si se trata de un key press), se lo almacena en la queue. Luego mediante las diferentes routinas de teclado, cuando se solicita teclas, la queue se va consumiendo.
+
+Se cuentan con routinas para obtener tanto las teclas como scan code o su respectivo código ASCII. Para las funciones que obtienen el valor ASCII se tiene en cuenta el CAPS LOCK y el SHIFT.
+
+\subsection {Sound driver}
+
+\subsection {IDT}
+
+Para el manejo de interrupciones y excepciones se crearon diversas entradas en la IDT. Para preservar el estado de los registros, se almacena los mismos en el stack.
+
+Debido a que varias de las interrupciones y excepciones requieren tener el estado de los registros al momento de que se dió la interrupción/excepción, se pasa como parametro a las funciones handler un puntero a struct que contiene el estado de los registros (se pasa la dirección al stack donde se almacenaron los registros para preservarlos).
+
+\subsubsection {Interrupciones de hardware}
+
+En cuanto a las interrupciones de hardware, se manejaron las interrupciones de timer tick y del teclado.
+
+Cuando se produce una interrupción de timer tick, se reemplaza el buffer principal de pantalla por el buffer intermedio. Y cuando se produce una interrupción de teclado, se agrega la tecla presionada a la queue (los key pressed).
+
+\subsubsection {Interrupciones de software/syscalls}
+
+Modelamos el manejo de syscalls a partir de la API de Linux de 64bit. En el caso de las interrupciones de software, no se preserva rax. Mediante este registro se pueden devolver datos al usuario.
+
+Los syscalls son la intefaz entre el userspace y el kernel. Los syscalls implementados se volcaron en la tabla \ref{table:syscalls}
+
+\begin{center}
+\begin{tabular}{|c|c|l|}
+\hline
+\textbf{rax} & \textbf{Syscall} & \textbf{Descripción} \\ \hline
+0 & sys\_read & \begin{minipage}{80mm}lee caracteres en formato ASCII hasta llegar a un newline.\end{minipage} \\ \hline
+1 & sys\_write &  \begin{minipage}{80mm}imprime texto por pantalla (en la matriz de texto).\end{minipage} \\ \hline
+2 & sys\_put\_text &  \begin{minipage}{80mm}imprime texto por pantalla en una posición absoluta.\end{minipage} \\ \hline
+3 & sys\_set\_font\_size &  \begin{minipage}{80mm}cambia el tamaño de los caracteres.\end{minipage} \\ \hline
+4 & sys\_draw\_square &  \begin{minipage}{80mm}imprime un cuadrado.\end{minipage} \\ \hline
+5 & sys\_get\_screen\_width &  \begin{minipage}{80mm}devuelve el ancho de la pantalla.\end{minipage} \\ \hline
+6 & sys\_get\_screen\_height &  \begin{minipage}{80mm}devuelve el alto de la pantalla.\end{minipage} \\ \hline
+7 & sys\_get\_time &  \begin{minipage}{80mm}devulve la hora actual en formato "hh:mm:ss"\end{minipage} \\ \hline
+8 & sys\_get\_key\_pressed &  \begin{minipage}{80mm}obtiene el scan code de la última tecla presionada o 0 (si no hay teclas en la queue).\end{minipage} \\ \hline
+9 & sys\_get\_character\_pressed &  \begin{minipage}{80mm}obtiene el código ASCII de la última tecla presionada o 0 (si no hay teclas en la queue).\end{minipage} \\ \hline
+10 & sys\_clear\_text\_buffer &  \begin{minipage}{80mm}limpia la matriz de caracteres.\end{minipage} \\ \hline
+11 & sys\_get\_cpu\_vendor &  \begin{minipage}{80mm}obtiene el cpu vendor. \end{minipage} \\ \hline
+12 & sys\_beep &  \begin{minipage}{80mm}emite un ruido a cierta frecuencia usando una onda cuadrada.\end{minipage} \\ \hline
+\end{tabular}
+\captionof{table}{syscalls implementadas para el llamado de funciones de kernel desde el userspace}
+\label{table:syscalls}
+\end{center}
+
+\subsubsection {Excepciones}
+
+Cuando se produce una excepción, se imprime la información relacionada a la excepción. Se imprime el estado de los registros al momento de efectuarse la excepción, y luego se vuelve a ejecutar la Shell.
+
+\section {Userspace}
+
+\subsection {libc}
+
+A partir de los syscalls se implementó adaptadores a las syscalls para que puedan ser llamadas desde C. A partir de estos adaptadores se implementaron varias funciones similares a las de la librería estandar de C.
+
+Para el manejo de strings se implementó: strcmp, strlen, strcpy, itoa y atoi.
+Para el manejo de IO se implementó: putchar, puts, printf (con un parametro de formato), getchar y scanf (con un parametro de formato).
+
+\subsection {shell}
+
+A partir de las funciones estandar implementadas, se creó una shell. 
+
+Para manejar los módulos de la shell creamos un tipo de estructura que contiene el nombre del módulo, su descripción (usado por el módulo help) y un puntero a la función correspondiente al módulo. Estas estructuras son almacenadas en un array con los módulos disponibles.
+
+\subsection {registers}
+\subsection {eliminator}
+
+\end{document}

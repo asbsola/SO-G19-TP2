@@ -23,7 +23,7 @@ void exceptionDispatcher(int id, const registers64_t *registers) {
 			break;
 	}
 
-	print_registers(registers);
+	print_registers(registers, HEX_RED);
 
     update_frame_buffer();
 

@@ -13,6 +13,7 @@ global sys_get_character_pressed
 global sys_clear_text_buffer
 global sys_get_cpu_vendor
 global sys_beep
+global sys_delay
 
 sys_read:
     push rbp
@@ -153,6 +154,17 @@ sys_beep:
     mov rbp, rsp
 
     mov rax, 12
+    int 0x80
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+sys_delay:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 13
     int 0x80
 
     mov rsp, rbp

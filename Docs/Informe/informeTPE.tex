@@ -87,7 +87,7 @@ Cuando se produce una interrupción de timer tick, se reemplaza el buffer princi
 
 Modelamos el manejo de syscalls a partir de la API de Linux de 64bit. En el caso de las interrupciones de software, no se preserva rax. Mediante este registro se pueden devolver datos al usuario.
 
-Los syscalls son la intefaz entre el userspace y el kernel. Los syscalls implementados se volcaron en la tabla \ref{table:syscalls}
+Los syscalls son la intefaz entre el userspace y el kernel. Los syscalls implementados se volcaron en la tabla \ref{table:syscalls}. En el manual de usuario se lista que parametros recibe en cada registro.
 
 \begin{center}
 \begin{tabular}{|c|c|l|}
@@ -122,7 +122,7 @@ Cuando se produce una excepción, se imprime la información relacionada a la ex
 A partir de los syscalls se implementó adaptadores a las syscalls para que puedan ser llamadas desde C. A partir de estos adaptadores se implementaron varias funciones similares a las de la librería estandar de C.
 
 Para el manejo de strings se implementó: strcmp, strlen, strcpy, itoa y atoi.
-Para el manejo de IO se implementó: putchar, puts, printf (con un parametro de formato), getchar y scanf (con un parametro de formato).
+Para el manejo de IO se implementó: putchar, puts, printf, getchar y scanf (con un parametro de formato).
 
 \subsection {shell}
 

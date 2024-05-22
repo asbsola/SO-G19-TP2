@@ -26,4 +26,10 @@ typedef struct
     uint64_t ss_rsp;
 } registers64_t;
 
+void save_registers(const registers64_t *registers);
+
+void print_stored_registers();
+
+void print_registers(const registers64_t *registers);
+
 #endif

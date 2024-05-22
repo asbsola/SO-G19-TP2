@@ -30,6 +30,10 @@ void keyboard_handler(const registers64_t * registers){
         caps_enabled = !caps_enabled;
         return;
     }
+    if(scan_code == 0x01){
+        save_registers(registers);
+        return;
+    }
     if(scan_code > 0x80 || buffer_size >= MAX_SIZE_KEY_BUFFER) return;
     key_buffer[(first_key_index + buffer_size++) % MAX_SIZE_KEY_BUFFER] = scan_code;
 }

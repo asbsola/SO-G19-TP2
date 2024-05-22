@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include <drivers/videoDriver.h>
 #include <interrupts.h>
-#include <lib.h>
 #include <exceptions.h>
 
 //defined in kernel.c
@@ -24,7 +23,7 @@ void exceptionDispatcher(int id, const registers64_t *registers) {
 			break;
 	}
 
-	print_registers_by_params(registers);
+	print_registers(registers);
 
     update_frame_buffer();
 

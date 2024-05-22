@@ -12,7 +12,8 @@ ModuleDescriptor modules[] = {
     {"help", "displays available modules", help}, 
     {"clear", "clears the screens text buffer", cls}, 
     {"sysinfo", "displays system information", sys_info},
-    {"beep", "beeps", beep}
+    {"regs", "displays stored register values", sys_print_registers},
+    {"beep", "beeps", beep},
     };
 
 void run_shell() {
@@ -59,4 +60,8 @@ void sys_info() {
 void beep() {
     sys_beep(500, 100);
     sys_beep(2000, 100);
+}
+
+void regs(){
+    sys_print_registers();
 }

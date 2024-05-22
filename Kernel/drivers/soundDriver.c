@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <timer.h>
+#include <drivers/pitDriver.h>
 #include <drivers/soundDriver.h>
 #include <lib.h>
 

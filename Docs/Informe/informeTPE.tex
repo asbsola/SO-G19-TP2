@@ -45,7 +45,7 @@ aronda@itba.edu.ar\\
 
 \begin {abstract}
 
-El presente informe trata sobre el desarrollo de un kernel que administra los recursos de hardware de una computadora y que tiene una API para interaccionar con el espacio de usuario. En el espacio de usuario se desarrolló un shell que permite ejecutar diferentes módulos que tienen el objetivo de mostrar el funcionamiento del sistema.
+El presente informe trata sobre el desarrollo de un kernel que administra los recursos de hardware de una computadora y que tiene una API para interactuar con el espacio de usuario. En el espacio de usuario se desarrolló un shell que permite ejecutar diferentes módulos que tienen el objetivo de mostrar el funcionamiento del sistema.
 
 \end {abstract}
 
@@ -55,9 +55,9 @@ El presente informe trata sobre el desarrollo de un kernel que administra los re
 
 El trabajo se desarrolló en modo video.
 
-Además del buffer principal de pantalla, se dispuso de un buffer intermedio de pantalla. Este buffer sobreescribe el buffer principal de pantalla cuando se produce una interrupción timer tick. Todas las routinas de video escriben a este buffer intermedio, en vez de escribir al buffer principal. Se tomó la decisión de usar este buffer intermedio para evitar efectos de "flickering" que se experimentaban.
+Además del buffer principal de pantalla, se dispuso de un buffer intermedio de pantalla. Este buffer sobreescribe el buffer principal de pantalla cuando se produce una interrupción timer tick. Todas las rutinas de video escriben a este buffer intermedio, en vez de escribir al buffer principal. Se tomó la decisión de usar este buffer intermedio para evitar efectos de "flickering" que se experimentaban.
 
-Para el manejo de texto en la pantalla se decidió utilizar una matriz que almacena los caracteres en cada línea, junto con su color. Cuando se escribe texto a pantalla, el mismo es almacenado en está matriz, al almacenarlo en la matriz se manejan los salto de linea, tabulaciones y borrados. Se utiliza un puntero que apunta a la proximación posición en la matriz donde se debe escribir el texto. Luego de escribir el texto en la matriz se lo imprime en el buffer intermedio de pantalla, donde se maneja el scrolling del texto en la pantalla. La utilización de esta matriz es lo que permite tanto el scrolling del texto en pantalla, como el ajuste dinámico del tamaño del texto. Ambas operaciones requieren hacer un clear de la pantalla, que sin el buffer intermedio de pantalla generaba el efecto de "flickering".
+Para el manejo de texto en la pantalla se decidió utilizar una matriz que almacena los caracteres en cada línea, junto con su color. Cuando se escribe texto a pantalla, el mismo es almacenado en está matriz, al almacenarlo en la matriz se manejan los salto de linea, tabulaciones y borrados. Se utiliza un puntero que apunta a la próxima posición en la matriz donde se debe escribir el texto. Luego de escribir el texto en la matriz se lo imprime en el buffer intermedio de pantalla, donde se maneja el scrolling del texto en la pantalla. La utilización de esta matriz es lo que permite tanto el scrolling del texto en pantalla, como el ajuste dinámico del tamaño del texto. Ambas operaciones requieren hacer un clear de la pantalla, que sin el buffer intermedio de pantalla generaba el efecto de "flickering".
 
 La utilización de tanto el buffer intermedio de pantalla, como la matriz de caracteres, implicó que tuviesemos que mover donde empieza el código en userpace para que el kernel tenga más espacio en memoria.
 

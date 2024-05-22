@@ -52,14 +52,6 @@ void * memcpy(void * destination, const void * source, uint64_t length)
 	return destination;
 }
 
-void print_tab() {
-	write_to_video_text_buffer("\t", 1, HEX_WHITE);
-}
-
-void print_enter() {
-	write_to_video_text_buffer("\n", 1, HEX_WHITE);
-}
-
 void uint64_to_hex_string(uint64_t num, char *buffer, uint16_t buffer_size) {
     // Asegúrate de que el buffer sea lo suficientemente grande para contener la cadena hexadecimal
     // y el carácter nulo de terminación. Para un entero de 64 bits necesitas 16 caracteres más el nulo.

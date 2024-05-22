@@ -7,7 +7,7 @@
 void start_shell();
 
 void exceptionDispatcher(int id, const registers64_t *registers) {
-	print_enter();
+	write_to_video_text_buffer("\n", 1, HEX_WHITE);
 	write_to_video_text_buffer("Exception caught: ", 18, HEX_RED);
 	switch (id)
 	{

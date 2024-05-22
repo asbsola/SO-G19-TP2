@@ -14,6 +14,7 @@ ModuleDescriptor modules[] = {
     {"sysinfo", "displays system information", sys_info},
     {"regs", "displays stored register values", sys_print_registers},
     {"beep", "beeps", beep},
+    {"div 0", "MUST REMOVE", div},
     };
 
 void run_shell() {
@@ -64,4 +65,10 @@ void beep() {
 
 void regs(){
     sys_print_registers();
+}
+
+void div(){
+    int a = 0;
+    int b = 24 / a;
+    printf("%d", b);
 }

@@ -11,10 +11,10 @@ void save_registers(const registers64_t *registers){
 void print_register(char * name, uint32_t nameDim, uint64_t value, uint32_t color) {
 	char buffer[17];
 	uint64_to_hex_string(value, buffer, 17);
-	print_tab();
+	write_to_video_text_buffer("\t", 1, HEX_WHITE);
 	write_to_video_text_buffer(name, nameDim, color);
 	write_to_video_text_buffer(buffer, 16, color);
-	print_enter();
+	write_to_video_text_buffer("\n", 1, HEX_WHITE);
 }
 
 void print_stored_registers() {

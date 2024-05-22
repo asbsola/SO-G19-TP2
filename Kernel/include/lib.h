@@ -9,10 +9,6 @@ void * memcpy(void * destination, const void * source, uint64_t length);
 
 char *cpuVendor(char *result);
 
-void print_tab();
-
-void print_enter();
-
 void uint64_to_hex_string(uint64_t num, char *buffer, uint16_t buffer_size);
 
 void outb(uint8_t dir, uint8_t val);

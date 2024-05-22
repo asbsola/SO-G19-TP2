@@ -57,5 +57,6 @@ void sys_info() {
 }
 
 void beep() {
-    sys_beep(1000, 100);
+    sys_beep(500, 100);
+    sys_beep(2000, 100);
 }

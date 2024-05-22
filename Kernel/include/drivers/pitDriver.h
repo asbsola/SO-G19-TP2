@@ -1,5 +1,5 @@
-#ifndef _TIMER_H_
-#define _TIMER_H_
+#ifndef _pit_H_
+#define _pit_H_
 
 #include <registers.h>
 

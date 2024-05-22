@@ -1,9 +1,9 @@
 #include <stdint.h>
 #include <syscall.h>
 #include <interrupts.h>
-#include <timer.h>
+#include <drivers/pitDriver.h>
 #include <drivers/videoDriver.h>
-#include <drivers/timeDriver.h>
+#include <drivers/rtcDriver.h>
 #include <drivers/keyboardDriver.h>
 #include <drivers/soundDriver.h>
 #include <interrupts.h>

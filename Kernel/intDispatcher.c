@@ -1,4 +1,4 @@
-#include <timer.h>
+#include <drivers/pitDriver.h>
 #include <drivers/keyboardDriver.h>
 #include <syscall.h>
 #include <stdint.h>

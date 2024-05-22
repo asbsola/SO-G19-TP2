@@ -1,4 +1,4 @@
-#include <timer.h>
+#include <drivers/pitDriver.h>
 #include <drivers/videoDriver.h>
 
 static unsigned long ticks = 0;

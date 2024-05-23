@@ -12,7 +12,7 @@ ModuleDescriptor modules[] = {
     {"help", "displays available modules", help}, 
     {"clear", "clears the screens text buffer", cls}, 
     {"sysinfo", "displays system information", sys_info},
-    {"regs", "displays stored register values. registers can be captured pressing the escape key", sys_print_registers},
+    {"regs", "displays captured register values", sys_print_registers},
     {"beep", "beeps", beep},
     {"div 0", "MUST REMOVE", div},
     };
@@ -31,7 +31,6 @@ void run_shell() {
 }
 
 void help() {
-    puts("HELP\n");
     puts("available modules:\n");
 
     for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++)
@@ -45,8 +44,6 @@ void cls() {
 }
 
 void sys_info() {
-    puts("SYSTEM INFO\n");
-
     puts("screen info:\n");
     printf("width: %d pixels\n", sys_get_screen_width());
     printf("height: %d pixels\n\n", sys_get_screen_height());

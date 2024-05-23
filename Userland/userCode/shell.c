@@ -12,7 +12,7 @@ ModuleDescriptor modules[] = {
     {"help", "displays available modules", help}, 
     {"clear", "clears the screens text buffer", cls}, 
     {"sysinfo", "displays system information", sys_info},
-    {"regs", "displays stored register values", sys_print_registers},
+    {"regs", "displays stored register values. registers can be captured pressing the escape key", sys_print_registers},
     {"beep", "beeps", beep},
     {"div 0", "MUST REMOVE", div},
     };
@@ -35,7 +35,7 @@ void help() {
     puts("available modules:\n");
 
     for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++)
-        printf("\t- %s: %s\n", modules[i].module_name, modules[i].module_description);
+        printf("\t- %s: %s.\n", modules[i].module_name, modules[i].module_description);
 
     putchar('\n');
 }

@@ -12,7 +12,7 @@ ModuleDescriptor modules[] = {
     {"help", "displays available modules", help}, 
     {"clear", "clears the screens text buffer", cls}, 
     {"sysinfo", "displays system information", sys_info},
-    {"regs", "displays captured register values", sys_print_registers},
+    {"regs", "displays captured registers (ESC key to capture)", sys_print_registers},
     {"beep", "beeps", beep},
     {"div 0", "MUST REMOVE", div},
     };

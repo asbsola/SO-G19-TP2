@@ -48,7 +48,9 @@ Lista de comandos:
 \item clear: limpia el buffer de texto de la pantalla.
 \item sysinfo: muestra información del sistema.
 \item beep: emite un sonido.
+\item regs: muestra los registros capturados.
 \end{itemize}
+Los registros se pueden capturar en cualquier momento presionando la tecla escape.
 
 \section *{Desarrollador}
 
@@ -86,7 +88,7 @@ Los syscalls disponibles se listan en la tabla \ref{table:syscalls}. Están mode
 10 & sys\_clear\_text\_buffer & & & & &   \\ \hline
 11 & sys\_get\_cpu\_vendor & char* buff & & & &   \\ \hline
 12 & sys\_beep & uint64\_t freq & uint64\_t secs & & &  \\ \hline
-12 & sys\_delay & uint64\_t millis & & & &  \\ \hline
+13 & sys\_delay & uint64\_t millis & & & &  \\ \hline
 \end{tabular}
 \captionof{table}{syscalls implementadas para el llamado de funciones de kernel desde el userspace}
 \label{table:syscalls}

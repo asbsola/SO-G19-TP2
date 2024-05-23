@@ -12,7 +12,8 @@ ModuleDescriptor modules[] = {
     {"help", "displays available modules", help}, 
     {"clear", "clears the screens text buffer", cls}, 
     {"sysinfo", "displays system information", sys_info},
-    {"regs", "displays stored register values. registers can be captured pressing the escape key", sys_print_registers},
+    {"regs", "displays stored register values\n(capture registers by pressing the escape key)", sys_print_registers},
+    {"size", "change font size", font_size},
     {"beep", "beeps", beep},
     {"div 0", "MUST REMOVE", div},
     };
@@ -54,6 +55,20 @@ void sys_info() {
     char cpu_vendor_buff[200];
     sys_get_cpu_vendor(cpu_vendor_buff);
     printf("cpu vendor: %s\n\n", cpu_vendor_buff);
+}
+
+void font_size(){
+    int n = 0;
+    printf("Choose font size (1-5) or 0 to exit: ");
+    scanf("%d", &n);
+    while(n < 0 || n >= 6){
+        printf("Choose a valid font size (1-5) or 0 to exit: ");
+        scanf("%d", &n);
+    }
+    if(n != 0){
+        sys_set_font_size(n);
+        printf("Font size set to %d\n", n);
+    }
 }
 
 void beep() {

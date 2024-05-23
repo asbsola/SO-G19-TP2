@@ -6,6 +6,7 @@
 void help();
 void cls();
 void sys_info();
+void font_size();
 void beep();
 void div();
 

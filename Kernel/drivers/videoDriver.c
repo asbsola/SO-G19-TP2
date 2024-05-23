@@ -220,5 +220,4 @@ void update_screen_text_buffer() {
         for (uint32_t x = 0; x < upper_x_limit; x++)
             draw_char(screenTextInfo.buffer[y][x].c, screenTextInfo.buffer[y][x].hexColor, x * fontWidth, (y - lower_y_limit) * fontHeight);
     _sti();
-    delay_ticks(1);
 }

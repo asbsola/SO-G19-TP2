@@ -170,3 +170,14 @@ sys_delay:
     mov rsp, rbp
     pop rbp
     ret
+
+sys_clear_screen:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 14
+    int 0x80
+
+    mov rsp, rbp
+    pop rbp
+    ret

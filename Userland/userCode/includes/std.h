@@ -14,7 +14,7 @@ void puts(const char *s);
 char* itoa(uint64_t num, char* dest, uint32_t dest_max_len);
 
 #define PRINTF_PRINT_BUFF_MAX_SIZE 1024
-void printf(const char* fmt, uint64_t arg);
+void printf(const char* fmt, ...);
 
 char getchar();
 uint32_t atoi(const char* s);

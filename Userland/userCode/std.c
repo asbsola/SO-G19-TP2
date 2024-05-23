@@ -1,5 +1,6 @@
 #include <std.h>
 #include <syscall_adapters.h>
+#include <stdarg.h>
 
 uint32_t strcmp(const char* s1, const char* s2) {
     uint32_t i;
@@ -56,24 +57,38 @@ char* itoa(uint64_t num, char* dest, uint32_t dest_max_len) {
     return dest;
 }
 
-void printf(const char* fmt, uint64_t arg) {
+uint32_t get_fmt_num_args(const char* fmt) {
+    uint32_t count = 0;
+    for (uint32_t i = 0; fmt[i] != '\0'; i++) {
+        count += (fmt[i] == '%' && fmt[i + 1] == 's');
+        count += (fmt[i] == '%' && fmt[i + 1] == 'd');
+        count += (fmt[i] == '%' && fmt[i + 1] == 'c');
+    }
+    return count;
+}
+
+void printf(const char* fmt, ...) {
     char printf_buff[PRINTF_PRINT_BUFF_MAX_SIZE];
+
+    va_list arg_list;
+    uint32_t num_args = get_fmt_num_args(fmt);
+    va_start(arg_list, num_args);
 
     uint32_t k = 0;
     for (uint32_t i = 0; k < PRINTF_PRINT_BUFF_MAX_SIZE && fmt[i] != '\0'; i++) {
         if (fmt[i] == '%' && fmt[i + 1] == 's') {
-            char* arg_s = (char*)arg;
+            char* arg_s = va_arg(arg_list, char*);
             for (uint32_t j = 0; k < PRINTF_PRINT_BUFF_MAX_SIZE && arg_s[j] != '\0'; j++)
                 printf_buff[k++] = arg_s[j];
             i++;
         }
         else if (fmt[i] == '%' && fmt[i + 1] == 'c') {
-            printf_buff[k++] = (char)arg;
+            printf_buff[k++] = va_arg(arg_list, int);
             i++;
         }
         else if (fmt[i] == '%' && fmt[i + 1] == 'd') {
             char temp[ITOA_BUFF_MAX_SIZE];
-            itoa(arg, temp, ITOA_BUFF_MAX_SIZE);
+            itoa(va_arg(arg_list, uint32_t), temp, ITOA_BUFF_MAX_SIZE);
 
             for (uint32_t j = 0; k < PRINTF_PRINT_BUFF_MAX_SIZE && temp[j] != '\0'; j++)
                 printf_buff[k++] = temp[j];
@@ -85,6 +100,9 @@ void printf(const char* fmt, uint64_t arg) {
         }
     }
     printf_buff[k] = '\0';
+
+    va_end(arg_list);
+
     puts(printf_buff);
 }
 

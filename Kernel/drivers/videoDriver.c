@@ -178,9 +178,16 @@ void write_to_video_text_buffer(const char* data, uint32_t data_len, uint32_t he
             case '\t':
                 write_to_video_text_buffer("    ", 4, hexColor);
                 break;
+            case '\r':
+                screenTextInfo.indexX = 0;
+                break;
             case '\b':
                 if (screenTextInfo.indexX > 0) {
                     screenTextInfo.indexX -= 1;
+                    screenTextInfo.buffer[screenTextInfo.indexY][screenTextInfo.indexX].c = ' ';
+                } else if (screenTextInfo.indexY > 0) {
+                    screenTextInfo.indexX = get_chars_per_buff_line() - 1;
+                    screenTextInfo.indexY -= 1;
                     screenTextInfo.buffer[screenTextInfo.indexY][screenTextInfo.indexX].c = ' ';
                 }
                 break;

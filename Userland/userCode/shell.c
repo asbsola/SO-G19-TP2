@@ -32,10 +32,8 @@ void help() {
     puts("HELP\n");
     puts("available modules:\n");
 
-    for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++) {
-        printf("\t- %s: ", modules[i].module_name);
-        printf("%s.\n", modules[i].module_description);
-    }
+    for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++)
+        printf("\t- %s: %s\n", modules[i].module_name, modules[i].module_description);
 
     putchar('\n');
 }

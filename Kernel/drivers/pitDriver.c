@@ -13,6 +13,11 @@ void delay(uint64_t milis){
 	while(ticks_elapsed() - start < (TICKS_PER_SECOND * milis) / 1000);
 }
 
+void delay_ticks(uint64_t ticks){
+	uint64_t start = ticks_elapsed();
+	while(ticks_elapsed() - start < ticks);
+}
+
 int ticks_elapsed() {
 	return ticks;
 }

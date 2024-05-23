@@ -14,6 +14,8 @@ global sys_clear_text_buffer
 global sys_get_cpu_vendor
 global sys_beep
 global sys_delay
+global sys_print_registers
+global sys_clear_screen
 
 sys_read:
     push rbp
@@ -171,7 +173,7 @@ sys_delay:
     pop rbp
     ret
 
-sys_clear_screen:
+sys_print_registers:
     push rbp
     mov rbp, rsp
 
@@ -181,3 +183,14 @@ sys_clear_screen:
     mov rsp, rbp
     pop rbp
     ret
+
+sys_clear_screen:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 15
+    int 0x80
+
+    mov rsp, rbp
+    pop rbp
+    ret  

@@ -45,7 +45,7 @@ aronda@itba.edu.ar\\
 
 \begin {abstract}
 
-El presente informe trata sobre el desarrollo de un kernel que administra los recursos de hardware de una computadora y que tiene una API para interaccionar con el espacio de usuario. En el espacio de usuario se desarrolló un shell que permite ejecutar diferentes módulos que tienen el objetivo de mostrar el funcionamiento del sistema.
+El presente informe trata sobre el desarrollo de un kernel que administra los recursos de hardware de una computadora y que tiene una API para interactuar con el espacio de usuario. En el espacio de usuario se desarrolló un shell que permite ejecutar diferentes módulos que tienen el objetivo de mostrar el funcionamiento del sistema.
 
 \end {abstract}
 
@@ -55,9 +55,9 @@ El presente informe trata sobre el desarrollo de un kernel que administra los re
 
 El trabajo se desarrolló en modo video.
 
-Además del buffer principal de pantalla, se dispuso de un buffer intermedio de pantalla. Este buffer sobreescribe el buffer principal de pantalla cuando se produce una interrupción timer tick. Todas las routinas de video escriben a este buffer intermedio, en vez de escribir al buffer principal. Se tomó la decisión de usar este buffer intermedio para evitar efectos de "flickering" que se experimentaban.
+Además del buffer principal de pantalla, se dispuso de un buffer intermedio de pantalla. Este buffer sobreescribe el buffer principal de pantalla cuando se produce una interrupción timer tick. Todas las rutinas de video escriben a este buffer intermedio, en vez de escribir al buffer principal. Se tomó la decisión de usar este buffer intermedio para evitar efectos de "flickering" que se experimentaban.
 
-Para el manejo de texto en la pantalla se decidió utilizar una matriz que almacena los caracteres en cada línea, junto con su color. Cuando se escribe texto a pantalla, el mismo es almacenado en está matriz, al almacenarlo en la matriz se manejan los salto de linea, tabulaciones y borrados. Se utiliza un puntero que apunta a la proximación posición en la matriz donde se debe escribir el texto. Luego de escribir el texto en la matriz se lo imprime en el buffer intermedio de pantalla, donde se maneja el scrolling del texto en la pantalla. La utilización de esta matriz es lo que permite tanto el scrolling del texto en pantalla, como el ajuste dinámico del tamaño del texto. Ambas operaciones requieren hacer un clear de la pantalla, que sin el buffer intermedio de pantalla generaba el efecto de "flickering".
+Para el manejo de texto en la pantalla se decidió utilizar una matriz que almacena los caracteres en cada línea, junto con su color. Cuando se escribe texto a pantalla, el mismo es almacenado en está matriz, al almacenarlo en la matriz se manejan los salto de linea, tabulaciones y borrados. Se utiliza un puntero que apunta a la próxima posición en la matriz donde se debe escribir el texto. Luego de escribir el texto en la matriz se lo imprime en el buffer intermedio de pantalla, donde se maneja el scrolling del texto en la pantalla. La utilización de esta matriz es lo que permite tanto el scrolling del texto en pantalla, como el ajuste dinámico del tamaño del texto. Ambas operaciones requieren hacer un clear de la pantalla, que sin el buffer intermedio de pantalla generaba el efecto de "flickering".
 
 La utilización de tanto el buffer intermedio de pantalla, como la matriz de caracteres, implicó que tuviesemos que mover donde empieza el código en userpace para que el kernel tenga más espacio en memoria.
 
@@ -87,7 +87,7 @@ Cuando se produce una interrupción de timer tick, se reemplaza el buffer princi
 
 Modelamos el manejo de syscalls a partir de la API de Linux de 64bit. En el caso de las interrupciones de software, no se preserva rax. Mediante este registro se pueden devolver datos al usuario.
 
-Los syscalls son la intefaz entre el userspace y el kernel. Los syscalls implementados se volcaron en la tabla \ref{table:syscalls}
+Los syscalls son la intefaz entre el userspace y el kernel. Los syscalls implementados se volcaron en la tabla \ref{table:syscalls}. En el manual de usuario se lista que parametros recibe en cada registro.
 
 \begin{center}
 \begin{tabular}{|c|c|l|}
@@ -106,6 +106,7 @@ Los syscalls son la intefaz entre el userspace y el kernel. Los syscalls impleme
 10 & sys\_clear\_text\_buffer &  \begin{minipage}{80mm}limpia la matriz de caracteres.\end{minipage} \\ \hline
 11 & sys\_get\_cpu\_vendor &  \begin{minipage}{80mm}obtiene el cpu vendor. \end{minipage} \\ \hline
 12 & sys\_beep &  \begin{minipage}{80mm}emite un ruido a cierta frecuencia usando una onda cuadrada.\end{minipage} \\ \hline
+13 & sys\_sleep &  \begin{minipage}{80mm}detiene la ejecución por cierta cantidad de tiempo.\end{minipage} \\ \hline
 \end{tabular}
 \captionof{table}{syscalls implementadas para el llamado de funciones de kernel desde el userspace}
 \label{table:syscalls}
@@ -122,7 +123,7 @@ Cuando se produce una excepción, se imprime la información relacionada a la ex
 A partir de los syscalls se implementó adaptadores a las syscalls para que puedan ser llamadas desde C. A partir de estos adaptadores se implementaron varias funciones similares a las de la librería estandar de C.
 
 Para el manejo de strings se implementó: strcmp, strlen, strcpy, itoa y atoi.
-Para el manejo de IO se implementó: putchar, puts, printf (con un parametro de formato), getchar y scanf (con un parametro de formato).
+Para el manejo de IO se implementó: putchar, puts, printf, getchar y scanf (con un parametro de formato).
 
 \subsection {shell}
 

@@ -24,8 +24,14 @@ static char map_to_ascii[256] = {
 
 void keyboard_handler(const registers64_t * registers){
     uint8_t scan_code = get_scan_code();
-    if(scan_code == CAPS_LOCK_CODE || scan_code == LEFT_SHIFT_CODE || scan_code == RIGHT_SHIFT_CODE){
+    if(scan_code == CAPS_LOCK_CODE_PRESSED ||
+     scan_code == LEFT_SHIFT_CODE_PRESSED || scan_code == RIGHT_SHIFT_CODE_PRESSED ||
+     scan_code == LEFT_SHIFT_CODE_RELEASED || scan_code == RIGHT_SHIFT_CODE_RELEASED){
         caps_enabled = !caps_enabled;
+        return;
+    }
+    if(scan_code == 0x01){
+        save_registers(registers);
         return;
     }
     if(scan_code > 0x80 || buffer_size >= MAX_SIZE_KEY_BUFFER) return;

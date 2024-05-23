@@ -11,9 +11,10 @@ typedef struct {
 ModuleDescriptor modules[] = {
     {"help", "displays available modules", help}, 
     {"clear", "clears the screens text buffer", cls}, 
-    {"sysinfo", "displays system information", sys_info},
-    {"regs", "displays captured registers (ESC key to capture)", sys_print_registers},
+    {"info", "displays system information", info},
     {"size", "change font size", font_size},
+    {"time", "display current time", time},
+    {"regs", "displays captured registers (ESC key to capture)", regs},
     {"beep", "beeps", beep},
     {"div 0", "MUST REMOVE", div},
     };
@@ -44,7 +45,7 @@ void cls() {
     sys_clear_text_buffer();
 }
 
-void sys_info() {
+void info() {
     puts("screen info:\n");
     printf("width: %d pixels\n", sys_get_screen_width());
     printf("height: %d pixels\n\n", sys_get_screen_height());
@@ -68,13 +69,18 @@ void font_size(){
     }
 }
 
-void beep() {
-    sys_beep(500, 100);
-    sys_beep(2000, 100);
+void time(){
+    char * time = sys_get_time(-3);
+    printf("%s\n", time);
 }
 
 void regs(){
     sys_print_registers();
+}
+
+void beep() {
+    sys_beep(500, 100);
+    sys_beep(2000, 100);
 }
 
 void div(){

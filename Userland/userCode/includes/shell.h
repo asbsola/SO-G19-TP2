@@ -5,8 +5,10 @@
 
 void help();
 void cls();
-void sys_info();
+void info();
 void font_size();
+void time();
+void regs();
 void beep();
 void div();
 

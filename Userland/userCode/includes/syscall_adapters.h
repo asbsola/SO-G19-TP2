@@ -15,7 +15,7 @@ uint8_t sys_get_key_pressed();
 char sys_get_character_pressed();
 void sys_clear_text_buffer();
 void sys_get_cpu_vendor(char* buff);
-void sys_beep(uint64_t freq, uint64_t secs);
+void sys_beep(uint64_t freq, uint64_t milis);
 void sys_delay(uint64_t milis);
 void sys_clear_screen(uint32_t clearColor);
 void sys_print_registers();

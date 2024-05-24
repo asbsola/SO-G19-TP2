@@ -11,8 +11,10 @@ typedef struct {
 ModuleDescriptor modules[] = {
     {"help", "displays available modules", help}, 
     {"clear", "clears the screens text buffer", cls}, 
-    {"sysinfo", "displays system information", sys_info},
-    {"regs", "displays captured register values", sys_print_registers},
+    {"info", "displays system information", info},
+    {"size", "change font size", font_size},
+    {"time", "display current time", time},
+    {"regs", "displays captured registers (ESC key to capture)", regs},
     {"beep", "beeps", beep},
     {"div 0", "MUST REMOVE", div},
     };
@@ -43,7 +45,7 @@ void cls() {
     sys_clear_text_buffer();
 }
 
-void sys_info() {
+void info() {
     puts("screen info:\n");
     printf("width: %d pixels\n", sys_get_screen_width());
     printf("height: %d pixels\n\n", sys_get_screen_height());
@@ -53,13 +55,32 @@ void sys_info() {
     printf("cpu vendor: %s\n\n", cpu_vendor_buff);
 }
 
-void beep() {
-    sys_beep(500, 100);
-    sys_beep(2000, 100);
+void font_size(){
+    int n = 0;
+    printf("Choose font size (1-5) or 0 to exit: ");
+    scanf("%d", &n);
+    while(n < 0 || n >= 6){
+        printf("Choose a valid font size (1-5) or 0 to exit: ");
+        scanf("%d", &n);
+    }
+    if(n != 0){
+        sys_set_font_size(n);
+        printf("Font size set to %d\n", n);
+    }
+}
+
+void time(){
+    char * time = sys_get_time(-3);
+    printf("%s\n", time);
 }
 
 void regs(){
     sys_print_registers();
+}
+
+void beep() {
+    sys_beep(500, 100);
+    sys_beep(2000, 100);
 }
 
 void div(){

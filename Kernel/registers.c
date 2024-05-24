@@ -15,6 +15,7 @@ void print_register(char * name, uint32_t nameDim, uint64_t value, uint32_t colo
 	write_to_video_text_buffer(name, nameDim, color);
 	write_to_video_text_buffer(buffer, 16, color);
 	write_to_video_text_buffer("\n", 1, HEX_WHITE);
+    update_frame_buffer();
 }
 
 void print_stored_registers() {

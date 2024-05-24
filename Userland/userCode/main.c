@@ -9,7 +9,7 @@ int main() {
 
     if (show_initial_info) {
         puts("[SYSTEM INFO]\n\n");
-        sys_info();
+        info();
         puts("[HELP]\n\n");
         help();
         show_initial_info = 0;

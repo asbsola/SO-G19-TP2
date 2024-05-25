@@ -5,12 +5,10 @@
 static uint8_t show_initial_info = 1;
 
 int main() {
-    sys_set_font_size(2); 
-
     if (show_initial_info) {
-        puts("[SYSTEM INFO]\n\n");
+        puts_with_color("[SYSTEM INFO]\n\n", 0x006fb6fb);
         info();
-        puts("[HELP]\n\n");
+        puts_with_color("[HELP]\n\n", 0x006fb6fb);
         help();
         show_initial_info = 0;
     }

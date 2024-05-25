@@ -24,7 +24,7 @@ void run_shell() {
     shell_input[0] = 0;
 
     while (1) { 
-        puts("shell> ");
+        puts_with_color("shell> ", 0x006fb5fb);
         scanf("%s", shell_input);
         for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++) 
             if (strcmp(shell_input, modules[i].module_name) == 0)

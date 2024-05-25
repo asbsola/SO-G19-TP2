@@ -56,7 +56,7 @@ void start_shell() {
 int main()
 {	
 	load_idt();
-    set_font_size(1);
+    set_font_size(2);
     clear_video_text_buffer();
     write_to_video_text_buffer("Kernel initialized\nRunning user code...\n\n", 41, HEX_GRAY);
 

@@ -9,6 +9,7 @@ void strcpy(char* dest, const char* src);
 
 void putchar(char c);
 void puts(const char *s);
+void puts_with_color(const char* s, uint32_t hexColor);
 
 #define ITOA_BUFF_MAX_SIZE 100
 char* itoa(uint64_t num, char* dest, uint32_t dest_max_len);

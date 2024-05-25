@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <syscall.h>
+#include <interruptHandlers/syscall.h>
 #include <interrupts.h>
 #include <drivers/pitDriver.h>
 #include <drivers/videoDriver.h>
@@ -31,16 +31,8 @@ uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64
 }
 
 uint64_t sys_write(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-    switch (rdi) {
-        case 1:
-            write_to_video_text_buffer((char*)rsi, rdx, HEX_WHITE);
-            return rdx;
-        case 2:
-            write_to_video_text_buffer((char*)rsi, rdx, HEX_RED);
-            return rdx;
-        default:
-            return -1;
-    }
+    write_to_video_text_buffer((char*)rsi, rdx, rdi);
+    return rdx;
 }
 
 uint64_t sys_set_font_size(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {

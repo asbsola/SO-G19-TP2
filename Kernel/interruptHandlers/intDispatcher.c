@@ -1,6 +1,6 @@
 #include <drivers/pitDriver.h>
 #include <drivers/keyboardDriver.h>
-#include <syscall.h>
+#include <interruptHandlers/syscall.h>
 #include <stdint.h>
 
 static void (*interrupts[])(const registers64_t *) = {timer_handler, keyboard_handler};

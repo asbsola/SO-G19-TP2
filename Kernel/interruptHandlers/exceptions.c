@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <drivers/videoDriver.h>
 #include <interrupts.h>
-#include <exceptions.h>
+#include <interruptHandlers/exceptions.h>
 
 //defined in kernel.c
 void start_shell();

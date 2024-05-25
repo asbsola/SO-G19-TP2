@@ -35,7 +35,11 @@ void putchar(char c) {
 }
 
 void puts(const char* s) {
-    sys_write(1, s, strlen(s));
+    sys_write(0x00ffffff, s, strlen(s));
+}
+
+void puts_with_color(const char* s, uint32_t hexColor) {
+    sys_write(hexColor, s, strlen(s));
 }
 
 char itoa_buff[ITOA_BUFF_MAX_SIZE];

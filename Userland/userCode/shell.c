@@ -29,7 +29,7 @@ void run_shell() {
 
     while (1) {
         sys_set_font_size(current_font_size);
-        puts("shell> ");
+        puts_with_color("shell> ", 0x006fb5fb);
         scanf("%s", shell_input);
         for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++) 
             if (strcmp(shell_input, modules[i].module_name) == 0)

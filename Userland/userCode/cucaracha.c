@@ -8,7 +8,6 @@ typedef struct{
     uint32_t delay;
 } note_t;
 
-const int song_length = 34;
 note_t notes[] = {
     {262, 200, 100}, {262, 200, 100}, {262, 200, 100}, {349, 400, 100}, {440, 200, 200},
     {262, 200, 100}, {262, 200, 100}, {262, 200, 100}, {349, 400, 100}, {440, 200, 200},
@@ -23,11 +22,12 @@ const uint32_t scale = 10;
 void play_la_cucaracha(){
     sys_clear_screen(0);
 
-    const uint32_t frameCount = sizeof(cucaracha_gif) / sizeof(cucaracha_gif[0]);
-    
+    const uint32_t frame_count = sizeof(cucaracha_gif) / sizeof(cucaracha_gif[0]);
+    const uint32_t song_length = sizeof(notes) / sizeof(notes[0]);
+
     uint32_t frame = 0;
     for (uint32_t i = 0; i < song_length; i++, frame++) {
-        frame %= frameCount;
+        frame %= frame_count;
 
         for (uint32_t y = 0; y < CUCARACHA_GIF_HEIGHT; y++) {
             for (uint32_t x = 0; x < CUCARACHA_GIF_WIDTH; x++) {
@@ -35,8 +35,8 @@ void play_la_cucaracha(){
                 uint32_t blue = (col & 3) * 64;
                 uint32_t green = ((col & 28) >> 2) * 32;
                 uint32_t red = (col >> 5) * 32;
-                uint32_t hexColor = blue + (green << 8) + (red << 16);
-                sys_draw_square(hexColor, x * scale, y * scale, scale);
+                uint32_t hex_color = blue + (green << 8) + (red << 16);
+                sys_draw_square(hex_color, x * scale, y * scale, scale);
             }
         }
 

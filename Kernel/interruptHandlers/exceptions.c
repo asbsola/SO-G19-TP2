@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <drivers/videoDriver.h>
-#include <interrupts.h>
+#include <interruptHandlers/interrupts.h>
 #include <interruptHandlers/exceptions.h>
 
 //defined in kernel.c

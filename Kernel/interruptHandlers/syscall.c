@@ -1,12 +1,12 @@
 #include <stdint.h>
 #include <interruptHandlers/syscall.h>
-#include <interrupts.h>
+#include <interruptHandlers/interrupts.h>
 #include <drivers/pitDriver.h>
 #include <drivers/videoDriver.h>
 #include <drivers/rtcDriver.h>
 #include <drivers/keyboardDriver.h>
 #include <drivers/soundDriver.h>
-#include <interrupts.h>
+#include <interruptHandlers/interrupts.h>
 #include <lib.h>
 
 uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {

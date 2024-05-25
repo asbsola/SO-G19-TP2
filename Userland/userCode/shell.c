@@ -1,6 +1,7 @@
 #include <syscall_adapters.h>
 #include <shell.h>
 #include <std.h>
+#include <cucaracha.h>
 
 typedef struct {
     char* module_name;
@@ -16,14 +17,18 @@ ModuleDescriptor modules[] = {
     {"time", "display current time", time},
     {"regs", "displays captured registers (ESC key to capture)", regs},
     {"beep", "beeps", beep},
+    {"song", "plays a short tune while displaying graphics", song},
     {"div 0", "MUST REMOVE", div},
     };
+
+static int current_font_size = 1;
 
 void run_shell() {
     char shell_input[MAX_SHELL_INPUT];
     shell_input[0] = 0;
 
-    while (1) { 
+    while (1) {
+        sys_set_font_size(current_font_size);
         puts("shell> ");
         scanf("%s", shell_input);
         for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++) 
@@ -64,7 +69,7 @@ void font_size(){
         scanf("%d", &n);
     }
     if(n != 0){
-        sys_set_font_size(n);
+        current_font_size = n;
         printf("Font size set to %d\n", n);
     }
 }
@@ -76,6 +81,10 @@ void time(){
 
 void regs(){
     sys_print_registers();
+}
+
+void song(){
+    play_la_cucaracha();
 }
 
 void beep() {

@@ -5,7 +5,6 @@
 static uint8_t show_initial_info = 1;
 
 int main() {
-    sys_set_font_size(2); 
 
     if (show_initial_info) {
         puts("[SYSTEM INFO]\n\n");

@@ -10,6 +10,7 @@ void font_size();
 void time();
 void regs();
 void beep();
+void song();
 void div();
 
 void run_shell();

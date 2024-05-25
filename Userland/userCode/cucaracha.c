@@ -44,7 +44,7 @@ void play_la_cucaracha(){
     sys_set_font_size(1);
     for (int i = 0; i < song_length; i++){
         sys_clear_text_buffer();
-        printf(ascii_art[i % frames]);
+        puts_with_color(ascii_art[i % frames], 0x00FC5E03);
         sys_beep(notes[i].freq, notes[i].duration);
         sys_delay(notes[i].delay);
     }

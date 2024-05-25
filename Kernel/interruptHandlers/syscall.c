@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <syscall.h>
+#include <interruptHandlers/syscall.h>
 #include <interrupts.h>
 #include <drivers/pitDriver.h>
 #include <drivers/videoDriver.h>

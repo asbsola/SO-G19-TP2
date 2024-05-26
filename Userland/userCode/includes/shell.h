@@ -12,6 +12,7 @@ void regs();
 void beep();
 void song();
 void div();
+void eliminator();
 
 void run_shell();
 

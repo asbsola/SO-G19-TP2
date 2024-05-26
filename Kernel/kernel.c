@@ -3,6 +3,7 @@
 #include <lib.h>
 #include <moduleLoader.h>
 #include <drivers/videoDriver.h>
+#include <drivers/pitDriver.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -54,6 +55,7 @@ void start_shell() {
 
 int main()
 {	
+	initialize_pit(60);
 	load_idt();
     set_font_size(1);
     clear_video_text_buffer();

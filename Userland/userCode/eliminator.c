@@ -94,7 +94,7 @@ void print_setting(char * text, uint8_t max_text_size, uint8_t value, uint32_t h
     sys_put_text(dest, max_text_size, hexColor, posX, posY);
 }
 
-int changeDirection(char key, int* p1Dir, int* p2Dir){
+void changeDirection(char key, int* p1Dir, int* p2Dir){
     switch (key)
     {
     case 0:
@@ -139,13 +139,11 @@ void play() {
         for(uint32_t x = SQUARE_SIZE; x < normalized_screen_width - SQUARE_SIZE; x += SQUARE_SIZE){
             sys_draw_square(HEX_RED, x, SQUARE_SIZE, SQUARE_SIZE);
             sys_draw_square(HEX_RED, x, normalized_screen_height - SQUARE_SIZE * 2, SQUARE_SIZE);
-            // sys_delay(60);
         }
 
         for(uint32_t y = SQUARE_SIZE; y < normalized_screen_height - SQUARE_SIZE; y += SQUARE_SIZE){
             sys_draw_square(HEX_RED, SQUARE_SIZE, y, SQUARE_SIZE);
             sys_draw_square(HEX_RED, normalized_screen_width - SQUARE_SIZE * 2, y, SQUARE_SIZE);
-            // sys_delay(60);
         }
 
         uint32_t bufferWidth = normalized_screen_width/SQUARE_SIZE - 4;
@@ -157,7 +155,6 @@ void play() {
             }
         }
 
-        sys_delay(500);
         sys_beep(400, 300);
 
         player1Data.x = bufferWidth / 2;
@@ -209,7 +206,7 @@ void play() {
                 sys_draw_square(player2Data.color, (player2Data.x + 2) * SQUARE_SIZE, (player2Data.y + 2) * SQUARE_SIZE, SQUARE_SIZE);
             }
 
-            sys_delay(300 / speed);
+            sys_delay(MAX_DELAY / speed);
         }
         keep_playing = endGame();
     }

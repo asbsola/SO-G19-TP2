@@ -47,7 +47,7 @@ char init_menu() {
             play();
         } else if (key == '\n') {
             change_settings_and_play();
-        } else if (key == 'X') {
+        } else if (key == 'x' || key == 'X') {
             return 0;
         }
     }
@@ -218,7 +218,7 @@ void play() {
         
         if(player1Data.alive == 0 || (players == 2 && player2Data.alive == 0)) {
             endGame();
-            break;
+            return;
         }
         
         sys_delay(300 / speed);

@@ -149,3 +149,7 @@ void scanf(const char* fmt, void* ptr) {
     else if (strcmp(fmt, "%c") == 0)
         *((char*)ptr) = scan_buff[0];
 }
+
+int isAlpha(char c){
+    return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || ('0' <= c && c <= '9');
+}

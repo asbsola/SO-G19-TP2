@@ -27,8 +27,6 @@ static int current_font_size = 1;
 
 void run_shell() {
 
-    eliminator();
-
     char shell_input[MAX_SHELL_INPUT];
     shell_input[0] = 0;
 

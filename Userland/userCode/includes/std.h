@@ -23,4 +23,6 @@ uint32_t atoi(const char* s);
 #define SCANF_BUFF_MAX_SIZE 1024
 void scanf(const char* fmt, void* ptr);
 
+int isAlpha(char c);
+
 #endif

@@ -94,6 +94,40 @@ void print_setting(char * text, uint8_t max_text_size, uint8_t value, uint32_t h
     sys_put_text(dest, max_text_size, hexColor, posX, posY);
 }
 
+int changeDirection(char key, int* p1Dir, int* p2Dir){
+    switch (key)
+    {
+    case 0:
+        break;
+    case W_KEY_CODE_PRESSED:
+        if(player1Data.direction != DOWN_DIRECTION) *p1Dir = UP_DIRECTION;
+        break;
+    case D_KEY_CODE_PRESSED:
+        if(player1Data.direction != LEFT_DIRECTION) *p1Dir = RIGHT_DIRECTION;
+        break;
+    case S_KEY_CODE_PRESSED:
+        if(player1Data.direction != UP_DIRECTION) *p1Dir = DOWN_DIRECTION;
+        break;
+    case A_KEY_CODE_PRESSED:
+        if(player1Data.direction != RIGHT_DIRECTION) *p1Dir = LEFT_DIRECTION;
+        break;
+    case UP_ARROW_CODE_PRESSED:
+        if(player2Data.direction != DOWN_DIRECTION) *p2Dir = UP_DIRECTION;
+        break;
+    case RIGHT_ARROW_CODE_PRESSED:
+        if(player2Data.direction != LEFT_DIRECTION) *p2Dir = RIGHT_DIRECTION;
+        break;
+    case DOWN_ARROW_CODE_PRESSED:
+        if(player2Data.direction != UP_DIRECTION) *p2Dir = DOWN_DIRECTION;
+        break;
+    case LEFT_ARROW_CODE_PRESSED:
+        if(player2Data.direction != RIGHT_DIRECTION) *p2Dir = LEFT_DIRECTION;
+        break;
+    default:
+        break;
+    }
+}
+
 void play() {
     int keep_playing = 1;
     while(keep_playing == 1){
@@ -137,38 +171,14 @@ void play() {
         player2Data.alive = 1;
 
         while(player1Data.alive == 1 && (players != 2 || player2Data.alive == 1)) {
-            char key = sys_get_key_pressed();
-            switch (key)
-            {
-            case 0:
-                break;
-            case W_KEY_CODE_PRESSED:
-                if(player1Data.direction != DOWN_DIRECTION) player1Data.direction = UP_DIRECTION;
-                break;
-            case D_KEY_CODE_PRESSED:
-                if(player1Data.direction != LEFT_DIRECTION) player1Data.direction = RIGHT_DIRECTION;
-                break;
-            case S_KEY_CODE_PRESSED:
-                if(player1Data.direction != UP_DIRECTION) player1Data.direction = DOWN_DIRECTION;
-                break;
-            case A_KEY_CODE_PRESSED:
-                if(player1Data.direction != RIGHT_DIRECTION) player1Data.direction = LEFT_DIRECTION;
-                break;
-            case UP_ARROW_CODE_PRESSED:
-                if(player2Data.direction != DOWN_DIRECTION) player2Data.direction = UP_DIRECTION;
-                break;
-            case RIGHT_ARROW_CODE_PRESSED:
-                if(player2Data.direction != LEFT_DIRECTION) player2Data.direction = RIGHT_DIRECTION;
-                break;
-            case DOWN_ARROW_CODE_PRESSED:
-                if(player2Data.direction != UP_DIRECTION) player2Data.direction = DOWN_DIRECTION;
-                break;
-            case LEFT_ARROW_CODE_PRESSED:
-                if(player2Data.direction != RIGHT_DIRECTION) player2Data.direction = LEFT_DIRECTION;
-                break;
-            default:
-                break;
+            char key;
+            int player1Dir = player1Data.direction;
+            int player2Dir = player2Data.direction;
+            while((key = sys_get_key_pressed()) != 0){
+                changeDirection(key, &player1Dir, &player2Dir);
             }
+            player1Data.direction = player1Dir;
+            player2Data.direction = player2Dir;
 
             player1Data.x += (player1Data.direction == 1) - (player1Data.direction == 3);
             player1Data.y += (player1Data.direction == 2) - (player1Data.direction == 0);

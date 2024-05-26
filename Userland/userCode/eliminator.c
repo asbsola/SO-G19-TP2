@@ -1,13 +1,5 @@
 #include <eliminator.h>
 
-static uint32_t screen_width;
-static uint32_t screen_height;
-
-static uint8_t players = 1;
-static char player_names[2][MAX_PLAYER_NAME] = {0};
-
-static uint8_t speed = 1;
-
 typedef struct {
     uint32_t x;
     uint32_t y;
@@ -16,6 +8,17 @@ typedef struct {
     uint8_t score;
     uint8_t alive;
 } PlayerData;
+
+static uint32_t screen_width;
+static uint32_t screen_height;
+
+static uint8_t players = 1;
+static char player_names[2][MAX_PLAYER_NAME] = {"a", "b"};
+
+static PlayerData player1Data = {0, 0, 0, 0x00FF0000, 0, 1};
+static PlayerData player2Data = {0, 0, 0, 0x0000FF00, 0, 1};
+
+static uint8_t speed = 1;
 
 void init_presentation() {
     sys_clear_text_buffer(0);
@@ -36,11 +39,16 @@ char init_menu() {
 
     sys_put_text("[SPACE] to begin game", 21, 0x00FF0000, 100, 250);
     sys_put_text("[ENTER] to change", 17, 0x00FF0000, 100, 300);
+    sys_put_text("[X] to exit game", 16, 0x00FF0000, 100, 350);
 
     while(1) {
         char key = sys_get_character_pressed();
-        if(key == ' ' || key == '\n') {
-            return key;
+        if(key == ' ') {
+            play();
+        } else if (key == '\n') {
+            change_settings_and_play();
+        } else if (key == 'X') {
+            return 0;
         }
     }
 
@@ -120,33 +128,42 @@ void play() {
 
     uint32_t x = SQUARE_SIZE;
     uint32_t y = SQUARE_SIZE;
+
+    uint32_t normalized_screen_width = screen_width - screen_width % SQUARE_SIZE;
+    uint32_t normalized_screen_height = screen_height - screen_height % SQUARE_SIZE;
     
-    while(x <= screen_width - SQUARE_SIZE * 2){
+    while(x <= normalized_screen_width - SQUARE_SIZE * 2){
         sys_draw_square(0x00FF0000, x, SQUARE_SIZE, SQUARE_SIZE);
-        sys_draw_square(0x00FF0000, x, screen_height - SQUARE_SIZE * 2, SQUARE_SIZE);
+        sys_draw_square(0x00FF0000, x, normalized_screen_height - SQUARE_SIZE * 2, SQUARE_SIZE);
         // sys_delay(60);
         x+=SQUARE_SIZE;
     }
 
-    x-=SQUARE_SIZE;
-
-    while(y <= screen_height - SQUARE_SIZE * 2){
+    while(y <= normalized_screen_height - SQUARE_SIZE * 2){
         sys_draw_square(0x00FF0000, SQUARE_SIZE, y, SQUARE_SIZE);
-        sys_draw_square(0x00FF0000, x, y, SQUARE_SIZE);
+        sys_draw_square(0x00FF0000, normalized_screen_width - SQUARE_SIZE * 2, y, SQUARE_SIZE);
         // sys_delay(60);
         y+=SQUARE_SIZE;
     }
 
-    y-=SQUARE_SIZE;
-
-    uint32_t bufferWidth = x/SQUARE_SIZE - 2;
-    uint32_t bufferHeight = y/SQUARE_SIZE - 2;
+    uint32_t bufferWidth = x/SQUARE_SIZE - 3;
+    uint32_t bufferHeight = y/SQUARE_SIZE - 3;
     uint32_t buffer[bufferHeight][bufferWidth];
 
     sys_delay(500);
 
-    PlayerData player1Data = {bufferWidth / 2, 5, 2, 0x00FF0000, 0, 1};
-    PlayerData player2Data = {bufferWidth / 2, bufferHeight - 6, 0, 0x0000FF00, 0, 1};
+    // TODO: verificar si funciona el beep
+    sys_beep(400, 300);
+
+    player1Data.x = bufferWidth / 2;
+    player1Data.y = 5;
+    player1Data.direction = 2;
+    player1Data.alive = 1;
+
+    player2Data.x = bufferWidth / 2;
+    player2Data.y = bufferHeight - 6;
+    player2Data.direction = 0;
+    player2Data.alive = 1;
 
     while(1) {
         char key = sys_get_key_pressed();
@@ -186,15 +203,69 @@ void play() {
             player2Data.alive = 0;
         }
 
-        if(player1Data.alive == 0 || player2Data.alive == 0) {
+        if(player1Data.x == player2Data.x && player1Data.y == player2Data.y) {
+            player1Data.alive = 0;
+            player2Data.alive = 0;
+        }
+
+        buffer[player1Data.y][player1Data.x] = 1;
+        sys_draw_square(player1Data.color, (player1Data.x + 2) * SQUARE_SIZE, (player1Data.y + 2) * SQUARE_SIZE, SQUARE_SIZE);
+
+        if(players == 2) {
+            buffer[player2Data.y][player2Data.x] = 1;
+            sys_draw_square(player2Data.color, (player2Data.x + 2) * SQUARE_SIZE, (player2Data.y + 2) * SQUARE_SIZE, SQUARE_SIZE);
+        }
+        
+        if(player1Data.alive == 0 || (players == 2 && player2Data.alive == 0)) {
             endGame();
             break;
         }
-
         
-
+        sys_delay(300 / speed);
     }
     
+}
+
+void endGame() {
+
+    // TODO: verificar si funciona el beep
+    sys_beep(400, 300);
+
+    if (players == 2)
+    {
+        if(player1Data.alive == 0 && player2Data.alive == 1) {
+            player2Data.score += 1;
+        } else if (player1Data.alive == 1 && player2Data.alive == 0) {
+            player1Data.score += 1;
+        }
+    }
+    
+    char dest[MAX_PLAYER_NAME + 5] = {0};
+    char number[4];
+    strcat(dest, player_names[0], ": ");
+    strcat(dest, dest, itoa(player1Data.score, number, 3));
+    sys_put_text(dest, MAX_PLAYER_NAME + 5, player1Data.color, 100, 100);
+
+    if(players == 2) {
+        strcat(dest, player_names[1], ": ");
+        strcat(dest, dest, itoa(player2Data.score, number, 3));
+        sys_put_text(dest, MAX_PLAYER_NAME + 5, player2Data.color, 100, 150);
+    }
+
+    sys_put_text("Press [SPACE BAR] to play again", 31, 0x00FFFFFF, 50, 250);
+    sys_put_text("Or [ENTER] to go back to menu", 29, 0x00FFFFFF, 70, 300);
+
+    while(1) {
+        char key = sys_get_character_pressed();
+        if(key == ' ') {
+            play();
+            return;
+        } else if (key == '\n') {
+            init_menu();
+            return;
+        }
+    }
+
 }
 
 void play_eliminator() {
@@ -204,13 +275,5 @@ void play_eliminator() {
     
     init_presentation();
 
-    char menu_result = init_menu();
-
-    if(menu_result == ' ') {
-        play();
-    } else if (menu_result == '\n') {
-        change_settings_and_play();
-    }
-    
-    while(1);
+    init_menu();
 }

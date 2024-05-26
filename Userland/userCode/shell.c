@@ -2,6 +2,7 @@
 #include <shell.h>
 #include <std.h>
 #include <cucaracha.h>
+#include <eliminator.h>
 
 typedef struct {
     char* module_name;
@@ -103,32 +104,5 @@ void div(){
 }
 
 void eliminator() {
-
-    uint32_t square_size = 10;
-
-    uint32_t screen_width = sys_get_screen_width();
-    uint32_t screen_height = sys_get_screen_height();
-
-    uint32_t buffer[screen_height][screen_width];
-
-    sys_clear_screen(0);
-
-    uint32_t x = square_size;
-    uint32_t y = square_size;
-    while(x <= screen_width - square_size * 2){
-        sys_draw_square(0x00FF0000, x, square_size, square_size);
-        sys_draw_square(0x00FF0000, x, screen_height - square_size * 2, square_size);
-        // sys_delay(30);
-        x+=square_size;
-    }
-
-    while(y <= screen_height - square_size * 2){
-        sys_draw_square(0x00FF0000, square_size, y, square_size);
-        sys_draw_square(0x00FF0000, screen_width - square_size * 2, y, square_size);
-        // sys_delay(30);
-        y+=square_size;
-    }
-
-    while(1);
-
+    play_eliminator();
 }

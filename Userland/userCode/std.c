@@ -22,6 +22,19 @@ void strcpy(char* dest, const char* src) {
     dest[i] = '\0';
 }
 
+void strcat(char* dest, const char* str1, const char * str2) {
+    uint32_t i;
+    uint32_t j;
+
+    for (i = 0; str1[i] != '\0'; i++)
+        dest[i] = str1[i];
+
+    for (j = 0; str2[j] != '\0'; j++)
+        dest[i + j] = str2[j];
+
+    dest[i + j] = '\0';
+}
+
 uint32_t strlen(const char* s) {
     uint32_t i;
 

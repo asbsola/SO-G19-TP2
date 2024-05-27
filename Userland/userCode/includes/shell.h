@@ -11,7 +11,7 @@ void time();
 void regs();
 void beep();
 void song();
-void div();
+void calculator();
 void eliminator();
 
 void run_shell();

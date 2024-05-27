@@ -19,7 +19,7 @@ ModuleDescriptor modules[] = {
     {"regs", "displays captured registers (ESC key to capture)", regs},
     {"beep", "beeps", beep},
     {"song", "plays a short tune while displaying graphics", song},
-    {"div 0", "MUST REMOVE", div},
+    {"calculator", "positive integer calculator", calculator},
     {"eliminator", "eliminator game", eliminator}
     };
 
@@ -95,10 +95,42 @@ void beep() {
     sys_beep(2000, 100);
 }
 
-void div(){
-    int a = 0;
-    int b = 24 / a;
-    printf("%d", b);
+void calculator(){
+    int num1 = -1;
+    int num2;
+    float response;
+    char operator[2];
+
+    printf("Only positive numbers.\n");
+
+    printf("First number: ");
+    scanf("%d", &num1);
+    
+    printf("Second number: ");
+    scanf("%d", &num2);
+
+    printf("Operator: ");
+    scanf("%c", &operator);
+
+
+    if (strcmp(operator, "+") == 0) {
+        response = num1 + num2;
+    } else if (strcmp(operator, "-") == 0) {
+        response = num1 - num2;
+    } else if (strcmp(operator, "*") == 0) {
+        response = num1 * num2;
+    } else if (strcmp(operator, "/") == 0) {
+        response = num1 / num2;
+    } else {
+        printf("Invalid operator.\n");
+        return;
+    }
+    
+    char stringResponse[11];
+
+    puts("Result: ");
+    puts(itoa(response, stringResponse, 10));
+    puts("\n");
 }
 
 void eliminator() {

@@ -107,18 +107,18 @@ void calculator(){
     printf("First number: ");
     scanf("%d", &num1);
     
-    printf("Second number: ");
-    scanf("%d", &num2);
-
     printf("Operator: ");
     scanf("%c", &operator);
+
+    printf("Second number: ");
+    scanf("%d", &num2);
 
     switch (operator) {
         case '+':
             response = num1 + num2;
             break;
         case '-':
-            response = num1 + num2;
+            response = num1 - num2;
             break;
         case '*':
             response = num1 * num2;

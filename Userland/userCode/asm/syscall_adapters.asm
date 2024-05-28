@@ -17,180 +17,63 @@ global sys_delay
 global sys_print_registers
 global sys_clear_screen
 
-sys_read:
+%macro syscall 1
     push rbp
     mov rbp, rsp
 
-    mov rax, 0
+    mov rax, %1 
+    mov r10, rcx
     int 0x80
 
     mov rsp, rbp
     pop rbp
     ret
+%endmacro
+
+sys_read:
+    syscall 0
 
 sys_write:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 1
-    int 0x80
-
-    mov rsp, rbp
-    pop rbp
-    ret
+    syscall 1
 
 sys_put_text:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 2
-    mov r10, rcx
-    int 0x80
-
-    mov rsp, rbp
-    pop rbp
-    ret
+    syscall 2
 
 sys_set_font_size:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 3
-    int 0x80
-
-    mov rsp, rbp
-    pop rbp
-    ret
+    syscall 3
 
 sys_draw_square:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 4
-    mov r10, rcx
-    int 0x80
-
-    mov rsp, rbp
-    pop rbp
-    ret
+    syscall 4
 
 sys_get_screen_width:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 5
-    int 0x80
-
-    mov rsp, rbp
-    pop rbp
-    ret
+    syscall 5
 
 sys_get_screen_height:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 6
-    int 0x80
-
-    mov rsp, rbp
-    pop rbp
-    ret
+    syscall 6
 
 sys_get_time:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 7
-    int 0x80
-
-    mov rsp, rbp
-    pop rbp
-    ret
+    syscall 7
 
 sys_get_key_pressed:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 8
-    int 0x80
-
-    mov rsp, rbp
-    pop rbp
-    ret
+    syscall 8
 
 sys_get_character_pressed:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 9
-    int 0x80
-
-    mov rsp, rbp
-    pop rbp
-    ret
+    syscall 9
 
 sys_clear_text_buffer:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 10 
-    int 0x80
-
-    mov rsp, rbp
-    pop rbp
-    ret
+    syscall 10
 
 sys_get_cpu_vendor:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 11
-    int 0x80
-
-    mov rsp, rbp
-    pop rbp
-    ret
+    syscall 11
 
 sys_beep:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 12
-    int 0x80
-
-    mov rsp, rbp
-    pop rbp
-    ret
+    syscall 12
 
 sys_delay:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 13
-    int 0x80
-
-    mov rsp, rbp
-    pop rbp
-    ret
+    syscall 13
 
 sys_print_registers:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 14
-    int 0x80
-
-    mov rsp, rbp
-    pop rbp
-    ret
+    syscall 14
 
 sys_clear_screen:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 15
-    int 0x80
-
-    mov rsp, rbp
-    pop rbp
-    ret  
+    syscall 15

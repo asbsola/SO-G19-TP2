@@ -96,12 +96,13 @@ void beep() {
 }
 
 void calculator(){
-    int num1 = -1;
-    int num2;
-    float response;
-    char operator[2];
+    uint32_t num1 = 0;
+    uint32_t num2 = 0;
+    uint32_t response = 0;
 
-    printf("Only positive numbers.\n");
+    char operator;
+
+    printf("Enter only positive numbers.\n");
 
     printf("First number: ");
     scanf("%d", &num1);
@@ -112,25 +113,25 @@ void calculator(){
     printf("Operator: ");
     scanf("%c", &operator);
 
-
-    if (strcmp(operator, "+") == 0) {
-        response = num1 + num2;
-    } else if (strcmp(operator, "-") == 0) {
-        response = num1 - num2;
-    } else if (strcmp(operator, "*") == 0) {
-        response = num1 * num2;
-    } else if (strcmp(operator, "/") == 0) {
-        response = num1 / num2;
-    } else {
-        printf("Invalid operator.\n");
-        return;
+    switch (operator) {
+        case '+':
+            response = num1 + num2;
+            break;
+        case '-':
+            response = num1 + num2;
+            break;
+        case '*':
+            response = num1 * num2;
+            break;
+        case '/':
+            response = num1 / num2;
+            break;
+        default:
+            printf("Invalid operator.\n");
+            return;
     }
-    
-    char stringResponse[11];
 
-    puts("Result: ");
-    puts(itoa(response, stringResponse, 10));
-    puts("\n");
+    printf("Result: %d\n", response);
 }
 
 void eliminator() {

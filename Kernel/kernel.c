@@ -59,7 +59,7 @@ int main()
 
     write_to_video_text_buffer("Back in kernel...\n", 18, HEX_GRAY);
 
-	while(1);
+	delay(1000);
 
 	return 0;
 }

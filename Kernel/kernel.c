@@ -4,6 +4,7 @@
 #include <moduleLoader.h>
 #include <drivers/videoDriver.h>
 #include <drivers/pitDriver.h>
+#include <shell_caller.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -13,9 +14,6 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
-
-static void * const userCodeModuleAddress = (void*)0xA00000;
-static void * const userDataModuleAddress = (void*)0xB00000;
 
 typedef int (*EntryPoint)();
 
@@ -38,8 +36,8 @@ void * getStackBase()
 void * initializeKernelBinary()
 {
 	void * moduleAddresses[] = {
-		userCodeModuleAddress,
-		userDataModuleAddress
+		SHELL_CODE_ADDRESS,
+		SHELL_DATA_ADDRESS
 	};
 
 	loadModules(&endOfKernelBinary, moduleAddresses);
@@ -47,10 +45,6 @@ void * initializeKernelBinary()
 	clearBSS(&bss, &endOfKernel - &bss);
 
 	return getStackBase();
-}
-
-void start_shell() {
-    ((EntryPoint)userCodeModuleAddress)();
 }
 
 int main()
@@ -62,6 +56,8 @@ int main()
     write_to_video_text_buffer("Kernel initialized\nRunning user code...\n\n", 41, HEX_GRAY);
 
     start_shell();
+
+    write_to_video_text_buffer("Back in kernel...\n", 18, HEX_GRAY);
 
 	while(1);
 

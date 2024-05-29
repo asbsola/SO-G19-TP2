@@ -30,7 +30,7 @@ void run_shell() {
     char shell_input[MAX_SHELL_INPUT];
     shell_input[0] = 0;
 
-    while (1) {
+    while (strcmp(shell_input, "exit") != 0) {
         sys_set_font_size(current_font_size);
         puts_with_color("shell> ", 0x006fb5fb);
         scanf("%s", shell_input);
@@ -42,6 +42,8 @@ void run_shell() {
 
 void help() {
     puts("available modules:\n");
+
+    puts("\t- exit: exit to kernel.\n");
 
     for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++)
         printf("\t- %s: %s.\n", modules[i].module_name, modules[i].module_description);

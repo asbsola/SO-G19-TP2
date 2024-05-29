@@ -2,9 +2,7 @@
 #include <drivers/videoDriver.h>
 #include <interruptHandlers/interrupts.h>
 #include <interruptHandlers/exceptions.h>
-
-//defined in kernel.c
-void start_shell();
+#include <shell_caller.h>
 
 void exceptionDispatcher(int id, const registers64_t *registers) {
 	write_to_video_text_buffer("\n", 1, HEX_WHITE);
@@ -27,5 +25,5 @@ void exceptionDispatcher(int id, const registers64_t *registers) {
 
     update_frame_buffer();
 
-	start_shell();
+	restart_shell();
 }

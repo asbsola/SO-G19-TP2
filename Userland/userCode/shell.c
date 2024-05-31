@@ -13,8 +13,8 @@ typedef struct {
 ModuleDescriptor modules[] = {
     {"help", "displays available modules", help}, 
     {"clear", "clears the screens text buffer", cls}, 
-    {"info", "displays system information", info},
-    {"size", "change font size", font_size},
+    {"sysinfo", "displays system information", info},
+    {"fontsize", "change font size", font_size},
     {"time", "display current time", time},
     {"regs", "displays captured registers (ESC key to capture)", regs},
     {"beep", "beeps", beep},

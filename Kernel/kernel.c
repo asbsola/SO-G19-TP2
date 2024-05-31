@@ -53,6 +53,7 @@ int main()
 	load_idt();
     set_font_size(1);
     clear_video_text_buffer();
+    write_to_video_text_buffer("GRUPO 21\n", 9, 0x006fb5fb);
     write_to_video_text_buffer("Kernel initialized\nRunning user code...\n\n", 41, HEX_GRAY);
 
     start_shell();

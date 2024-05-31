@@ -71,6 +71,8 @@ Se cuentan con routinas para obtener tanto las teclas como scan code o su respec
 
 \subsection {Sound driver}
 
+\subsection {PIT}
+
 \subsection {IDT}
 
 Para el manejo de interrupciones y excepciones se crearon diversas entradas en la IDT. Para preservar el estado de los registros, se almacena los mismos en el stack.
@@ -107,6 +109,8 @@ Los syscalls son la intefaz entre el userspace y el kernel. Los syscalls impleme
 11 & sys\_get\_cpu\_vendor &  \begin{minipage}{80mm}obtiene el cpu vendor. \end{minipage} \\ \hline
 12 & sys\_beep &  \begin{minipage}{80mm}emite un ruido a cierta frecuencia usando una onda cuadrada.\end{minipage} \\ \hline
 13 & sys\_sleep &  \begin{minipage}{80mm}detiene la ejecución por cierta cantidad de tiempo.\end{minipage} \\ \hline
+14 & sys\_print\_registers &  \begin{minipage}{80mm}imprime los registros capturados del sistema.\end{minipage} \\ \hline
+15 & sys\_clear\_screen &  \begin{minipage}{80mm}limpia el buffer de video.\end{minipage} \\ \hline
 \end{tabular}
 \captionof{table}{syscalls implementadas para el llamado de funciones de kernel desde el userspace}
 \label{table:syscalls}
@@ -115,6 +119,22 @@ Los syscalls son la intefaz entre el userspace y el kernel. Los syscalls impleme
 \subsubsection {Excepciones}
 
 Cuando se produce una excepción, se imprime la información relacionada a la excepción. Se imprime el estado de los registros al momento de efectuarse la excepción, y luego se vuelve a ejecutar la Shell.
+
+\subsection {Ejecución de la Shell desde el Kernel}
+
+Para ejecutar la shell desde el Kernel, se decidió utilizar la instrucción iretq con el stack configurado de la siguiente manera:
+
+\begin{center}
+\begin{tabular}{|c|}
+\hline
+ret address = SHELL\_CODE\_ADDRESS (dirección del comienzo del código de la shell) \\ \hline
+Code Segment = 0x8 \\ \hline
+RFLAGS = 0x202 \\ \hline
+RSP = shell\_start\_rsp \\ \hline
+Stack Segment = 0x0 \\ \hline
+\end{tabular}
+\end{center}
+donde shell\_start\_rsp es el valor de rsp en la primera invocación a la shell. Ejecutar la shell de esta manera permite que los stack frame no se apilen pues, en caso de reiniciar la shell, RSP se resetea. Y además, permite setear los flags de Userspace con los permisos adecuados.
 
 \section {Userspace}
 
@@ -133,5 +153,6 @@ Para manejar los módulos de la shell creamos un tipo de estructura que contiene
 
 \subsection {registers}
 \subsection {eliminator}
+\subsection {buffer overflow}
 
 \end{document}

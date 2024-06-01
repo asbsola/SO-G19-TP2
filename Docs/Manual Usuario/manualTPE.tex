@@ -36,7 +36,7 @@ Una vez compilado el proyecto y generada la imagen, se puede ejecutar el mismo m
 $> ./run.sh
 \end{lstlisting}
 
-Notar que el proyecto utiliza flags de qemu para poder emitir sonido. Los flags necesarios para esto cambiaron entre versiones de qemu.
+Notar que el proyecto utiliza flags de qemu para poder emitir sonido. Los flags necesarios para esto pueden cambiar dependiendo del entorno.
 
 \section *{Shell}
 
@@ -44,11 +44,17 @@ El shell cuenta con varios módulos que se pueden ejecutar. Al iniciarse el shel
 
 Lista de comandos:
 \begin{itemize}
+\item exit: vuelve al kernel.
 \item help: muestra los módulos disponibles.
 \item clear: limpia el buffer de texto de la pantalla.
 \item sysinfo: muestra información del sistema.
-\item beep: emite un sonido.
+\item fontsize: permite cambiar el tamaño de letra.
+\item time: imprime la hora actual.
 \item regs: muestra los registros capturados.
+\item beep: emite un sonido.
+\item song: toca una canción mientras se muestran gráficos por la pantalla.
+\item calculator: calculadora de enteros positivos (al dividir por 0 se produce excepción).
+\item eliminator: juego eliminator.
 \end{itemize}
 Los registros se pueden capturar en cualquier momento presionando la tecla escape.
 
@@ -71,7 +77,7 @@ Ya existen implementadas las siguientes funciones en la librería estandar: putc
 Los syscalls disponibles se listan en la tabla \ref{table:syscalls}. Están modelados a partir de la API de Linux 64bit.
 
 \begin{center}
-\hspace*{-0.85in}
+\hspace*{-0.95in}
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
 \textbf{rax} & \textbf{syscall} & \textbf{rdi} & \textbf{rsi} & \textbf{rdx} & \textbf{r10} & \textbf{r8} \\ \hline
@@ -82,13 +88,15 @@ Los syscalls disponibles se listan en la tabla \ref{table:syscalls}. Están mode
 4 & sys\_draw\_square & uint32\_t hexColor & uint32\_t posX & uint32\_t posY & uint32\_t size &  \\ \hline
 5 & sys\_get\_screen\_width & & & & & \\ \hline
 6 & sys\_get\_screen\_height & & & & &   \\ \hline
-7 & sys\_get\_time & & & & &   \\ \hline
+7 & sys\_get\_time & int time\_zone & & & &   \\ \hline
 8 & sys\_get\_key\_pressed & & & & &   \\ \hline
 9 & sys\_get\_character\_pressed & & & & &   \\ \hline
 10 & sys\_clear\_text\_buffer & & & & &   \\ \hline
 11 & sys\_get\_cpu\_vendor & char* buff & & & &   \\ \hline
 12 & sys\_beep & uint64\_t freq & uint64\_t secs & & &  \\ \hline
 13 & sys\_delay & uint64\_t millis & & & &  \\ \hline
+14 & sys\_clear\_screen & uint32\_t clearColor & & & &  \\ \hline
+14 & sys\_print\_registers &  & & & &  \\ \hline
 \end{tabular}
 \captionof{table}{syscalls implementadas para el llamado de funciones de kernel desde el userspace}
 \label{table:syscalls}

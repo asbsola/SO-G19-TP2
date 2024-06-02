@@ -120,6 +120,8 @@ Los syscalls son la intefaz entre el userspace y el kernel. Los syscalls impleme
 
 Cuando se produce una excepción, se imprime la información relacionada a la excepción. Se imprime el estado de los registros al momento de efectuarse la excepción, y luego se vuelve a ejecutar la Shell.
 
+Se capturaron las siguientes excepciones: división por cero y invalid opcode.
+
 \subsection {Ejecución de la Shell desde el Kernel}
 
 Para ejecutar la shell desde el Kernel, se decidió utilizar la instrucción iretq con el stack configurado de la siguiente manera:
@@ -152,7 +154,15 @@ A partir de las funciones estandar implementadas, se creó una shell.
 Para manejar los módulos de la shell creamos un tipo de estructura que contiene el nombre del módulo, su descripción (usado por el módulo help) y un puntero a la función correspondiente al módulo. Estas estructuras son almacenadas en un array con los módulos disponibles.
 
 \subsection {registers}
+
+Cuando se produce una interrupción de teclado, se checkea si se presiono la tecla ESCAPE. En caso de que se haya presionado, se guarda los registros (el handler de teclado recibe un struct de registros) en un struct.
+
+Esos registros capturados pueden ser impresos por pantalla, desde user space, mediante una syscall.
+
+Hay que tener en cuenta que la mayoría del tiempo, el procesador está ejecutando código del kernel space, pues la rutinas de video y manejo de teclado ocupan una gran parte del tiempo de ejecución. Por ello, el rip suele estar en una posición de memoria correspondiente al kernel.
+
 \subsection {eliminator}
-\subsection {buffer overflow}
+
+Mediante las syscalls empleadas, se implemento el juego eliminator. El mismo se puede jugar de manera individual o con un contrincante.
 
 \end{document}

@@ -3,6 +3,7 @@
 #include <std.h>
 #include <cucaracha.h>
 #include <eliminator.h>
+#include <lib.h>
 
 typedef struct {
     char* module_name;
@@ -20,7 +21,8 @@ ModuleDescriptor modules[] = {
     {"beep", "beeps", beep},
     {"song", "plays a short tune while displaying graphics", song},
     {"calculator", "positive integer calculator", calculator},
-    {"eliminator", "eliminator game", eliminator}
+    {"eliminator", "eliminator game", eliminator},
+    {"invalid_opcode", "jumps to address 0x0 to force invalid opcode exception", invalid_opcode}
     };
 
 static int current_font_size = 1;
@@ -138,4 +140,9 @@ void calculator(){
 
 void eliminator() {
     play_eliminator();
+}
+
+void invalid_opcode() {
+    printf("Jumping to address 0x0\n");
+    jump_to_cero();
 }

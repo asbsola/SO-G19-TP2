@@ -22,7 +22,7 @@ ModuleDescriptor modules[] = {
     {"song", "plays a short tune while displaying graphics", song},
     {"calculator", "positive integer calculator", calculator},
     {"eliminator", "eliminator game", eliminator},
-    {"invalid_opcode", "jumps to address 0x0 to force invalid opcode exception", invalid_opcode}
+    {"jump", "jumps to address given by user in decimal (1407583 causes invalid opcode >:) )", jump}
     };
 
 static int current_font_size = 1;
@@ -142,7 +142,10 @@ void eliminator() {
     play_eliminator();
 }
 
-void invalid_opcode() {
-    printf("Jumping to address 0x0\n");
-    jump_to_cero();
+void jump() {
+    uint64_t dir = 0;
+    printf("Address: ");
+    scanf("%d", &dir);
+    printf("Jumping to address %d\n", dir);
+    jump_to_dir(dir);
 }

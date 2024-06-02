@@ -13,6 +13,7 @@ void beep();
 void song();
 void calculator();
 void eliminator();
+void jump();
 
 void run_shell();
 

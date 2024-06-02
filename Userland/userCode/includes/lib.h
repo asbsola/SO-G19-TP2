@@ -3,6 +3,6 @@
 
 #include <stdint.h>
 
-void invalid_opcode();
+void jump_to_dir(uint64_t dir);
 
 #endif

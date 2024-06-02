@@ -2,12 +2,15 @@
 #include <drivers/videoDriver.h>
 #include <lib.h>
 
-const uint64_t MAX_FREQUENCY = 1193182;
 static uint32_t TICKS_PER_SECOND;
 static unsigned long ticks = 0;
 
+static uint64_t UPDATE_SCREEN_RATE;
+static unsigned long ticks_at_last_update = 0;
+
 void initialize_pit(uint32_t frequency){
 	TICKS_PER_SECOND = frequency;
+    UPDATE_SCREEN_RATE = (TICKS_PER_SECOND >= UPDATE_SCREEN_FREQ) ? (TICKS_PER_SECOND / UPDATE_SCREEN_FREQ) : TICKS_PER_SECOND;
     uint16_t divisor = MAX_FREQUENCY / TICKS_PER_SECOND;
     outb(0x43, 0x36);
     outb(0x40, (uint8_t)(divisor & 0xFF));
@@ -16,7 +19,11 @@ void initialize_pit(uint32_t frequency){
 
 void timer_handler(const registers64_t * registers) {
 	ticks++;
-    update_frame_buffer();
+
+    if (ticks - ticks_at_last_update >= UPDATE_SCREEN_RATE) {
+        update_frame_buffer();
+        ticks_at_last_update = ticks;
+    }
 }
 
 void delay(uint64_t milis){

@@ -30,7 +30,7 @@ void keyboard_handler(const registers64_t * registers){
         caps_enabled = !caps_enabled;
         return;
     }
-    if(scan_code == 0x01){
+    if(scan_code == ESCAPE_CODE_PRESSED){
         save_registers(registers);
         return;
     }

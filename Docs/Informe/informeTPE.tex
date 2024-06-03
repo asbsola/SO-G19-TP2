@@ -71,7 +71,19 @@ Se cuentan con routinas para obtener tanto las teclas como scan code o su respec
 
 \subsection {Sound driver}
 
+El driver de sonido ofrece como funcionalidad hacer sonar un pitido mediante el pc speaker con la frecuencia y duración deseada. Para producir el pitido se envía el valor resultante de dividir la frecuencia máxima por la deseada al puerto correspondiente al canal 2 del PIT, durante este proceso se desactivan las interrupciones.
+
+El pc speaker es habilitado y deshabilitado mediante el puerto 0x61 de entrada y salida. Entre estas ocurrencias se deja pasar el tiempo de duración con un método poveído por el driver del PIT.
+
 \subsection {PIT}
+
+Al controlador del PIT ademas de los metodos ofrecidos por la catedra se le agrego:
+
+Un metodo de inicialización con frecuencia de ticks como parametro (con un máximo estipulado para no causar conflictos con la renderización).
+
+Una llamada al metodo de refresco del buffer de pantalla cada cierta cantidad de ticks establecida.
+
+Dos metodos que detienen la ejecución por el tiempo pasado por parametro, uno en ticks y el otro en milisegundos, utilizados en la syscall delay.
 
 \subsection {IDT}
 
@@ -108,7 +120,7 @@ Los syscalls son la intefaz entre el userspace y el kernel. Los syscalls impleme
 10 & sys\_clear\_text\_buffer &  \begin{minipage}{80mm}limpia la matriz de caracteres.\end{minipage} \\ \hline
 11 & sys\_get\_cpu\_vendor &  \begin{minipage}{80mm}obtiene el cpu vendor. \end{minipage} \\ \hline
 12 & sys\_beep &  \begin{minipage}{80mm}emite un ruido a cierta frecuencia usando una onda cuadrada.\end{minipage} \\ \hline
-13 & sys\_sleep &  \begin{minipage}{80mm}detiene la ejecución por cierta cantidad de tiempo.\end{minipage} \\ \hline
+13 & sys\_delay &  \begin{minipage}{80mm}detiene la ejecución por cierta cantidad de tiempo.\end{minipage} \\ \hline
 14 & sys\_print\_registers &  \begin{minipage}{80mm}imprime los registros capturados del sistema.\end{minipage} \\ \hline
 15 & sys\_clear\_screen &  \begin{minipage}{80mm}limpia el buffer de video.\end{minipage} \\ \hline
 \end{tabular}

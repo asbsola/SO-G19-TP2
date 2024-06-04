@@ -65,9 +65,9 @@ Para la impresión de caracterés se utilizó una tipografía en formato bitmap.
 
 \subsection {Keyboard driver}
 
-Para manejar el teclado se dispuso de una queue de tecladas. Cuando se genera la interrupción de teclado (si se trata de un key press), se lo almacena en la queue. Luego mediante las diferentes routinas de teclado, cuando se solicita teclas, la queue se va consumiendo.
+Para manejar el teclado se dispuso de una queue de teclas. Cuando se genera la interrupción de teclado (si se trata de un key press), se lo almacena en la queue. Luego mediante las diferentes rutinas de teclado, cuando se solicita teclas, la queue se va consumiendo.
 
-Se cuentan con routinas para obtener tanto las teclas como scan code o su respectivo código ASCII. Para las funciones que obtienen el valor ASCII se tiene en cuenta el CAPS LOCK y el SHIFT.
+Se cuentan con rutinas para obtener tanto las teclas como scan code o su respectivo código ASCII. Para las funciones que obtienen el valor ASCII se tiene en cuenta el CAPS LOCK y el SHIFT.
 
 \subsection {Sound driver}
 

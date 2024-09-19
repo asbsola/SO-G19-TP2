@@ -69,3 +69,5 @@ void uint64_to_hex_string(uint64_t num, char *buffer, uint16_t buffer_size) {
         num >>= 4;  // Desplaza el número 4 bits a la derecha
     }
 }
+
+

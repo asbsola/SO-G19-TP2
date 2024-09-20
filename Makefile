@@ -1,6 +1,13 @@
 
 all:  bootloader kernel userland image
 
+
+buddy: 
+	cd Testing; make buddy
+
+bitmap:
+	cd Testing; make bitmap
+
 bootloader:
 	cd Bootloader; make all
 

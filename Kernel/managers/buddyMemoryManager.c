@@ -1,4 +1,4 @@
-#include <includes/memoryManager.h>
+#include <managers/memoryManager.h>
 #include <stdio.h>
 
 #define max(a, b) (((a) > (b)) ? (a) : (b))

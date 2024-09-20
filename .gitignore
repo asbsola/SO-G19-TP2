@@ -15,5 +15,3 @@ compile.sh
 #Object files
 *.o
 
-#Makefile.inc
-*.inc

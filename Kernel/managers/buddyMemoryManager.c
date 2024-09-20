@@ -44,6 +44,7 @@ memoryManagerADT init_memory_manager(void *memory, uint64_t memory_size) {
 
     return mem_manager;
 }
+//aca en lugar de llamarlo tree lo podemos llamar vec que es mas intuitivo, al menos para mi je
 
 void* allocate_mem_recursive(memoryNode* tree, uint64_t size, uint64_t chunck_size, void* memory_start, uint64_t node_index, uint64_t height) {
     if (chunck_size < size || tree[node_index].status == USED) 
@@ -60,10 +61,10 @@ void* allocate_mem_recursive(memoryNode* tree, uint64_t size, uint64_t chunck_si
     if (tree[node_index].status != SPLIT) {
         tree[node_index].status = SPLIT;
     }
-
+    
     uint64_t half_size = chunck_size / 2;
     uint64_t left_index = node_index + 1;
-
+    
     void* addr = allocate_mem_recursive(tree, size, half_size, memory_start, left_index, height - 1);
     if (addr == NULL) {
         uint64_t right_index = node_index + _2pown(height - 1); 
@@ -79,7 +80,63 @@ void* mem_alloc(memoryManagerADT mem_manager, uint64_t size) {
     return allocate_mem_recursive(mem_manager->root, best_fit_size, mem_manager->memory_size, mem_manager->memory_start, 0, mem_manager->tree_max_height);
 }
 
+
+int is_valid_dir(memoryManagerADT mem_manager, void* address) {
+    
+    if (address < mem_manager->memory_start || address >= mem_manager->memory_start + mem_manager->memory_size) {
+        return 0;  
+    }
+    
+    uint64_t offset = address - mem_manager->memory_start;
+
+    for (uint64_t i = 0; i < mem_manager->tree_max_height; i++) {
+        uint64_t block_size = _2pown(i + MIN_BLOCK_SIZE_ORDER);  
+ 
+        if (offset % block_size == 0) {
+            return 1;  
+        }
+    }
+
+    
+    return 0;
+}
+
+memoryNodeStatus free_mem_recursive(memoryNode* tree, void * address, uint64_t chunck_size, void* memory_start, uint64_t node_index, uint64_t height) {
+    if(address < memory_start){
+        return tree[node_index].status; //no esta en el lado derecho, que busquen en el izquierdo
+    }
+
+    if (address == memory_start) {
+        if(tree[node_index].status == FREE) {
+            return -2;  //ya le habian hecho free, ver que error tiramos
+        }
+        tree[node_index].status = FREE;
+        return FREE;  
+    }
+    
+    uint64_t half_size = chunck_size / 2;
+    uint64_t left_index = node_index + 1;
+    
+    uint64_t right_index = node_index + _2pown(height - 1); 
+    memoryNodeStatus rightChild = free_mem_recursive(tree, address, half_size, memory_start + half_size, right_index, height - 1);
+    memoryNodeStatus leftChild;
+    if(rightChild == -1){
+            leftChild = free_mem_recursive(tree, address, half_size, memory_start, left_index, height - 1);
+    }
+    
+    if(leftChild == FREE && rightChild == FREE){
+        tree[node_index].status = FREE;
+        return FREE;
+    }
+
+    return tree[node_index].status;
+}
+
+
 void mem_free(memoryManagerADT mem_manager, void* address) {
+    if(!is_valid_dir(mem_manager, address)) return; //aca habria que tirar algun error o ver que hacemos
+    
+    free_mem_recursive(mem_manager->root, address, mem_manager->memory_size, mem_manager->memory_start, 0, mem_manager->tree_max_height);
 
 }
 

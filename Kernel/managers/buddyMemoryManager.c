@@ -1,4 +1,4 @@
-#include "./../include/managers/memoryManager.h"
+#include <managers/memoryManager.h>
 #include <stdio.h>
 
 #define max(a, b) (((a) > (b)) ? (a) : (b))
@@ -24,13 +24,13 @@ struct memoryManagerCDT {
 
 memoryManagerADT init_memory_manager(void *memory, uint64_t memory_size) {
     uint64_t max_block_order = nlog2(memory_size);
-    uint64_t tree_max_height = max_block_order - MIN_BLOCK_SIZE_ORDER + 1;
+    uint64_t tree_max_height = max_block_order - MIN_BLOCK_SIZE_ORDER + 1; // maybe check this isnt too low
     uint64_t tree_max_node_count = _2pown(tree_max_height) - 1;
     uint64_t tree_max_size = sizeof(memoryNode) * tree_max_node_count;
 
     if (memory_size < tree_max_size) return NULL;
 
-    uint64_t usable_memory = _2pown(nlog2(memory_size - tree_max_size));
+    uint64_t usable_memory = _2pown(nlog2(memory_size - tree_max_size)); // should check if that this isnt lower than min block size
 
     memoryManagerADT mem_manager = memory;
     mem_manager->tree_memory_start = memory + sizeof(struct memoryManagerCDT);
@@ -46,6 +46,8 @@ memoryManagerADT init_memory_manager(void *memory, uint64_t memory_size) {
 }
 //aca en lugar de llamarlo tree lo podemos llamar vec que es mas intuitivo, al menos para mi je
 
+// usa una definición de height inversa a lo q suele ser en un arbol pero bueno
+// memory_start no es el mejor nombre, quizas chunck_start
 void* allocate_mem_recursive(memoryNode* tree, uint64_t size, uint64_t chunck_size, void* memory_start, uint64_t node_index, uint64_t height) {
     if (chunck_size < size || tree[node_index].status == USED) 
         return NULL;
@@ -89,8 +91,8 @@ int is_valid_dir(memoryManagerADT mem_manager, void* address) {
     
     uint64_t offset = address - mem_manager->memory_start;
 
-    for (uint64_t i = 0; i < mem_manager->tree_max_height; i++) {
-        uint64_t block_size = _2pown(i + MIN_BLOCK_SIZE_ORDER);  
+    for (uint64_t i = 0; i < mem_manager->tree_max_height; i++) { // el for es innecesario, si es multiplo de una potencia de dos mayor a la minima tambien es multiplo de la minima
+        uint64_t block_size = _2pown(i + MIN_BLOCK_SIZE_ORDER);
  
         if (offset % block_size == 0) {
             return 1;  
@@ -101,6 +103,7 @@ int is_valid_dir(memoryManagerADT mem_manager, void* address) {
     return 0;
 }
 
+// simil critica memory_start y height
 memoryNodeStatus free_mem_recursive(memoryNode* tree, void * address, uint64_t chunck_size, void* memory_start, uint64_t node_index, uint64_t height) {
     if(address < memory_start){
         return tree[node_index].status; //no esta en el lado derecho, que busquen en el izquierdo
@@ -120,11 +123,11 @@ memoryNodeStatus free_mem_recursive(memoryNode* tree, void * address, uint64_t c
     uint64_t right_index = node_index + _2pown(height - 1); 
     memoryNodeStatus rightChild = free_mem_recursive(tree, address, half_size, memory_start + half_size, right_index, height - 1);
     memoryNodeStatus leftChild;
-    if(rightChild == -1){
+    if(rightChild == -1){ // Cambiaria valor de retorno del metodo a int para significar exito o fracaso en vez de status
             leftChild = free_mem_recursive(tree, address, half_size, memory_start, left_index, height - 1);
     }
     
-    if(leftChild == FREE && rightChild == FREE){
+    if(leftChild == FREE && rightChild == FREE){ // teniendo node_index no es necesario tener valor de retorno para este condicional
         tree[node_index].status = FREE;
         return FREE;
     }

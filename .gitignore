@@ -1,7 +1,9 @@
 .gitignore
 .bash_history
 .vscode
+
 compile.sh
+run.sh
 
 #Binary Files
 *.bin

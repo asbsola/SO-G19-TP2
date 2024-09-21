@@ -24,6 +24,7 @@ clean:
 	cd Bootloader; make clean
 	cd Image; make clean
 	cd Kernel; make clean
+	cd Testing; make clean
 	cd Userland; make clean
 
 .PHONY: bootloader image collections kernel userland all clean

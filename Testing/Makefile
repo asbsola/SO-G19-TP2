@@ -4,7 +4,7 @@ BUDDYTEST=buddyTest
 BITMAPTEST=bitmapTest
 MMTEST=test_mm test_util
 BUDDY=../Kernel/managers/buddyMemoryManager
-BITMAP=../Kernel/managers/bitmapManager # aquí va el archivo del bitmap manager
+BITMAP=../Kernel/managers/bitmapMemoryManager
 
 all: $(BUDDYTEST) $(BITMAPTEST)
 
@@ -22,7 +22,7 @@ $(BITMAPTEST): $(addsuffix .o, $(MMTEST)) $(BITMAP).o
 
 # Regla para compilar los archivos .c en archivos .o
 %.o: %.c
-	$(GCC) -I./include $(GCCFLAGS) -c $< -o $@
+	$(GCC) -I./include -I../Kernel/include $(GCCFLAGS) -c $< -o $@
 
 # Limpiar todos los archivos objeto y binarios generados
 clean:

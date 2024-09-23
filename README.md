@@ -55,3 +55,4 @@ cd Testing
 
 ### Memory managers
 * Se usa parte de la memoria provista en la inicialización del memory manager para guardar estructuras auxiliares. Por este motivo la interfaz tiene métodos para obtener la memoria utilizable.
+* Al inicio de la ejecución del kernel se le asignan 10000 bytes al memory manager.

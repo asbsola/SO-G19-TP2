@@ -36,7 +36,7 @@ y para ejecutar el ejecutable generado (se genera en la carpeta testing).
 
 ```bash
 cd Testing
-./buddyTest
+./buddyTest <memoryAmount>
 ```
 
 o 
@@ -49,7 +49,7 @@ y para ejecutar el ejecutable generado (se genera en la carpeta testing).
 
 ```bash
 cd Testing
-./bitmapTest
+./bitmapTest <memoryAmount>
 ```
 ## Limitaciones
 

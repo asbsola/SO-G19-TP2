@@ -12,7 +12,9 @@ struct memoryManagerCDT {
     void* memory_start;
     void* bitmap_start;
     uint64_t bitmap_length;
-    uint64_t usable_memory;
+    uint64_t max_blocks;
+    uint64_t usable_memory_size;
+    uint64_t free_memory_size;
 };
 
 #define FREE 0
@@ -27,22 +29,33 @@ memoryManagerADT init_memory_manager(void* memory, uint64_t memory_size){
     memoryManagerADT mem_manager = memory;
     mem_manager->bitmap = memory + sizeof(struct memoryManagerCDT);
     mem_manager->bitmap_start = mem_manager->bitmap;
-    uint64_t bitmap_max_length = (memory_size - sizeof(struct memoryManagerCDT)) / BLOCK_SIZE / BLOCKS_PER_BYTE / sizeof(mem_manager->bitmap[0]);
+    int blocks_per_entry = sizeof(mem_manager->bitmap[0]) * BLOCKS_PER_BYTE;
+    uint64_t bitmap_max_length = (memory_size - sizeof(struct memoryManagerCDT)) / BLOCK_SIZE / blocks_per_entry;
 
-    uint64_t non_usable_memory = sizeof(struct memoryManagerCDT) + bitmap_max_length * sizeof(mem_manager->bitmap[0]);
-    if(memory_size < non_usable_memory) return NULL;
+    uint64_t non_usable_memory_size = sizeof(struct memoryManagerCDT) + bitmap_max_length * sizeof(mem_manager->bitmap[0]);
+    if(memory_size < non_usable_memory_size) return NULL;
 
-    uint64_t usable_blocks = (memory_size - non_usable_memory) / BLOCK_SIZE;
-    if(usable_blocks == 0) return NULL;
+    
+    mem_manager->max_blocks = (memory_size - non_usable_memory_size) / BLOCK_SIZE;
+    if(mem_manager->max_blocks == 0) return NULL;
 
-    mem_manager->bitmap_length = usable_blocks / sizeof(*mem_manager->bitmap) / BLOCKS_PER_BYTE;
+    mem_manager->bitmap_length = mem_manager->max_blocks / blocks_per_entry + (mem_manager->max_blocks % blocks_per_entry != 0);
     mem_manager->memory_start = mem_manager->bitmap_start + mem_manager->bitmap_length * sizeof(mem_manager->bitmap[0]);
-    mem_manager->usable_memory = usable_blocks * BLOCK_SIZE;
+    mem_manager->usable_memory_size = mem_manager->max_blocks * BLOCK_SIZE;
+    mem_manager->free_memory_size = mem_manager->usable_memory_size;
 
     for(uint64_t i=0; i<mem_manager->bitmap_length; i++){
         mem_manager->bitmap[i] = 0;
     }
     return mem_manager;
+}
+
+uint64_t get_usable_memory_size(memoryManagerADT mem_manager) {
+    return mem_manager->usable_memory_size;
+}
+
+uint64_t get_free_memory_size(memoryManagerADT mem_manager) {
+    return mem_manager->free_memory_size;
 }
 
 int find_free_blocks(memoryManagerADT mem_manager, uint64_t blocks_needed, uint64_t* start_block){
@@ -51,6 +64,7 @@ int find_free_blocks(memoryManagerADT mem_manager, uint64_t blocks_needed, uint6
     uint64_t free_blocks = 0;
     for(uint64_t i=0; i<mem_manager->bitmap_length; i++){
         for(int b=0; b<blocks_per_entry; b++){
+            if(i * blocks_per_entry + b >= mem_manager->max_blocks) break;
             if(GET_BLOCK_STATE(mem_manager->bitmap[i], b) != FREE) free_blocks = 0;
             else {
                 free_blocks++;
@@ -74,6 +88,7 @@ void reserve_blocks(memoryManagerADT mem_manager, uint64_t start_block, uint64_t
         block_offset = (start_block + b) % blocks_per_entry;
         SET_STATE_USED(mem_manager->bitmap[index], block_offset);
     }
+    mem_manager->free_memory_size -= blocks * BLOCK_SIZE;
 }
 
 void* mem_alloc(memoryManagerADT mem_manager, uint64_t size){
@@ -86,11 +101,13 @@ void* mem_alloc(memoryManagerADT mem_manager, uint64_t size){
 }
 
 int valid_chunk_start(memoryManagerADT mem_manager, uint64_t offset){
+    if(offset % BLOCK_SIZE != 0) return 0;
     uint64_t start_block = offset / BLOCK_SIZE;
     int blocks_per_entry = sizeof(mem_manager->bitmap[0]) * BLOCKS_PER_BYTE;
     uint64_t index = start_block / blocks_per_entry;
+    if(index > mem_manager->bitmap_length) return 0;
     int block_offset = start_block % blocks_per_entry;
-    return (offset % BLOCK_SIZE == 0 && GET_BLOCK_STATE(mem_manager->bitmap[index], block_offset) == START);
+    return GET_BLOCK_STATE(mem_manager->bitmap[index], block_offset) == START;
 }
 
 void free_blocks(memoryManagerADT mem_manager, uint64_t start_block){
@@ -101,6 +118,7 @@ void free_blocks(memoryManagerADT mem_manager, uint64_t start_block){
         SET_STATE_FREE(mem_manager->bitmap[index], block_offset);
         index = (start_block + b + 1) / blocks_per_entry;
         block_offset = (start_block + b + 1) % blocks_per_entry;
+        mem_manager->free_memory_size += BLOCK_SIZE;
     }
 }
 

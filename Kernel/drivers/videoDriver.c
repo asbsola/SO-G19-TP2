@@ -172,6 +172,8 @@ void write_to_video_text_buffer(const char* data, uint32_t data_len, uint32_t he
         switch (data[i]) {
             case '\n':
                 screenTextInfo.indexY += 1;
+
+                if (screenTextInfo.indexY == SCREEN_TEXT_BUFFER_HEIGHT) clear_video_text_buffer(); 
                 screenTextInfo.indexY %= SCREEN_TEXT_BUFFER_HEIGHT;
 
                 screenTextInfo.indexX = 0;

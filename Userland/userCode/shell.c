@@ -22,7 +22,8 @@ ModuleDescriptor modules[] = {
     {"song", "plays a short tune while displaying graphics", song},
     {"calculator", "positive integer calculator", calculator},
     {"eliminator", "eliminator game", eliminator},
-    {"jump", "jumps to address given by user in decimal (1407583 causes invalid opcode >:) )", jump}
+    {"jump", "jumps to address given by user in decimal (1407583 causes invalid opcode >:) )", jump},
+    {"test_mm", "tests the memory manager", test_mm}
     };
 
 static int current_font_size = 1;

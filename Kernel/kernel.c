@@ -6,6 +6,11 @@
 #include <drivers/pitDriver.h>
 #include <shell_caller.h>
 
+#include <managers/memoryManager.h>
+
+#define MEMORY_MANAGER_MEM_SIZE 10000
+memoryManagerADT the_memory_manager = NULL;
+
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -51,6 +56,10 @@ int main()
 {	
 	initialize_pit(60);
 	load_idt();
+
+    char managed_memory[MEMORY_MANAGER_MEM_SIZE];
+    the_memory_manager = init_memory_manager(managed_memory, MEMORY_MANAGER_MEM_SIZE);
+
     set_font_size(1);
     clear_video_text_buffer();
     write_to_video_text_buffer("GRUPO 21\n", 9, 0x006fb5fb);

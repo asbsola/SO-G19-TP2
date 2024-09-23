@@ -16,6 +16,10 @@ global sys_beep
 global sys_delay
 global sys_print_registers
 global sys_clear_screen
+global sys_malloc
+global sys_free
+global sys_get_usable_memory_size
+global sys_get_free_memory_size
 
 %macro syscall 1
     push rbp
@@ -77,3 +81,15 @@ sys_print_registers:
 
 sys_clear_screen:
     syscall 15
+
+sys_malloc:
+    syscall 16
+
+sys_free:
+    syscall 17
+
+sys_get_usable_memory_size:
+    syscall 18
+
+sys_get_free_memory_size:
+    syscall 19

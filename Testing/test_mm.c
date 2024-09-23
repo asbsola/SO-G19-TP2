@@ -1,5 +1,5 @@
-#include "test_util.h"
-#include "./../Kernel/include/managers/memoryManager.h"
+#include <test_util.h>
+#include <managers/memoryManager.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -31,10 +31,11 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
     printf("Usable memory: %ld\n", max_memory);
 
     while (1) {
-        printf("\n\nAllocating memory...\n\n");
         rq = 0;
         total = 0;
         uint64_t free_memory = get_free_memory_size(mem_manager);
+
+        //printf("\n\nFree memory: %ld, Allocating memory...\n\n", free_memory);
 
         if(rq == MAX_BLOCKS) break;
         // Request as many blocks as we can
@@ -45,7 +46,7 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
             if (mm_rqs[rq].address) {
                 free_memory = get_free_memory_size(mem_manager);
                 total += mm_rqs[rq].size;
-                printf("Memoria allocada: %d - Memoria libre: %ld\n", mm_rqs[rq].size, free_memory);
+                //printf("Memoria allocada: %d - Memoria libre: %ld\n", mm_rqs[rq].size, free_memory);
                 rq++;
             }
         }

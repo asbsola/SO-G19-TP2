@@ -61,7 +61,7 @@ uint32_t get_video_buffer_bytes_per_pixel() {
 }
 
 void update_frame_buffer() {
-    memcpy(VBE_mode_info->framebuffer, video_buffer, get_video_buffer_width() * get_video_buffer_height() * get_video_buffer_bytes_per_pixel());
+    memcpy((void*)((uint64_t)VBE_mode_info->framebuffer), video_buffer, get_video_buffer_width() * get_video_buffer_height() * get_video_buffer_bytes_per_pixel());
 }
 
 void put_pixel(uint32_t hexColor, uint64_t x, uint64_t y) {

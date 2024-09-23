@@ -55,7 +55,7 @@ void puts_with_color(const char* s, uint32_t hexColor) {
     sys_write(hexColor, s, strlen(s));
 }
 
-char itoa_buff[ITOA_BUFF_MAX_SIZE];
+char itoa_buff[ITOA_BUFF_MAX_SIZE] = {0};
 char* itoa(uint64_t num, char* dest, uint32_t dest_max_len) {
     itoa_buff[0] = 0;
 
@@ -85,7 +85,7 @@ uint32_t get_fmt_num_args(const char* fmt) {
 }
 
 void printf(const char* fmt, ...) {
-    char printf_buff[PRINTF_PRINT_BUFF_MAX_SIZE];
+    char printf_buff[PRINTF_PRINT_BUFF_MAX_SIZE] = {0};
 
     va_list arg_list;
     uint32_t num_args = get_fmt_num_args(fmt);
@@ -146,7 +146,7 @@ uint32_t atoi(const char* s) {
 }
 
 void scanf(const char* fmt, void* ptr) {
-    char scan_buff[SCANF_BUFF_MAX_SIZE];
+    char scan_buff[SCANF_BUFF_MAX_SIZE] = {0};
 
     uint32_t len = sys_read(scan_buff, SCANF_BUFF_MAX_SIZE);
     scan_buff[len - 1] = '\0';

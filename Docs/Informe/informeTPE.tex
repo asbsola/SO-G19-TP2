@@ -1,8 +1,8 @@
 \documentclass{article}
-\title{\textbf{Trabajo Práctico Especial (TPE)} \\ [1ex]
-\large Instituto Tecnológico de Buenos Aires - Arquitectura de las computadoras (72.08) \\ [1ex]
-\large Grupo 21 }
-\date{4 de junio de 2024}
+\title{\textbf{Trabajo Práctico 2} \\ [1ex]
+\large Instituto Tecnológico de Buenos Aires - Sistemas Operativos (72.11) \\ [1ex]
+\large Grupo 19 }
+\date{23 de septiembre de 2024}
 \author{
 \textbf{Ignacio Searles}\\
 isearles@itba.edu.ar\\
@@ -12,13 +12,9 @@ isearles@itba.edu.ar\\
 abarthelemysola@itba.edu.ar\\
 64.502
 \and
-\textbf{Lautaro Paletta}\\
-lapaletta@itba.edu.ar\\
-64.449
-\and
-\textbf{Agustín Ronda}\\
-aronda@itba.edu.ar\\
-64.507
+\textbf{Santiago Bassi}\\
+sabassi@itba.edu.ar\\
+64.643
 }
 
 \usepackage{multicol}
@@ -38,7 +34,7 @@ aronda@itba.edu.ar\\
 
 \renewcommand{\figurename}{Figura}
 \renewcommand{\tablename}{Tabla}
-\renewcommand*\abstractname{Resumen}
+\renewcommand{\abstractname}{Resumen}
 
 \begin{document}
 \maketitle
@@ -49,132 +45,64 @@ El presente informe trata sobre el desarrollo de un kernel que administra los re
 
 \end {abstract}
 
-\section {Kernel}
+\section {Memory Manager}
 
-\subsection {Video driver}
+Ambos memory managers, al momento de su inicialización, reciben la cantidad de memoria de la que van a disponer. De esa memoria, consumen una parte para almacenar los datos necesarios para su funcionamiento.
 
-El trabajo se desarrolló en modo video.
+Para los testeos del memory manager, se decidio que cuando se compila fuera del kernel, el mismo corra infinitamente pues se puede terminar la ejecucion matando el proceso desde la shell. En cambio, cuando se compila y ejecutan los tests dentro del kernel, se decidió que el mismo corra una cantidad determinada de veces, pues en el sistema implementado no posee procesos por lo que no puede frenar la ejecucion del test.
 
-Además del buffer principal de pantalla, se dispuso de un buffer intermedio de pantalla. Este buffer sobreescribe el buffer principal de pantalla cuando se produce una interrupción timer tick. Todas las rutinas de video escriben a este buffer intermedio, en vez de escribir al buffer principal. Se tomó la decisión de usar este buffer intermedio para evitar efectos de "flickering" que se experimentaban.
+\subsection {Bitmap Memory Manager}
 
-Para el manejo de texto en la pantalla se decidió utilizar una matriz que almacena los caracteres en cada línea, junto con su color. Cuando se escribe texto a pantalla, el mismo es almacenado en está matriz, al almacenarlo en la matriz se manejan los salto de linea, tabulaciones y borrados. Se utiliza un puntero que apunta a la próxima posición en la matriz donde se debe escribir el texto. Luego de escribir el texto en la matriz se lo imprime en el buffer intermedio de pantalla, donde se maneja el scrolling del texto en la pantalla. La utilización de esta matriz es lo que permite tanto el scrolling del texto en pantalla, como el ajuste dinámico del tamaño del texto. Ambas operaciones requieren hacer un clear de la pantalla, que sin el buffer intermedio de pantalla generaba el efecto de "flickering".
+A continuation se detallan las instrucciones para compilar y ejecutar los test del bitmap memory manager:
 
-La utilización de tanto el buffer intermedio de pantalla, como la matriz de caracteres, implicó que tuviesemos que mover donde empieza el código en userpace para que el kernel tenga más espacio en memoria.
+\begin{enumerate}
 
-Para la impresión de caracterés se utilizó una tipografía en formato bitmap. Cada caractér es de 8x16 cuadrados. Para el ajuste del tamaño de los caracterés cambiamos el tamaño de cada cuadrado. Esto implica que podemos cambiar el tamaño del texto por múltiplos enteros. La tipografía utilizada se extrajo de \url{http://www.helenos.org/doc/refman/uspace-ia32/font-8x16_8c-source.html}.
+\item Compilacion y ejecucion de los test dentro del kernel:
 
-\subsection {Keyboard driver}
+\begin{enumerate}
+    \item En la raiz del proyecto ejecutar \textbf{make}.
+    \item Luego ejecutar \textbf{./run.sh}.
+    \item En la shell que se abre, ejecutar \textbf{test\_mm}.
+\end{enumerate}
 
-Para manejar el teclado se dispuso de una queue de teclas. Cuando se genera la interrupción de teclado (si se trata de un key press), se lo almacena en la queue. Luego mediante las diferentes rutinas de teclado, cuando se solicita teclas, la queue se va consumiendo.
+\item Compilacion y ejecucion de los test fuera del kernel:
 
-Se cuentan con rutinas para obtener tanto las teclas como scan code o su respectivo código ASCII. Para las funciones que obtienen el valor ASCII se tiene en cuenta el CAPS LOCK y el SHIFT.
+\begin{enumerate}
+    \item En la raiz del proyecto ejecutar \textbf{make bitmaptest}.
+    \item Luego, ejecutar \textbf{cd Testing}.
+    \item Por ultimo, ejecutar \textbf{./bitmapTest \textless memoryAmount\textgreater}. 
 
-\subsection {Sound driver}
+    Siendo memoryAmount la cantidad de memoria que se desea asignar.
+\end{enumerate}
 
-El driver de sonido ofrece como funcionalidad hacer sonar un pitido mediante el pc speaker con la frecuencia y duración deseada. Para producir el pitido se envía el valor resultante de dividir la frecuencia máxima por la deseada al puerto correspondiente al canal 2 del PIT, durante este proceso se desactivan las interrupciones.
+\end{enumerate}
 
-El pc speaker es habilitado y deshabilitado mediante el puerto 0x61 de entrada y salida. Entre estas ocurrencias se deja pasar el tiempo de duración con un método poveído por el driver del PIT.
+\subsection {Buddy Memory Manager}
 
-\subsection {PIT}
 
-Al controlador del PIT además de los métodos ofrecidos por la cátedra se le agregó:
+A continuation se detallan las instrucciones para compilar y ejecutar los test del buddy memory manager:
 
-Un método de inicialización con frecuencia de ticks como parámetro (con un máximo estipulado para no causar conflictos con la renderización).
+\begin{enumerate}
 
-Una llamada al método de refresco del buffer de pantalla cada cierta cantidad de ticks establecida.
+\item Compilacion y ejecucion de los test dentro del kernel:
 
-Dos métodos que detienen la ejecución por el tiempo pasado por parámetro, uno en ticks y el otro en milisegundos, utilizados en la syscall delay.
+\begin{enumerate}
+    \item En la raiz del proyecto ejecutar \textbf{make buddy}.
+    \item Luego ejecutar \textbf{./run.sh}.
+    \item En la shell que se abre, ejecutar \textbf{test\_mm}.
+    
+\end{enumerate}
 
-\subsection {IDT}
+\item Compilacion y ejecucion de los test fuera del kernel:
 
-Para el manejo de interrupciones y excepciones se crearon diversas entradas en la IDT. Para preservar el estado de los registros, se almacena los mismos en el stack.
+\begin{enumerate}
+    \item En la raiz del proyecto ejecutar \textbf{make buddytest}.
+    \item Luego, ejecutar \textbf{cd Testing}.
+    \item Por ultimo, ejecutar \textbf{./buddytest <memoryAmount>}.
 
-Debido a que varias de las interrupciones y excepciones requieren tener el estado de los registros al momento de que se dió la interrupción/excepción, se pasa como parametro a las funciones handler un puntero a struct que contiene el estado de los registros (se pasa la dirección al stack donde se almacenaron los registros para preservarlos).
+    Siendo memoryAmount la cantidad de memoria que se desea asignar.
+\end{enumerate}
 
-\subsubsection {Interrupciones de hardware}
-
-En cuanto a las interrupciones de hardware, se manejaron las interrupciones de timer tick y del teclado.
-
-Cuando se produce una interrupción de timer tick, se reemplaza el buffer principal de pantalla por el buffer intermedio. Y cuando se produce una interrupción de teclado, se agrega la tecla presionada a la queue (los key pressed).
-
-\subsubsection {Interrupciones de software/syscalls}
-
-Modelamos el manejo de syscalls a partir de la API de Linux de 64bit. En el caso de las interrupciones de software, no se preserva rax. Mediante este registro se pueden devolver datos al usuario.
-
-Los syscalls son la intefaz entre el userspace y el kernel. Los syscalls implementados se volcaron en la tabla \ref{table:syscalls}. En el manual de usuario se lista que parametros recibe en cada registro.
-
-\begin{center}
-\begin{tabular}{|c|c|l|}
-\hline
-\textbf{rax} & \textbf{Syscall} & \textbf{Descripción} \\ \hline
-0 & sys\_read & \begin{minipage}{80mm}lee caracteres en formato ASCII hasta llegar a un newline.\end{minipage} \\ \hline
-1 & sys\_write &  \begin{minipage}{80mm}imprime texto por pantalla (en la matriz de texto).\end{minipage} \\ \hline
-2 & sys\_put\_text &  \begin{minipage}{80mm}imprime texto por pantalla en una posición absoluta.\end{minipage} \\ \hline
-3 & sys\_set\_font\_size &  \begin{minipage}{80mm}cambia el tamaño de los caracteres.\end{minipage} \\ \hline
-4 & sys\_draw\_square &  \begin{minipage}{80mm}imprime un cuadrado.\end{minipage} \\ \hline
-5 & sys\_get\_screen\_width &  \begin{minipage}{80mm}devuelve el ancho de la pantalla.\end{minipage} \\ \hline
-6 & sys\_get\_screen\_height &  \begin{minipage}{80mm}devuelve el alto de la pantalla.\end{minipage} \\ \hline
-7 & sys\_get\_time &  \begin{minipage}{80mm}devulve la hora actual en formato "hh:mm:ss"\end{minipage} \\ \hline
-8 & sys\_get\_key\_pressed &  \begin{minipage}{80mm}obtiene el scan code de la última tecla presionada o 0 (si no hay teclas en la queue).\end{minipage} \\ \hline
-9 & sys\_get\_character\_pressed &  \begin{minipage}{80mm}obtiene el código ASCII de la última tecla presionada o 0 (si no hay teclas en la queue).\end{minipage} \\ \hline
-10 & sys\_clear\_text\_buffer &  \begin{minipage}{80mm}limpia la matriz de caracteres.\end{minipage} \\ \hline
-11 & sys\_get\_cpu\_vendor &  \begin{minipage}{80mm}obtiene el cpu vendor. \end{minipage} \\ \hline
-12 & sys\_beep &  \begin{minipage}{80mm}emite un ruido a cierta frecuencia usando una onda cuadrada.\end{minipage} \\ \hline
-13 & sys\_delay &  \begin{minipage}{80mm}detiene la ejecución por cierta cantidad de tiempo.\end{minipage} \\ \hline
-14 & sys\_print\_registers &  \begin{minipage}{80mm}imprime los registros capturados del sistema.\end{minipage} \\ \hline
-15 & sys\_clear\_screen &  \begin{minipage}{80mm}limpia el buffer de video.\end{minipage} \\ \hline
-\end{tabular}
-\captionof{table}{syscalls implementadas para el llamado de funciones de kernel desde el userspace}
-\label{table:syscalls}
-\end{center}
-
-\subsubsection {Excepciones}
-
-Cuando se produce una excepción, se imprime la información relacionada a la excepción. Se imprime el estado de los registros al momento de efectuarse la excepción, y luego se vuelve a ejecutar la Shell.
-
-Se capturaron las siguientes excepciones: división por cero y invalid opcode.
-
-\subsection {Ejecución de la Shell desde el Kernel}
-
-Para ejecutar la shell desde el Kernel, se decidió utilizar la instrucción iretq con el stack configurado de la siguiente manera:
-
-\begin{center}
-\begin{tabular}{|c|}
-\hline
-ret address = SHELL\_CODE\_ADDRESS (dirección del comienzo del código de la shell) \\ \hline
-Code Segment = 0x8 \\ \hline
-RFLAGS = 0x202 \\ \hline
-RSP = shell\_start\_rsp \\ \hline
-Stack Segment = 0x0 \\ \hline
-\end{tabular}
-\end{center}
-donde shell\_start\_rsp es el valor de rsp en la primera invocación a la shell. Ejecutar la shell de esta manera permite que los stack frame no se apilen pues, en caso de reiniciar la shell, RSP se resetea. Y además, permite setear los flags de Userspace con los permisos adecuados.
-
-\section {Userspace}
-
-\subsection {libc}
-
-A partir de los syscalls se implementó adaptadores a las syscalls para que puedan ser llamadas desde C. A partir de estos adaptadores se implementaron varias funciones similares a las de la librería estandar de C.
-
-Para el manejo de strings se implementó: strcmp, strlen, strcpy, itoa y atoi.
-Para el manejo de IO se implementó: putchar, puts, printf, getchar y scanf (con un parametro de formato).
-
-\subsection {shell}
-
-A partir de las funciones estandar implementadas, se creó una shell. 
-
-Para manejar los módulos de la shell creamos un tipo de estructura que contiene el nombre del módulo, su descripción (usado por el módulo help) y un puntero a la función correspondiente al módulo. Estas estructuras son almacenadas en un array con los módulos disponibles.
-
-\subsection {registers}
-
-Cuando se produce una interrupción de teclado, se checkea si se presiono la tecla ESCAPE. En caso de que se haya presionado, se guarda los registros (el handler de teclado recibe un struct de registros) en un struct.
-
-Esos registros capturados pueden ser impresos por pantalla, desde user space, mediante una syscall.
-
-Hay que tener en cuenta que la mayoría del tiempo, el procesador está ejecutando código del kernel space, pues la rutinas de video y manejo de teclado ocupan una gran parte del tiempo de ejecución. Por ello, el rip suele estar en una posición de memoria correspondiente al kernel.
-
-\subsection {eliminator}
-
-Mediante las syscalls empleadas, se implemento el juego eliminator. El mismo se puede jugar de manera individual o con un contrincante.
+\end{enumerate}
 
 \end{document}

@@ -41,36 +41,38 @@ sabassi@itba.edu.ar\\
 
 \begin {abstract}
 
-El presente informe trata sobre el desarrollo de un kernel que administra los recursos de hardware de una computadora y que tiene una API para interactuar con el espacio de usuario. En el espacio de usuario se desarrolló un shell que permite ejecutar diferentes módulos que tienen el objetivo de mostrar el funcionamiento del sistema.
+El presente informe trata sobre el desarrollo de un kernel que administra los recursos de hardware de una computadora y que tiene una API para interactuar con el espacio de usuario. En el espacio de usuario se desarrolló un shell que permite ejecutar diferentes módulos cuyo objetivo es mostrar el funcionamiento del sistema.
 
 \end {abstract}
 
 \section {Memory Manager}
 
-Ambos memory managers, al momento de su inicialización, reciben la cantidad de memoria de la que van a disponer. De esa memoria, consumen una parte para almacenar los datos necesarios para su funcionamiento.
+Ambos memory managers, al momento de su inicialización, reciben la cantidad de memoria que van a administrar. De esa memoria, consumen una parte para almacenar los datos necesarios para su funcionamiento.
 
-Para los testeos del memory manager, se decidio que cuando se compila fuera del kernel, el mismo corra infinitamente pues se puede terminar la ejecucion matando el proceso desde la shell. En cambio, cuando se compila y ejecutan los tests dentro del kernel, se decidió que el mismo corra una cantidad determinada de veces, pues en el sistema implementado no posee procesos por lo que no puede frenar la ejecucion del test.
+Para los testeos del memory manager, se decidió que cuando se compila fuera del kernel, este corra indefinidamente, ya que se puede terminar la ejecución matando el proceso desde la shell. En cambio, cuando se compilan y ejecutan los tests dentro del kernel, se decidió que corran una cantidad determinada de veces, dado que el sistema implementado no posee procesos y no es posible frenar la ejecución del test.
 
 \subsection {Bitmap Memory Manager}
 
-A continuation se detallan las instrucciones para compilar y ejecutar los test del bitmap memory manager:
+Para el bitmap, se decidió usar dos bits para representar cada bloque de memoria, lo que permite utilizar tres estados (FREE, USED, START). A cada bloque se le asignó un tamaño definido por la macro BLOCK\_SIZE.
+
+A continuación, se detallan las instrucciones para compilar y ejecutar los tests del bitmap memory manager:
 
 \begin{enumerate}
 
-\item Compilacion y ejecucion de los test dentro del kernel:
+\item Compilación y ejecución de los tests dentro del kernel:
 
 \begin{enumerate}
-    \item En la raiz del proyecto ejecutar \textbf{make}.
-    \item Luego ejecutar \textbf{./run.sh}.
+    \item En la raíz del proyecto, ejecutar \textbf{make}.
+    \item Luego, ejecutar \textbf{./run.sh}.
     \item En la shell que se abre, ejecutar \textbf{test\_mm}.
 \end{enumerate}
 
-\item Compilacion y ejecucion de los test fuera del kernel:
+\item Compilación y ejecución de los tests fuera del kernel:
 
 \begin{enumerate}
-    \item En la raiz del proyecto ejecutar \textbf{make bitmaptest}.
+    \item En la raíz del proyecto, ejecutar \textbf{make bitmaptest}.
     \item Luego, ejecutar \textbf{cd Testing}.
-    \item Por ultimo, ejecutar \textbf{./bitmapTest \textless memoryAmount\textgreater}. 
+    \item Por último, ejecutar \textbf{./bitmapTest \textless memoryAmount\textgreater}. 
 
     Siendo memoryAmount la cantidad de memoria que se desea asignar.
 \end{enumerate}
@@ -79,26 +81,26 @@ A continuation se detallan las instrucciones para compilar y ejecutar los test d
 
 \subsection {Buddy Memory Manager}
 
+Para el buddy, se decidió almacenar la información en un árbol, donde cada nodo almacena uno de los siguientes estados: FREE, SPLIT o USED. Al no tener memoria dinámica para generar el árbol, se decidió almacenarlo en un bloque de memoria contigua, disponiendo sus elementos en orden preorder.
 
-A continuation se detallan las instrucciones para compilar y ejecutar los test del buddy memory manager:
-
-\begin{enumerate}
-
-\item Compilacion y ejecucion de los test dentro del kernel:
+A continuación, se detallan las instrucciones para compilar y ejecutar los tests del buddy memory manager:
 
 \begin{enumerate}
-    \item En la raiz del proyecto ejecutar \textbf{make buddy}.
-    \item Luego ejecutar \textbf{./run.sh}.
+
+\item Compilación y ejecución de los tests dentro del kernel:
+
+\begin{enumerate}
+    \item En la raíz del proyecto, ejecutar \textbf{make buddy}.
+    \item Luego, ejecutar \textbf{./run.sh}.
     \item En la shell que se abre, ejecutar \textbf{test\_mm}.
-    
 \end{enumerate}
 
-\item Compilacion y ejecucion de los test fuera del kernel:
+\item Compilación y ejecución de los tests fuera del kernel:
 
 \begin{enumerate}
-    \item En la raiz del proyecto ejecutar \textbf{make buddytest}.
+    \item En la raíz del proyecto, ejecutar \textbf{make buddytest}.
     \item Luego, ejecutar \textbf{cd Testing}.
-    \item Por ultimo, ejecutar \textbf{./buddytest <memoryAmount>}.
+    \item Por último, ejecutar \textbf{./buddytest \textless memoryAmount\textgreater}.
 
     Siendo memoryAmount la cantidad de memoria que se desea asignar.
 \end{enumerate}

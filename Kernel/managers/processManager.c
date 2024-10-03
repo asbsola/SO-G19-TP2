@@ -56,6 +56,7 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint64
     process_pcb->stack = stack;
     process_pcb->parent_pid = parent_pid;
     process_pcb->status = READY;
+    process_pcb->priority = LOW;
     process_pcb->rip = (uint64_t)start_wrapper;
 
     struct startFrame* start_frame = (startFrame*)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame));

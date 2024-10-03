@@ -8,7 +8,8 @@
 
 #include <managers/memoryManager.h>
 
-#define MEMORY_MANAGER_MEM_SIZE 10000
+#define MEMORY_MANAGER_MEM_SIZE 200000
+static char managed_memory[MEMORY_MANAGER_MEM_SIZE];
 memoryManagerADT the_memory_manager = NULL;
 
 extern uint8_t text;
@@ -19,6 +20,7 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
+static const uint64_t StackPageCount = 64; // Stack Size = PageSize * StackPageCount
 
 typedef int (*EntryPoint)();
 
@@ -33,8 +35,8 @@ void * getStackBase()
 {
 	return (void*)(
 		(uint64_t)&endOfKernel
-		+ PageSize * 8				//The size of the stack itself, 32KiB
-		- sizeof(uint64_t)			//Begin at the top of the stack
+		+ PageSize * StackPageCount
+		- sizeof(uint64_t)		
 	);
 }
 
@@ -57,7 +59,6 @@ int main()
 	initialize_pit(60);
 	load_idt();
 
-    char managed_memory[MEMORY_MANAGER_MEM_SIZE];
     the_memory_manager = init_memory_manager(managed_memory, MEMORY_MANAGER_MEM_SIZE);
 
     set_font_size(1);

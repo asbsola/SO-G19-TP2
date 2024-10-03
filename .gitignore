@@ -1,6 +1,7 @@
 .gitignore
 .bash_history
 .vscode
+compile_flags.txt
 
 compile.sh
 run.sh

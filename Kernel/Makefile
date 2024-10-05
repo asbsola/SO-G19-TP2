@@ -2,9 +2,10 @@ include Makefile.inc
 
 KERNEL=kernel.bin
 
-SOURCE_DIRS=. drivers interruptHandlers
+SOURCE_DIRS=. drivers interruptHandlers managers
 SOURCES=$(wildcard $(addsuffix /*.c, $(SOURCE_DIRS)))
 SOURCES_ASM=$(wildcard asm/*.asm)
+SOURCES := $(filter-out managers/buddyMemoryManager.c managers/bitmapMemoryManager.c, $(SOURCES))
 
 OBJECTS=$(SOURCES:.c=.o)
 OBJECTS_ASM=$(SOURCES_ASM:.asm=.o)
@@ -36,4 +37,3 @@ clean:
 	rm -rf asm/*.o drivers/*.o interruptHandlers/*.o managers/*.o *.o *.bin
 
 .PHONY: all clean buddy
-

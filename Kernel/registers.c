@@ -25,7 +25,8 @@ void print_stored_registers() {
 void print_registers(const registers64_t *registers, uint32_t color) {
 	print_register("cs:     ", 8, registers->cs, color);
 	print_register("rflags: ", 8, registers->rflags, color);
-	print_register("rsp:    ", 8, registers->ss_rsp, color);
+	print_register("ss:     ", 8, registers->ss, color);
+	print_register("rsp:    ", 8, registers->rsp, color);
 	print_register("rbp:    ", 8, registers->rbp, color);
 	print_register("rip:    ", 8, registers->rip, color);
 	print_register("rax:    ", 8, registers->rax, color);

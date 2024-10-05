@@ -5,7 +5,6 @@
 static uint8_t show_initial_info = 1;
 
 int main() {
-
     if (show_initial_info) {
         puts_with_color("[SYSTEM INFO]\n\n", 0x006fb6fb);
         info();

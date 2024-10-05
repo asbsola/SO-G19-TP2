@@ -23,7 +23,8 @@ typedef struct
     uint64_t rip;
     uint64_t cs;
     uint64_t rflags;
-    uint64_t ss_rsp;
+    uint64_t rsp;
+    uint64_t ss;
 } registers64_t;
 
 void save_registers(const registers64_t *registers);

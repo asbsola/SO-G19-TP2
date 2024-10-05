@@ -17,3 +17,5 @@ run.sh
 
 #Object files
 *.o
+
+.cache

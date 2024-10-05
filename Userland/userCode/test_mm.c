@@ -37,7 +37,7 @@ uint64_t test_mm() {
             if (mm_rqs[rq].address) {
                 free_memory = sys_get_free_memory_size();
                 total += mm_rqs[rq].size;
-                printf("Allocated memory: %d - Free memory: %ld\n", mm_rqs[rq].size, free_memory);
+                printf("Allocated memory: %d - Free memory: %ld, Ptr: %ld\n", mm_rqs[rq].size, free_memory, (uint64_t)mm_rqs[rq].address);
                 rq++;
             }
         }

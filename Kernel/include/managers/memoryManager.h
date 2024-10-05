@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#define ALIGNMENT 8
+
 typedef struct memoryManagerCDT* memoryManagerADT;
 
 memoryManagerADT init_memory_manager(void* memory, uint64_t memory_size);

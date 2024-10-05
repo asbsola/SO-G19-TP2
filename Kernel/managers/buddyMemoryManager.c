@@ -41,7 +41,7 @@ memoryManagerADT init_memory_manager(void *memory, uint64_t memory_size) {
 
     memoryManagerADT mem_manager = memory;
     mem_manager->tree_memory_start = memory + sizeof(struct memoryManagerCDT);
-    mem_manager->memory_start = mem_manager->tree_memory_start + tree_max_size;
+    mem_manager->memory_start = (void *)(((uint64_t)(mem_manager->tree_memory_start + tree_max_size) / ALIGNMENT + 1) * ALIGNMENT);
     mem_manager->memory_size = usable_memory;
     mem_manager->free_memory_size = usable_memory;
     mem_manager->tree_max_height = tree_max_height;

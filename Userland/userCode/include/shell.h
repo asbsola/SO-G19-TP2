@@ -1,6 +1,13 @@
 #ifndef __SHELL__
 #define __SHELL__
 
+#include <syscall_adapters.h>
+#include <std.h>
+#include <cucaracha.h>
+#include <eliminator.h>
+#include <lib.h>
+
+
 #define MAX_SHELL_INPUT 1024
 
 void help();

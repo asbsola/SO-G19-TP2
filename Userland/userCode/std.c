@@ -1,6 +1,4 @@
 #include <std.h>
-#include <syscall_adapters.h>
-#include <stdarg.h>
 
 uint32_t strcmp(const char* s1, const char* s2) {
     uint32_t i;

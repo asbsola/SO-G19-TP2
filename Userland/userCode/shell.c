@@ -1,9 +1,4 @@
-#include <syscall_adapters.h>
 #include <shell.h>
-#include <std.h>
-#include <cucaracha.h>
-#include <eliminator.h>
-#include <lib.h>
 
 typedef struct
 {
@@ -179,19 +174,20 @@ void mem()
 
 void ps()
 {
-    process_info_t processes[10];
-    sys_ps(processes, 10);
-    for (int i = 0; i < 10; i++)
+    process_info_t processes[] = (process_info_t *)sys_ps();
+    for (int i = 0; processes[i].pid != -1; i++)
     {
         if (processes[i].pid != 0)
         {
             printf("Process %d\n", i);
-            printf("\tName: %s\n", processes[i].name);
             printf("\tPID: %d\n", processes[i].pid);
             printf("\tParent PID: %d\n", processes[i].parent_pid);
             printf("\tPriority: %d\n", processes[i].priority);
             printf("\tStatus: %d\n", processes[i].status);
-            printf("\tForeground: %d\n", processes[i].is_foreground);
+            printf("\tForeground: %d\n", processes[i].is_in_foreground);
+            printf("\tStack pointer: %d\n", processes[i].stack_pointer);
+            printf("\tBase pointer: %d\n", processes[i].base_pointer);
+
         }
     }
 }

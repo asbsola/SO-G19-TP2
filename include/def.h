@@ -1,5 +1,4 @@
 #ifndef  __DEF_H
-
 #define __DEF_H
 
 #include <stdint.h>
@@ -21,13 +20,12 @@ typedef enum
 
 typedef struct
 {
-    char name[256];
     pid_t pid;
     pid_t parent_pid;
     processPriority priority;
     void *stack_pointer;
     void *base_pointer;
-    uint8_t is_foreground;
+    uint8_t is_in_foreground;
     processStatus status;
 } process_info_t;
 

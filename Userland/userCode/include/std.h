@@ -2,6 +2,10 @@
 #define __STD__
 
 #include <stdint.h>
+#include <syscall_adapters.h>
+#include <stdarg.h>
+
+
 
 uint32_t strlen(const char* s);
 void strcat(char* dest, const char* str1, const char * str2);
@@ -20,6 +24,7 @@ void printf(const char* fmt, ...);
 
 char getchar();
 uint32_t atoi(const char* s);
+
 #define SCANF_BUFF_MAX_SIZE 1024
 void scanf(const char* fmt, void* ptr);
 

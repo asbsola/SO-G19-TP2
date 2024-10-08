@@ -13,7 +13,7 @@ $(MODULE): $(OBJECTS) $(OBJECTS_ASM)
 	$(GCC) $(GCCFLAGS) -T userCode.ld _loader.c $(OBJECTS) $(OBJECTS_ASM) -o ../$(MODULE)
 
 %.o: %.c
-	$(GCC) $(GCCFLAGS) -I./include -c $< -o $@
+	$(GCC) $(GCCFLAGS) -I./include -I./../../include -c $< -o $@
 
 %.o : %.asm
 	$(ASM) $(ASMFLAGS) $< -o $@

@@ -12,6 +12,7 @@
 #include <managers/processManager.h>
 
 extern memoryManagerADT the_memory_manager;
+extern processManagerADT the_process_manager;
 
 uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
 {
@@ -154,7 +155,7 @@ uint64_t sys_get_total_memory_size(uint64_t rdi, uint64_t rsi, uint64_t rdx, uin
 
 uint64_t sys_ps(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
 {
-    return (uint64_t)get_pcbs(NULL);
+    return get_ps_data(the_process_manager, the_memory_manager);
 }
 
 uint64_t (*syscalls[])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t) = {

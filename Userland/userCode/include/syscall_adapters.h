@@ -28,6 +28,6 @@ void sys_free(void *ptr);
 uint64_t sys_get_usable_memory_size();
 uint64_t sys_get_free_memory_size();
 uint64_t sys_get_total_memory_size();
-void sys_ps(process_info_t *processes, uint64_t size);
+void * sys_ps();
 
 #endif

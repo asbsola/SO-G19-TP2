@@ -1,6 +1,6 @@
 #include <idle.h>
-#include <videoDriver.h>
-#include <interrupts.h>
+#include <drivers/videoDriver.h>
+#include <interruptHandlers/interrupts.h>
 
 uint64_t idle(char** argv, int argc){
     while(1){

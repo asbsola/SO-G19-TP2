@@ -46,7 +46,7 @@ processManagerADT init_process_manager(memoryManagerADT memory_manager) {
 
 pid_t get_lowest_unused_pid(processManagerADT process_manager){
     pid_t pid;
-    for (pid = INIT_PROCESS_PID + 1; process_manager->processes[pid] != NULL && pid < MAX_PROCESSES; pid++);
+    for (pid = IDLE_PROCESS_PID; process_manager->processes[pid] != NULL && pid < MAX_PROCESSES; pid++);
     return pid;
 }
 
@@ -99,9 +99,9 @@ int exit_process(processManagerADT process_manager, pid_t pid, int64_t status) {
 
     for (pid_t i = 0; i < MAX_PROCESSES; i++)
         if (process_manager->processes[i] != NULL && process_manager->processes[i]->parent_pid == pid)
-            process_manager->processes[i]->parent_pid = INIT_PROCESS_PID;
+            process_manager->processes[i]->parent_pid = IDLE_PROCESS_PID;
 
-    if (process_manager->processes[pid]->parent_pid == INIT_PROCESS_PID) {
+    if (process_manager->processes[pid]->parent_pid == IDLE_PROCESS_PID) {
         mem_free(process_manager->memory_manager, process_manager->processes[pid]);
         process_manager->processes[pid] = NULL;
         process_manager->num_processes -= 1;

@@ -3,13 +3,18 @@
 #include <interruptHandlers/syscall.h>
 #include <stdint.h>
 
-static void (*interrupts[])(const registers64_t *) = {timer_handler, keyboard_handler};
+extern schedulerADT the_scheduler;
 
-void irqDispatcher(uint64_t irq, const registers64_t *registers) {
+static void (*interrupts[])(const registers64_t *) = {keyboard_handler};
+
+uint64_t* irqDispatcher(uint64_t irq, const registers64_t *registers) {
     if (irq >= sizeof(interrupts) / sizeof(interrupts[0]))
         return;
+    if(irq == 0)
+        return timer_handler(the_scheduler, registers);
 
     interrupts[irq](registers);
+    return registers;
 }
 
 uint64_t softIntDispatcher(const registers64_t *registers){

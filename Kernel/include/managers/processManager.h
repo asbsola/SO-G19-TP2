@@ -6,7 +6,7 @@
 
 #define PROCESS_STACK_SIZE 4096
 #define MAX_PROCESSES 15 
-#define INIT_PROCESS_PID 0
+#define IDLE_PROCESS_PID 0
 
 typedef int64_t pid_t;
 typedef enum { RUNNING, READY, BLOCKED, EXITED } processStatus;

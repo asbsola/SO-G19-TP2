@@ -21,5 +21,5 @@ section .data
     shell_start_rsp dq 0
 
 section .rodata
-    SHELL_CODE_ADDRESS dq 0xA00000
-    SHELL_DATA_ADDRESS dq 0xB00000
+    SHELL_CODE_ADDRESS dq 0xE00000
+    SHELL_DATA_ADDRESS dq 0xF00000

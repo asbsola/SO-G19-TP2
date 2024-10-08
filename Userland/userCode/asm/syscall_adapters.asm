@@ -21,6 +21,7 @@ global sys_free
 global sys_get_usable_memory_size
 global sys_get_free_memory_size
 global sys_get_total_memory_size
+global sys_ps
 
 %macro syscall 1
     push rbp
@@ -94,5 +95,9 @@ sys_get_usable_memory_size:
 
 sys_get_free_memory_size:
     syscall 19
+
 sys_get_total_memory_size:
     syscall 20
+
+sys_ps:
+    syscall 21

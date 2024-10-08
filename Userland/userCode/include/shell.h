@@ -16,6 +16,7 @@ void eliminator();
 void jump();
 void test_mm();
 void mem();
+void ps();
 
 void run_shell();
 

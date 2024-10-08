@@ -2,6 +2,10 @@
 #define __syscall_adapters__
 
 #include <stdint.h>
+#include <def.h>
+
+
+
 
 uint64_t sys_read(const char *buff, uint64_t len);
 uint64_t sys_write(uint32_t hexColor, const char *buff, uint64_t len);
@@ -24,5 +28,6 @@ void sys_free(void *ptr);
 uint64_t sys_get_usable_memory_size();
 uint64_t sys_get_free_memory_size();
 uint64_t sys_get_total_memory_size();
+void sys_ps(process_info_t *processes, uint64_t size);
 
 #endif

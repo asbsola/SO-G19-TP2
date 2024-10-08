@@ -25,7 +25,8 @@ ModuleDescriptor modules[] = {
     {"eliminator", "eliminator game", eliminator},
     {"jump", "jumps to address given by user in decimal (1407583 causes invalid opcode >:) )", jump},
     {"test_mm", "tests the memory manager", test_mm},
-    {"mem", "displays memory status", mem}};
+    {"mem", "displays memory status", mem},
+    {"ps", "displays information about processes", ps}};
 
 static int current_font_size = 1;
 
@@ -174,4 +175,23 @@ void mem()
     printf("Usable memory:   %d\n", sys_get_usable_memory_size());
     printf("Free memory:     %d\n", sys_get_free_memory_size());
     printf("Occupied memory: %d\n", sys_get_usable_memory_size() - sys_get_free_memory_size());
+}
+
+void ps()
+{
+    process_info_t processes[10];
+    sys_ps(processes, 10);
+    for (int i = 0; i < 10; i++)
+    {
+        if (processes[i].pid != 0)
+        {
+            printf("Process %d\n", i);
+            printf("\tName: %s\n", processes[i].name);
+            printf("\tPID: %d\n", processes[i].pid);
+            printf("\tParent PID: %d\n", processes[i].parent_pid);
+            printf("\tPriority: %d\n", processes[i].priority);
+            printf("\tStatus: %d\n", processes[i].status);
+            printf("\tForeground: %d\n", processes[i].is_foreground);
+        }
+    }
 }

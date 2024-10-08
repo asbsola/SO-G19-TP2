@@ -9,6 +9,7 @@
 #include <interruptHandlers/interrupts.h>
 #include <lib.h>
 #include <managers/memoryManager.h>
+#include <managers/processManager.h>
 
 extern memoryManagerADT the_memory_manager;
 
@@ -151,13 +152,18 @@ uint64_t sys_get_total_memory_size(uint64_t rdi, uint64_t rsi, uint64_t rdx, uin
     return get_total_memory_size(the_memory_manager);
 }
 
+uint64_t sys_ps(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
+{
+    return (uint64_t)get_pcbs(NULL);
+}
+
 uint64_t (*syscalls[])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t) = {
     sys_read, sys_write, sys_put_text,
     sys_set_font_size, sys_draw_square, sys_get_screen_width,
     sys_get_screen_height, sys_get_time, sys_get_key_pressed, sys_get_character_pressed,
     sys_clear_text_buffer, sys_get_cpu_vendor, sys_beep, sys_delay,
     sys_print_registers, sys_clear_screen,
-    sys_malloc, sys_free, sys_get_usable_memory_size, sys_get_free_memory_size, sys_get_total_memory_size};
+    sys_malloc, sys_free, sys_get_usable_memory_size, sys_get_free_memory_size, sys_get_total_memory_size, sys_ps};
 
 uint64_t syscall_handler(const registers64_t *registers)
 {

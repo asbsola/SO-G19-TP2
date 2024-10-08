@@ -174,7 +174,7 @@ void mem()
 
 void ps()
 {
-    process_info_t processes[] = (process_info_t *)sys_ps();
+    process_info_t * processes = (process_info_t *)sys_ps();
     for (int i = 0; processes[i].pid != -1; i++)
     {
         if (processes[i].pid != 0)

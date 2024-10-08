@@ -17,13 +17,14 @@ void initialize_pit(uint32_t frequency){
     outb(0x40, (uint8_t)((divisor >> 8) & 0xFF));
 }
 
-void timer_handler(const registers64_t * registers) {
+uint64_t timer_handler(schedulerADT scheduler, const registers64_t * registers) {
 	ticks++;
-
     if (ticks - ticks_at_last_update >= UPDATE_SCREEN_RATE) {
         update_frame_buffer();
         ticks_at_last_update = ticks;
     }
+
+    return context_switch(scheduler,(uint64_t)registers);
 }
 
 void delay(uint64_t milis){

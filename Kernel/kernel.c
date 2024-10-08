@@ -69,9 +69,7 @@ int main()
     the_memory_manager = init_memory_manager(managed_memory, MEMORY_MANAGER_MEM_SIZE);
 	the_process_manager = init_process_manager(the_memory_manager);
 	the_scheduler = init_scheduler(the_process_manager, the_memory_manager);
-    write_to_video_text_buffer("helooooo\n", 18, HEX_GRAY);
-	update_frame_buffer();
-	
+    
     _sti();
 	
     set_font_size(1);

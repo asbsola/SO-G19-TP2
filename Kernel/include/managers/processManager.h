@@ -19,7 +19,6 @@ struct processControlBlockCDT {
     processStatus status;
     char* stack;
     uint64_t rsp;
-    uint64_t rip;
     uint64_t ret;
 } processControlBlockCDT;
 typedef struct processControlBlockCDT* processControlBlockADT;

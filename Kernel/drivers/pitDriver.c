@@ -24,7 +24,7 @@ uint64_t timer_handler(schedulerADT scheduler, const registers64_t * registers) 
         ticks_at_last_update = ticks;
     }
 
-    return context_switch(scheduler,(uint64_t)registers);
+    return context_switch(scheduler, (uint64_t)registers);
 }
 
 void delay(uint64_t milis){

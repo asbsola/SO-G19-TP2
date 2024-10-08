@@ -5,11 +5,9 @@
 #include <managers/memoryManager.h>
 #include <def.h>
 
-
 #define PROCESS_STACK_SIZE 4096
 #define MAX_PROCESSES 15 
 #define IDLE_PROCESS_PID 0
-
 
 typedef struct processControlBlockCDT
 {

@@ -72,20 +72,20 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_
     process_pcb->priority = LOW;
     process_pcb->is_in_foreground = is_in_foreground;
 
-    struct startFrame *start_frame = (startFrame *)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame) - sizeof(uint64_t));
+    struct startFrame *start_frame = (startFrame *)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame));
     start_frame->process_manager = process_manager;
     start_frame->process_start = process_start;
     start_frame->pid = pid;
     start_frame->argv = argv;
 
-    registers64_t* call_frame = (registers64_t*)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame) - sizeof(registers64_t)- sizeof(uint64_t));   
+    registers64_t* call_frame = (registers64_t*)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame) - sizeof(registers64_t)); 
     call_frame->rip = (uint64_t)start_wrapper;
     call_frame->rsp = (uint64_t)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame));
     call_frame->ss = 0x0;
     call_frame->cs = 0x8;
     call_frame->rflags = 0x202;
 
-    process_pcb->rsp = (uint64_t)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame) - sizeof(registers64_t) - sizeof(uint64_t));
+    process_pcb->rsp = (uint64_t)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame) - sizeof(registers64_t));
 
     process_manager->processes[pid] = process_pcb;
     process_manager->num_processes++;
@@ -142,7 +142,7 @@ int kill_process(processManagerADT process_manager, pid_t pid) {
 
     for (pid_t pid_i = 0; pid_i < MAX_PROCESSES; pid_i++)
         if (process_manager->processes[pid_i] != NULL && process_manager->processes[pid_i]->parent_pid == pid)
-            kill_process(process_manager, pid_i);   //ACA NO HAY QUE MATAR, HAY QUE DECIR QUE EL PADRE ES INIT
+            kill_process(process_manager, pid_i);
 
     mem_free(process_manager->memory_manager, process_manager->processes[pid]->stack);
     mem_free(process_manager->memory_manager, process_manager->processes[pid]);

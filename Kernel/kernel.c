@@ -77,11 +77,11 @@ int main()
     write_to_video_text_buffer("GRUPO 21\n", 9, 0x006fb5fb);
     write_to_video_text_buffer("Kernel initialized\nRunning user code...\n\n", 41, HEX_GRAY);
 
-    start_shell();
+    //start_shell();
 
     write_to_video_text_buffer("Back in kernel...\n", 18, HEX_GRAY);
 
-	delay(1000);
+	delay(2000);
 
 	return 0;
 }

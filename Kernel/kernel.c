@@ -69,6 +69,9 @@ int main()
     the_memory_manager = init_memory_manager(managed_memory, MEMORY_MANAGER_MEM_SIZE);
 	the_process_manager = init_process_manager(the_memory_manager);
 	the_scheduler = init_scheduler(the_process_manager, the_memory_manager);
+    char* argv[] = {NULL};
+    create_process(the_process_manager, 0, 0, idle2, argv);
+    create_process(the_process_manager, 0, 0, idle3, argv);
     
     set_font_size(1);
     clear_video_text_buffer();

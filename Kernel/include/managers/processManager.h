@@ -5,6 +5,7 @@
 #include <managers/memoryManager.h>
 #include <managers/scheduler.h>
 #include <managers/processControlBlock.h>
+#include <interruptHandlers/interrupts.h>
 #include <def.h>
 
 #define PROCESS_STACK_SIZE 4096

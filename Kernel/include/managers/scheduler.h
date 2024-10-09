@@ -9,7 +9,11 @@
 typedef struct schedulerCDT *schedulerADT;
 
 schedulerADT init_scheduler(memoryManagerADT memory_manager);
+
 int schedule_process(schedulerADT scheduler, processControlBlockADT process);
+int deschedule_process(schedulerADT scheduler, processControlBlockADT process);
+pid_t get_current_process(schedulerADT scheduler);
+
 uint64_t context_switch(schedulerADT scheduler, uint64_t rsp);
 
 #endif

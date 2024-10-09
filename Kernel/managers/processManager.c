@@ -101,7 +101,7 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_
 
 int exit_process(processManagerADT process_manager, pid_t pid, int64_t status)
 {
-    if (pid >= MAX_PROCESSES || process_manager->processes[pid] == NULL)
+    if (pid == IDLE_PROCESS_PID || pid >= MAX_PROCESSES || process_manager->processes[pid] == NULL)
         return -1;
 
     process_manager->processes[pid]->status = EXITED;
@@ -112,13 +112,10 @@ int exit_process(processManagerADT process_manager, pid_t pid, int64_t status)
         if (process_manager->processes[i] != NULL && process_manager->processes[i]->parent_pid == pid)
             process_manager->processes[i]->parent_pid = IDLE_PROCESS_PID;
 
-    if (process_manager->processes[pid]->parent_pid == IDLE_PROCESS_PID) {
-        mem_free(process_manager->memory_manager, process_manager->processes[pid]);
-        process_manager->processes[pid] = NULL;
-        process_manager->num_processes -= 1;
-    }
-
-    go_to_scheduler();
+    if(get_current_process(process_manager->scheduler) == pid)
+        go_to_scheduler();
+    else
+        deschedule_process(process_manager->scheduler, process_manager->processes[pid]);
     return 0;
 }
 
@@ -129,7 +126,10 @@ int block_process(processManagerADT process_manager, pid_t pid)
 
     process_manager->processes[pid]->status = BLOCKED;
 
-    go_to_scheduler();
+    if(get_current_process(process_manager->scheduler) == pid)
+        go_to_scheduler();
+    else
+        deschedule_process(process_manager->scheduler, process_manager->processes[pid]);
     return 0;
 }
 
@@ -139,24 +139,39 @@ int unblock_process(processManagerADT process_manager, pid_t pid)
         return -1;
 
     process_manager->processes[pid]->status = READY;
+    schedule_process(process_manager->scheduler, process_manager->processes[pid]);
     return 0;
 }
 
 int kill_process(processManagerADT process_manager, pid_t pid) {
-    if (pid >= MAX_PROCESSES || process_manager->processes[pid] == NULL)
+    if (pid == IDLE_PROCESS_PID || pid >= MAX_PROCESSES || process_manager->processes[pid] == NULL)
         return -1;
 
     for (pid_t pid_i = 0; pid_i < MAX_PROCESSES; pid_i++)
         if (process_manager->processes[pid_i] != NULL && process_manager->processes[pid_i]->parent_pid == pid)
             kill_process(process_manager, pid_i);
 
+    process_manager->processes[pid]->status = KILLED;
     mem_free(process_manager->memory_manager, process_manager->processes[pid]->stack);
+    process_manager->processes[pid] = NULL;
+    process_manager->num_processes--;
+
+    if(get_current_process(process_manager->scheduler) == pid)
+        go_to_scheduler();
+    else
+        deschedule_process(process_manager->scheduler, process_manager->processes[pid]);
+    return 0;
+}
+
+int wait_process(processManagerADT process_manager, pid_t pid){
+    while(process_manager->processes[pid]->status != EXITED){
+        _hlt();
+    }
+    int ret = process_manager->processes[pid]->ret;
     mem_free(process_manager->memory_manager, process_manager->processes[pid]);
     process_manager->processes[pid] = NULL;
     process_manager->num_processes -= 1;
-
-    go_to_scheduler();
-    return 0;
+    return ret;
 }
 
 processControlBlockADT* get_pcbs(processManagerADT process_manager) {
@@ -168,7 +183,7 @@ uint64_t get_num_processes(processManagerADT process_manager){
 }
 
 uint64_t get_ps_data(processManagerADT process_manager, memoryManagerADT mem_manager) {
-    process_info_t * processes = (process_info_t *)mem_alloc(mem_manager ,sizeof(process_info_t) * (process_manager->num_processes + 1));
+    process_info_t * processes = (process_info_t *) mem_alloc(mem_manager, sizeof(process_info_t) * (process_manager->num_processes + 1));
     for(int i = 0; i < process_manager->num_processes; i++) {
         processes[i].pid = process_manager->processes[i]->pid;
         processes[i].parent_pid = process_manager->processes[i]->parent_pid;

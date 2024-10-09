@@ -172,22 +172,17 @@ void mem()
     printf("Occupied memory: %d\n", sys_get_usable_memory_size() - sys_get_free_memory_size());
 }
 
-void ps()
-{
+void ps(){
     process_info_t * processes = (process_info_t *)sys_ps();
-    for (int i = 0; processes[i].pid != -1; i++)
-    {
-        if (processes[i].pid != 0)
-        {
-            printf("Process %d\n", i);
-            printf("\tPID: %d\n", processes[i].pid);
-            printf("\tParent PID: %d\n", processes[i].parent_pid);
-            printf("\tPriority: %d\n", processes[i].priority);
-            printf("\tStatus: %d\n", processes[i].status);
-            printf("\tForeground: %d\n", processes[i].is_in_foreground);
-            printf("\tStack pointer: %d\n", processes[i].stack_pointer);
-            printf("\tBase pointer: %d\n", processes[i].base_pointer);
-
-        }
+    for (int i = 0; processes[i].pid != -1; i++){
+        printf("Process %d\n", i);
+        printf("\tPID: %d\n", processes[i].pid);
+        if(processes[i].parent_pid == -1) printf("\tParent PID: -1\n");
+        else printf("\tParent PID: %d\n", processes[i].parent_pid);
+        printf("\tPriority: %d\n", processes[i].priority);
+        printf("\tStatus: %d\n", processes[i].status);
+        printf("\tForeground: %d\n", processes[i].is_in_foreground);
+        printf("\tStack pointer: %d\n", processes[i].stack_pointer);
+        printf("\tBase pointer: %d\n", processes[i].base_pointer);
     }
 }

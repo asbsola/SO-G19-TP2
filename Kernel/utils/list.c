@@ -1,42 +1,49 @@
-
 #include <utils/list.h>
 
+struct ListNode {
+    void * data;              
+    ListNode *next;
+};
+typedef struct ListNode ListNode;
 
-List *list_init(memoryManagerADT memory_manager) {
-    List *list = (List *)mem_alloc(memory_manager, sizeof(List));
-    if (list == NULL) {
-        return NULL;
-    }
+struct List {
+    ListNode *head;
+    ListNode *last;
+    size_t size;
+    memoryManagerADT memory_manager;
+};
+
+ListADT list_init(memoryManagerADT memory_manager) {
+    ListADT list = (ListADT) mem_alloc(memory_manager, sizeof(struct List));
+    if (list == NULL) return NULL;
+
     list->head = NULL;
     list->last = NULL;
     list->size = 0;
+    list->memory_manager = memory_manager;
     return list;
 }
 
-void free_list(memoryManagerADT memory_manager, List *list) {
-    if (list == NULL) {
-        return;
-    }
+void free_list(ListADT list) {
+    if (list == NULL) return;
 
-    ListNode *current = list->head;
-    ListNode *next;
+    ListNode* current = list->head;
+    ListNode* next;
     while (list->size > 0) {
         next = current->next;
-        mem_free(memory_manager, current);
+        mem_free(list->memory_manager, current);
         current = next;
         list->size--;
     }
-    mem_free(memory_manager, list);
+    mem_free(list->memory_manager, list);
 }
 
-uint8_t list_add(memoryManagerADT memory_manager, List *list, void *data) {
-    if (list == NULL || data == NULL) {
-        return 0;
-    }
-    ListNode *new_node = (ListNode *)mem_alloc(memory_manager, sizeof(ListNode));
-    if (new_node == NULL) {
-        return 0;
-    }
+int list_add(ListADT list, void *data) {
+    if (list == NULL || data == NULL) return 0;
+
+    ListNode* new_node = (ListNode*) mem_alloc(list->memory_manager, sizeof(ListNode));
+    if (new_node == NULL) return 0;
+
     new_node->data = data;
     if (list->head == NULL) {
         list->head = new_node;
@@ -50,34 +57,28 @@ uint8_t list_add(memoryManagerADT memory_manager, List *list, void *data) {
     return 1;
 }
 
-uint8_t list_remove(memoryManagerADT memory_manager, List *list, void *data) {
-    if (list == NULL || list->head == NULL || data == NULL) {
+int list_remove(ListADT list, void *data) {
+    if (list == NULL || list_is_empty(list) || data == NULL)
         return 0;
-    }
-    ListNode *current = list->head;
-    ListNode *previous = NULL;
+
+    ListNode* current = list->head;
+    ListNode* previous = list->last;
     while(current->data != data) {
-        if (current == list->last) {
-            return 0;
-        }
+        if (current == list->last) return 0;
         previous = current;
         current = current->next;
     }
     previous->next = current->next;
-    mem_free(memory_manager, current);
+    mem_free(list->memory_manager, current);
     return 1;
 }
 
-size_t list_size(memoryManagerADT memory_manager, const List *list) {
-    if (list == NULL) {
-        return 0;
-    }
+size_t list_size(const ListADT list) {
+    if (list == NULL) return 0;
     return list->size;
 }
 
-uint8_t list_is_empty(memoryManagerADT memory_manager, const List *list) {
-    if (list == NULL) {
-        return 1;
-    }
+int list_is_empty(const ListADT list) {
+    if (list == NULL) return 1;
     return list->size == 0;
 }

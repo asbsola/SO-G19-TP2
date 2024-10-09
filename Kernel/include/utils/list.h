@@ -5,32 +5,19 @@
 #include <stdint.h>
 #include <managers/memoryManager.h>
 
-typedef struct List List;
-typedef struct ListNode ListNode;
+typedef struct List* ListADT;
 
-struct ListNode {
-    void * data;              
-    ListNode *next;
-};
+ListADT list_init(memoryManagerADT memory_manager);
 
-struct List {
-    ListNode *head;
-    ListNode *last;
-    size_t size;
-};
+void free_list(ListADT list);
 
+int list_add(ListADT list, void *data);
 
-List *list_init(memoryManagerADT memory_manager);
+int list_remove(ListADT list, void *data);
 
-void free_list(memoryManagerADT memory_manager, List *list);
+size_t list_size(const ListADT list);
 
-uint8_t list_add(memoryManagerADT memory_manager, List *list, void *data);
-
-uint8_t list_remove(memoryManagerADT memory_manager, List *list, void *data);
-
-size_t list_size(memoryManagerADT memory_manager, const List *list);
-
-uint8_t list_is_empty(memoryManagerADT memory_manager, const List *list);
+int list_is_empty(const ListADT list);
 
 
 #endif

@@ -1,8 +1,10 @@
+#include "drivers/videoDriver.h"
+#include "idle.h"
 #include <managers/processManager.h>
 #include <registers.h>
 
-extern void (*start_wrapper)();
-extern void (*go_to_scheduler)();
+extern void start_process_wrapper();
+extern void go_to_scheduler();
 
 struct processManagerCDT
 {
@@ -26,8 +28,9 @@ int get_argc(char* argv[]){
     return argc;
 }
 
-void start(startFrame* data) {
+void start_process(startFrame* data) {
     int argc = get_argc(data->argv);
+
     int64_t status = data->process_start(data->argv, argc);
     exit_process(data->process_manager, data->pid, status);
 }
@@ -45,8 +48,8 @@ processManagerADT init_process_manager(memoryManagerADT memory_manager, schedule
     process_manager->scheduler = scheduler;
     process_manager->num_processes = 0;
 
-    char* argv[] = {NULL};
-    create_process(process_manager, -1, 0, idle, argv);
+    char* argv[] = {"idle", NULL};
+    create_process(process_manager, -1, NOT_IN_FOREGROUND, idle, argv);
 
     return process_manager;
 }
@@ -83,7 +86,7 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_
     start_frame->argv = argv;
 
     registers64_t* call_frame = (registers64_t*)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame) - sizeof(registers64_t)); 
-    call_frame->rip = (uint64_t)process_start;
+    call_frame->rip = (uint64_t)start_process_wrapper;
     call_frame->rsp = (uint64_t)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame));
     call_frame->ss = 0x0;
     call_frame->cs = 0x8;

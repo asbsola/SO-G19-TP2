@@ -1,12 +1,12 @@
 section .text
 
-global start_wrapper 
+global start_process_wrapper 
 global go_to_scheduler
-extern start
+extern start_process
 
-start_wrapper:
+start_process_wrapper:
     mov rdi, rsp
-    call start 
+    call start_process
 
 go_to_scheduler:
     push rbp

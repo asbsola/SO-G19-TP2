@@ -2,6 +2,8 @@
 #define __PCB_H__
 
 #include <def.h>
+#define NOT_IN_FOREGROUND 0
+#define IN_FOREGROUND 1
 
 typedef struct processControlBlockCDT
 {

@@ -4,7 +4,7 @@
 
 uint64_t idle(char** argv, int argc){
     while(1) {
-        write_to_video_text_buffer("hola\n", 5, 0x00ffffff);
-        _hlt();
+        write_to_video_text_buffer("holas\n", 6, 0x00ffffff);
+        //_hlt();
     }
 }

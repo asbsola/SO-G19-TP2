@@ -11,7 +11,7 @@
 #include <managers/processManager.h>
 #include <managers/scheduler.h>
 
-#define MEMORY_MANAGER_MEM_SIZE 200000
+#define MEMORY_MANAGER_MEM_SIZE 20000
 static char managed_memory[MEMORY_MANAGER_MEM_SIZE];
 
 memoryManagerADT the_memory_manager = NULL;
@@ -26,7 +26,7 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
-static const uint64_t StackPageCount = 64; // Stack Size = PageSize * StackPageCount
+static const uint64_t StackPageCount = 16; // Stack Size = PageSize * StackPageCount
 
 typedef int (*EntryPoint)();
 
@@ -70,14 +70,14 @@ int main()
 	the_process_manager = init_process_manager(the_memory_manager);
 	the_scheduler = init_scheduler(the_process_manager, the_memory_manager);
     
-    _sti();
-	
     set_font_size(1);
     clear_video_text_buffer();
     write_to_video_text_buffer("GRUPO 21\n", 9, 0x006fb5fb);
     write_to_video_text_buffer("Kernel initialized\nRunning user code...\n\n", 41, HEX_GRAY);
 
-    //start_shell();
+    _sti();
+
+    start_shell();
 
     write_to_video_text_buffer("Back in kernel...\n", 18, HEX_GRAY);
 

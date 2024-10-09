@@ -79,7 +79,7 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_
     start_frame->argv = argv;
 
     registers64_t* call_frame = (registers64_t*)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame) - sizeof(registers64_t)); 
-    call_frame->rip = (uint64_t)start_wrapper;
+    call_frame->rip = (uint64_t)process_start;
     call_frame->rsp = (uint64_t)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame));
     call_frame->ss = 0x0;
     call_frame->cs = 0x8;

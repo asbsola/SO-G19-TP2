@@ -2,7 +2,7 @@ include Makefile.inc
 
 KERNEL=kernel.bin
 
-SOURCE_DIRS=. drivers interruptHandlers managers utils
+SOURCE_DIRS=. drivers interruptHandlers managers
 SOURCES=$(wildcard $(addsuffix /*.c, $(SOURCE_DIRS)))
 SOURCES_ASM=$(wildcard asm/*.asm)
 SOURCES := $(filter-out managers/buddyMemoryManager.c managers/bitmapMemoryManager.c, $(SOURCES))
@@ -22,8 +22,8 @@ endif
 all: $(KERNEL)
 
 $(KERNEL): $(LOADEROBJECT) $(OBJECTS) $(MEMORY_MANAGER_SRC:.c=.o) $(STATICLIBS) $(OBJECTS_ASM)
-	$(LD) $(LDFLAGS) -T kernel.ld -o $(KERNEL) $(LOADEROBJECT) $(OBJECTS) $(MEMORY_MANAGER_SRC:.c=.o) $(OBJECTS_ASM) $(STATICLIBS)
-	$(LD) $(LDFLAGS) -T kernel.ld --oformat=elf64-x86-64 -o kernel.elf $(MEMORY_MANAGER_SRC:.c=.o) $(LOADEROBJECT) $(OBJECTS) $(OBJECTS_ASM) $(STATICLIBS) 
+	$(LD) $(LDFLAGS) -g -T kernel.ld -o $(KERNEL) $(LOADEROBJECT) $(OBJECTS) $(MEMORY_MANAGER_SRC:.c=.o) $(OBJECTS_ASM) $(STATICLIBS)
+	$(LD) $(LDFLAGS) -g -T kernel.ld --oformat=elf64-x86-64 -o kernel.elf $(MEMORY_MANAGER_SRC:.c=.o) $(LOADEROBJECT) $(OBJECTS) $(OBJECTS_ASM) $(STATICLIBS) 
 
 %.o: %.c
 	$(GCC) $(GCCFLAGS) -I./include -I./../include -c $< -o $@

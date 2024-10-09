@@ -67,20 +67,10 @@ int main()
 	load_idt();
 
     the_memory_manager = init_memory_manager(managed_memory, MEMORY_MANAGER_MEM_SIZE);
-	the_process_manager = init_process_manager(the_memory_manager);
-	the_scheduler = init_scheduler(the_process_manager, the_memory_manager);
-    char* argv[] = {NULL};
-    create_process(the_process_manager, 0, 0, idle2, argv);
-    create_process(the_process_manager, 0, 0, idle3, argv);
-    
-    set_font_size(1);
-    clear_video_text_buffer();
-    write_to_video_text_buffer("GRUPO 21\n", 9, 0x006fb5fb);
-    write_to_video_text_buffer("Kernel initialized\nRunning user code...\n\n", 41, HEX_GRAY);
+	the_scheduler = init_scheduler(the_memory_manager);
+	the_process_manager = init_process_manager(the_memory_manager, the_scheduler);
 
     _sti();
-
-    start_shell();
 
     write_to_video_text_buffer("Back in kernel...\n", 18, HEX_GRAY);
 

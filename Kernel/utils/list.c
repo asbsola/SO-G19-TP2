@@ -1,13 +1,14 @@
 #include <utils/list.h>
 
+typedef struct ListNode ListNode;
 struct ListNode {
     void * data;              
     ListNode *next;
 };
-typedef struct ListNode ListNode;
 
 struct List {
     ListNode *head;
+    ListNode *next;
     ListNode *last;
     size_t size;
     memoryManagerADT memory_manager;
@@ -18,6 +19,7 @@ ListADT list_init(memoryManagerADT memory_manager) {
     if (list == NULL) return NULL;
 
     list->head = NULL;
+    list->next = NULL;
     list->last = NULL;
     list->size = 0;
     list->memory_manager = memory_manager;
@@ -47,10 +49,12 @@ int list_add(ListADT list, void *data) {
     new_node->data = data;
     if (list->head == NULL) {
         list->head = new_node;
+        list->next = new_node;
         list->last = new_node;
         new_node->next = new_node;
     } else {
         list->last->next = new_node;
+        list->last = new_node;
         new_node->next = list->head;
     }
     list->size++;
@@ -69,8 +73,23 @@ int list_remove(ListADT list, void *data) {
         current = current->next;
     }
     previous->next = current->next;
+    if(current == list->next)
+        list->next = current->next;
     mem_free(list->memory_manager, current);
+    list->size--;
+    if(list->size == 0){
+        list->head = NULL;
+        list->next = NULL;
+        list->last = NULL;
+    }
     return 1;
+}
+
+void* list_next(const ListADT list){
+    if(list == NULL || list_is_empty(list)) return NULL;
+    void* data = list->next->data;
+    list->next = list->next->next;
+    return data;
 }
 
 size_t list_size(const ListADT list) {

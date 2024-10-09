@@ -1,6 +1,5 @@
 #include <managers/processManager.h>
 #include <registers.h>
-#include <stdint.h>
 
 extern void (*start_wrapper)();
 extern void (*go_to_scheduler)();
@@ -9,6 +8,7 @@ struct processManagerCDT
 {
     uint64_t num_processes;
     memoryManagerADT memory_manager;
+    schedulerADT scheduler;
     processControlBlockADT processes[MAX_PROCESSES];
 };
 
@@ -32,10 +32,9 @@ void start(startFrame* data) {
     exit_process(data->process_manager, data->pid, status);
 }
 
-processManagerADT init_process_manager(memoryManagerADT memory_manager)
+processManagerADT init_process_manager(memoryManagerADT memory_manager, schedulerADT scheduler)
 {
     processManagerADT process_manager = mem_alloc(memory_manager, sizeof(struct processManagerCDT));
-
     if (process_manager == NULL)
         return NULL;
 
@@ -43,7 +42,12 @@ processManagerADT init_process_manager(memoryManagerADT memory_manager)
         process_manager->processes[pid] = NULL;
 
     process_manager->memory_manager = memory_manager;
+    process_manager->scheduler = scheduler;
     process_manager->num_processes = 0;
+
+    char* argv[] = {NULL};
+    create_process(process_manager, -1, 0, idle, argv);
+
     return process_manager;
 }
 
@@ -89,6 +93,8 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_
 
     process_manager->processes[pid] = process_pcb;
     process_manager->num_processes++;
+
+    schedule_process(process_manager->scheduler, process_pcb);
 
     return process_pcb->pid;
 }

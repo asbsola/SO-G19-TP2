@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#define MAX_ITERS 8000
 #define MAX_BLOCKS 128
 
 typedef struct MM_rq {
@@ -30,14 +31,15 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
     max_memory = get_usable_memory_size(mem_manager);
     printf("Usable memory: %ld\n", max_memory);
 
-    while (1) {
+    uint64_t counter = 0;
+
+    while (counter++ < MAX_ITERS) {
         rq = 0;
         total = 0;
         uint64_t free_memory = get_free_memory_size(mem_manager);
 
-        //printf("\n\nFree memory: %ld, Allocating memory...\n\n", free_memory);
+        printf("\n\nFree memory: %ld, Allocating memory...\n\n", free_memory);
 
-        if(rq == MAX_BLOCKS) break;
         // Request as many blocks as we can
         while (rq < MAX_BLOCKS && total < max_memory && free_memory != 0) {
             mm_rqs[rq].size = GetUniform(max_memory - total - 1) + 1;

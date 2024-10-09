@@ -2,39 +2,74 @@
 #include <registers.h>
 #include <managers/scheduler.h>
 #include <drivers/videoDriver.h>
+#include <utils/list.h>
 
 struct schedulerCDT {
-    processManagerADT process_manager;
-    pid_t current;
-    // Queue prioritie_queues[];
+    memoryManagerADT memory_manager;
+    ListADT process_list;
+    processControlBlockADT current_process;
 };
 
-schedulerADT init_scheduler(processManagerADT process_manager, memoryManagerADT memory_manager){
+schedulerADT init_scheduler(memoryManagerADT memory_manager){
     schedulerADT scheduler = mem_alloc(memory_manager, sizeof(struct schedulerCDT));
-
     if (scheduler == NULL) return NULL;
 
-    scheduler->process_manager = process_manager;
-    char* argv[] = {NULL};
-    scheduler->current = -1;
+    ListADT process_list = list_init(memory_manager);
+    if(process_list == NULL) return NULL;
 
-    create_process(scheduler->process_manager, -1, 0, idle, argv);
+    scheduler->process_list = process_list;
+    scheduler->current_process = NULL;
+    scheduler->memory_manager = memory_manager;
 
     return scheduler;
 }
 
-pid_t next_process(schedulerADT scheduler){
-    return (scheduler->current + 1) % get_num_processes(scheduler->process_manager);
+pid_t get_current_process(schedulerADT scheduler){
+    if(scheduler->current_process == NULL) return -1;
+    return scheduler->current_process->pid;
+}
+
+int schedule_process(schedulerADT scheduler, processControlBlockADT process){
+    return list_add(scheduler->process_list, process);
+}
+
+int deschedule_process(schedulerADT scheduler, processControlBlockADT process){
+    return list_remove(scheduler->process_list, process);
+}
+
+processControlBlockADT next_process(schedulerADT scheduler){
+    return (processControlBlockADT) list_next(scheduler->process_list);
+}
+
+void handle_status(schedulerADT scheduler, processControlBlockADT process){
+    switch (process->status) {
+    case RUNNING:
+        process->status = READY;
+        break;
+    case BLOCKED:
+        list_remove(scheduler->process_list, process);
+        break;
+    case EXITED:
+        list_remove(scheduler->process_list, process);
+        break;
+    case KILLED:
+        list_remove(scheduler->process_list, process);
+        mem_free(scheduler->memory_manager, process);
+    default:
+        break;
+    }
 }
 
 uint64_t context_switch(schedulerADT scheduler, uint64_t rsp){
-    processControlBlockADT* processes = get_pcbs(scheduler->process_manager);
-    if (scheduler->current == -1) {
-        scheduler->current++;
-        return processes[scheduler->current]->rsp;
+    if (scheduler->current_process == NULL){
+        scheduler->current_process = next_process(scheduler);
+        return scheduler->current_process->rsp;
     }
 
-    processes[scheduler->current]->rsp = rsp;
-    scheduler->current = next_process(scheduler);
-    return processes[scheduler->current]->rsp;
+    scheduler->current_process->rsp = rsp;
+    handle_status(scheduler, scheduler->current_process);
+
+    scheduler->current_process = next_process(scheduler);
+    scheduler->current_process->status = RUNNING;
+    return scheduler->current_process->rsp;
 }

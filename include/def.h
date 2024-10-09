@@ -9,7 +9,8 @@ typedef enum
     RUNNING,
     READY,
     BLOCKED,
-    EXITED
+    EXITED,
+    KILLED
 } processStatus;
 typedef enum
 {

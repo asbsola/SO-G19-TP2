@@ -15,6 +15,8 @@ int list_add(ListADT list, void *data);
 
 int list_remove(ListADT list, void *data);
 
+void* list_next(const ListADT list);
+
 size_t list_size(const ListADT list);
 
 int list_is_empty(const ListADT list);

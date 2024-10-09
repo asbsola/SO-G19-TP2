@@ -3,29 +3,18 @@
 
 #include <stdint.h>
 #include <managers/memoryManager.h>
+#include <managers/scheduler.h>
+#include <managers/processControlBlock.h>
+#include <interruptHandlers/interrupts.h>
 #include <def.h>
 
 #define PROCESS_STACK_SIZE 4096
 #define MAX_PROCESSES 15 
 #define IDLE_PROCESS_PID 0
 
-typedef struct processControlBlockCDT
-{
-    pid_t pid;
-    pid_t parent_pid;
-    processPriority priority;
-    processStatus status;
-    char *stack;
-    uint64_t rsp;
-    uint64_t ret;
-    uint8_t is_in_foreground;
-} processControlBlockCDT;
-
-typedef struct processControlBlockCDT *processControlBlockADT;
-
 typedef struct processManagerCDT *processManagerADT;
 
-processManagerADT init_process_manager(memoryManagerADT memory_manager);
+processManagerADT init_process_manager(memoryManagerADT memory_manager, schedulerADT scheduler);
 
 pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_t is_in_foreground, uint64_t (*process_start)(char **, int), char *argv[]);
 

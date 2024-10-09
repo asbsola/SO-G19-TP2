@@ -1,0 +1,7 @@
+#ifndef __SHELL_CALLER__
+#define __SHELL_CALLER__
+
+#define SHELL_CODE_ADDRESS 0xE00000
+#define SHELL_DATA_ADDRESS 0xF00000
+
+#endif

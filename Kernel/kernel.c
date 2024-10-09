@@ -4,8 +4,9 @@
 #include <moduleLoader.h>
 #include <drivers/videoDriver.h>
 #include <drivers/pitDriver.h>
-#include <shell_caller.h>
 #include <interruptHandlers/interrupts.h>
+
+#include <shell.h>
 
 #include <managers/memoryManager.h>
 #include <managers/processManager.h>
@@ -49,8 +50,8 @@ void * getStackBase()
 void * initializeKernelBinary()
 {
 	void * moduleAddresses[] = {
-		SHELL_CODE_ADDRESS,
-		SHELL_DATA_ADDRESS
+		(void*)SHELL_CODE_ADDRESS,
+		(void*)SHELL_DATA_ADDRESS
 	};
 
 	loadModules(&endOfKernelBinary, moduleAddresses);

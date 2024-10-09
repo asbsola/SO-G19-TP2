@@ -2,7 +2,7 @@ include Makefile.inc
 
 KERNEL=kernel.bin
 
-SOURCE_DIRS=. drivers interruptHandlers managers
+SOURCE_DIRS=. drivers interruptHandlers managers utils
 SOURCES=$(wildcard $(addsuffix /*.c, $(SOURCE_DIRS)))
 SOURCES_ASM=$(wildcard asm/*.asm)
 SOURCES := $(filter-out managers/buddyMemoryManager.c managers/bitmapMemoryManager.c, $(SOURCES))

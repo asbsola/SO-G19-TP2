@@ -157,6 +157,10 @@ processControlBlockADT* get_pcbs(processManagerADT process_manager) {
     return process_manager->processes;
 }
 
+uint64_t get_num_processes(processManagerADT process_manager){
+    return process_manager->num_processes;
+}
+
 uint64_t get_ps_data(processManagerADT process_manager, memoryManagerADT mem_manager) {
     process_info_t * processes = (process_info_t *)mem_alloc(mem_manager ,sizeof(process_info_t) * (process_manager->num_processes + 1));
     for(int i = 0; i < process_manager->num_processes; i++) {

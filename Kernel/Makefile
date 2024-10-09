@@ -35,6 +35,6 @@ $(LOADEROBJECT):
 	$(ASM) $(ASMFLAGS) $(LOADERSRC) -o $(LOADEROBJECT)
 
 clean:
-	rm -rf asm/*.o drivers/*.o interruptHandlers/*.o managers/*.o *.o *.bin
+	rm -rf asm/*.o drivers/*.o interruptHandlers/*.o managers/*.o *.elf *.o *.bin
 
 .PHONY: all clean buddy

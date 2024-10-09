@@ -58,7 +58,10 @@ memoryManagerADT init_memory_manager(void *memory, uint64_t memory_size)
     mem_manager->tree_max_height = tree_max_height;
 
     memoryNode *root = memory + sizeof(struct memoryManagerCDT);
-    root->status = FREE;
+
+    for (uint64_t i = 0; i < tree_max_node_count; i++)
+        root[i].status = FREE;
+
     mem_manager->root = root;
 
     return mem_manager;

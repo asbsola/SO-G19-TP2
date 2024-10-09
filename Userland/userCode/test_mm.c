@@ -28,7 +28,6 @@ uint64_t test_mm() {
         puts_with_color("\n\nStart test iteration\n", 0xc2daff);
         printf("Free memory: %ld, Allocating memory...\n\n", free_memory);
 
-        if(rq == MAX_BLOCKS) break;
         // Request as many blocks as we can
         while (rq < MAX_BLOCKS && total < max_memory && free_memory != 0) {
             mm_rqs[rq].size = GetUniform(max_memory - total - 1) + 1;

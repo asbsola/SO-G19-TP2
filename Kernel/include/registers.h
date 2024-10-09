@@ -33,4 +33,6 @@ void print_stored_registers();
 
 void print_registers(const registers64_t *registers, uint32_t color);
 
+void print_register(char * name, uint32_t nameDim, uint64_t value, uint32_t color);
+
 #endif

@@ -3,7 +3,6 @@
 #include <managers/scheduler.h>
 #include <drivers/videoDriver.h>
 
-typedef int64_t pid_t;
 struct schedulerCDT {
     processManagerADT process_manager;
     pid_t current;
@@ -28,15 +27,19 @@ schedulerADT init_scheduler(processManagerADT process_manager, memoryManagerADT 
 uint64_t context_switch(schedulerADT scheduler, uint64_t rsp){
     if (scheduler->current == -1) {
         scheduler->current++;        
-        processControlBlockADT current = get_pcbs(scheduler->process_manager)[scheduler->current];
 
-        return current->rsp;
+        return get_pcbs(scheduler->process_manager)[scheduler->current]->rsp;
     }
 
+    /*
     processControlBlockADT current = get_pcbs(scheduler->process_manager)[scheduler->current];
     uint64_t rsp_aux = current->rsp;
+
+    //print_register("rsp: ", 5, rsp_aux, 0x00ffffff); 
+    //print_register("rsp2: ", 6, rsp, 0x00ffffff); 
     
     current->rsp = rsp;
+    */
 
-    return rsp_aux;
+    return rsp;//current->rsp;
 }

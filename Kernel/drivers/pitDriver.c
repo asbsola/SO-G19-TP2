@@ -1,3 +1,4 @@
+#include <interruptHandlers/interrupts.h>
 #include <drivers/pitDriver.h>
 #include <drivers/videoDriver.h>
 #include <lib.h>

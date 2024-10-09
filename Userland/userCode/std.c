@@ -86,8 +86,7 @@ void printf(const char* fmt, ...) {
     char printf_buff[PRINTF_PRINT_BUFF_MAX_SIZE] = {0};
 
     va_list arg_list;
-    uint32_t num_args = get_fmt_num_args(fmt);
-    va_start(arg_list, num_args);
+    va_start(arg_list, fmt);
 
     uint32_t k = 0;
     for (uint32_t i = 0; k < PRINTF_PRINT_BUFF_MAX_SIZE && fmt[i] != '\0'; i++) {

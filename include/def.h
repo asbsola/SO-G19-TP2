@@ -6,6 +6,9 @@
 #define NOT_IN_FOREGROUND 0
 #define IN_FOREGROUND 1
 
+#define NOT_WAITING 0
+#define WAITING 1
+
 typedef int64_t pid_t;
 typedef enum
 {

@@ -90,7 +90,6 @@ void handle_status(schedulerADT scheduler, processControlBlockADT process){
         break;
     case KILLED:
         list_remove(scheduler->process_list, process);
-        mem_free(scheduler->memory_manager, process);
     default:
         break;
     }

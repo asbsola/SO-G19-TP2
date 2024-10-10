@@ -11,13 +11,15 @@ typedef struct MM_rq {
     uint32_t size;
 } mm_rq;
 
-uint64_t test_mm() {
+uint64_t test_mm(char** argv, int argc) {
     mm_rq mm_rqs[MAX_BLOCKS];
     uint8_t rq;
     uint32_t total;
 
     uint64_t max_memory = sys_get_usable_memory_size();
     printf("Usable memory: %ld\n", max_memory);
+
+    max_memory = max_memory / 2;
 
     uint64_t count = 0;
     while (count++ < MAX_ITERS) {

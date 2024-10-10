@@ -111,7 +111,7 @@ void printf(const char* fmt, ...) {
         }
         else if (fmt[i] == '%' && fmt[i + 1] == 'l' && fmt[i + 2] == 'd') {
             char temp[ITOA_BUFF_MAX_SIZE];
-            itoa(va_arg(arg_list, uint32_t), temp, ITOA_BUFF_MAX_SIZE);
+            itoa(va_arg(arg_list, uint64_t), temp, ITOA_BUFF_MAX_SIZE);
 
             for (uint64_t j = 0; k < PRINTF_PRINT_BUFF_MAX_SIZE && temp[j] != '\0'; j++)
                 printf_buff[k++] = temp[j];

@@ -28,7 +28,7 @@ global sys_block_process_by_pid
 global sys_kill_process_by_pid
 global sys_unblock_process_by_pid
 global sys_get_pid
-global sys_wait_process
+global sys_wait
 
 %macro syscall 1
     push rbp
@@ -127,5 +127,5 @@ sys_unblock_process_by_pid:
 sys_get_pid:
     syscall 27
 
-sys_wait_process:
+sys_wait:
     syscall 28

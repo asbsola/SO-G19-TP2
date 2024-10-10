@@ -1,3 +1,4 @@
+#include <std.h>
 #include <test_utils.h>
 
 // Random
@@ -57,9 +58,8 @@ void bussy_wait(uint64_t n) {
         ;
 }
 
-void endless_loop() {
-    while (1)
-        ;
+uint64_t endless_loop(char** argv, int argc) {
+    while (1) ;
 }
 
 void endless_loop_print(uint64_t wait) {

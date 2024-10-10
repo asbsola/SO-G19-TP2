@@ -32,6 +32,6 @@ int sys_block_process_by_pid(pid_t pid);
 int sys_kill_process_by_pid(pid_t pid);
 int sys_unblock_process_by_pid(pid_t pid);
 pid_t sys_get_pid();
-int sys_wait_process(pid_t pid);
+int sys_wait();
 
 #endif

@@ -22,6 +22,13 @@ global sys_get_usable_memory_size
 global sys_get_free_memory_size
 global sys_get_total_memory_size
 global sys_ps
+global sys_create_process
+global sys_exit_process_by_pid
+global sys_block_process_by_pid
+global sys_kill_process_by_pid
+global sys_unblock_process_by_pid
+global sys_get_pid
+global sys_wait_process
 
 %macro syscall 1
     push rbp
@@ -101,3 +108,24 @@ sys_get_total_memory_size:
 
 sys_ps:
     syscall 21
+
+sys_create_process:
+    syscall 22
+
+sys_exit_process_by_pid:
+    syscall 23
+
+sys_block_process_by_pid:
+    syscall 24
+
+sys_kill_process_by_pid:
+    syscall 25
+
+sys_unblock_process_by_pid:
+    syscall 26
+
+sys_get_pid:
+    syscall 27
+
+sys_wait_process:
+    syscall 28

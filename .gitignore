@@ -1,5 +1,5 @@
-.gitignore
 .bash_history
+.gdb_history
 .vscode
 compile_flags.txt
 

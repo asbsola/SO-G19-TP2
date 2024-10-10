@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#define NOT_IN_FOREGROUND 0
+#define IN_FOREGROUND 1
+
 typedef int64_t pid_t;
 typedef enum
 {

@@ -7,7 +7,6 @@
 #include <eliminator.h>
 #include <lib.h>
 
-
 #define MAX_SHELL_INPUT 1024
 
 void help();

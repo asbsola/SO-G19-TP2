@@ -47,7 +47,7 @@ int list_add(ListADT list, void *data) {
     if (new_node == NULL) return 0;
 
     new_node->data = data;
-    if (list->head == NULL) {
+    if (list_is_empty(list)) {
         list->head = new_node;
         list->next = new_node;
         list->last = new_node;
@@ -73,8 +73,12 @@ int list_remove(ListADT list, void *data) {
         current = current->next;
     }
     previous->next = current->next;
+    if(current == list->head)
+        list->head = current->next;
     if(current == list->next)
         list->next = current->next;
+    if(current == list->last)
+        list->last = previous;
     mem_free(list->memory_manager, current);
     list->size--;
     if(list->size == 0){

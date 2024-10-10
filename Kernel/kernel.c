@@ -12,7 +12,7 @@
 #include <managers/processManager.h>
 #include <managers/scheduler.h>
 
-#define MEMORY_MANAGER_MEM_SIZE 300000
+#define MEMORY_MANAGER_MEM_SIZE (1<<22) // 4MB
 static char managed_memory[MEMORY_MANAGER_MEM_SIZE];
 
 memoryManagerADT the_memory_manager = NULL;

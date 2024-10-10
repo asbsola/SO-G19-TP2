@@ -1,5 +1,6 @@
 #include <idle.h>
 #include <utils/string.h>
+#include <registers.h>
 #include <managers/processManager.h>
 
 #define MAX(a, b) ((a)<(b)?(b):(a))
@@ -91,7 +92,7 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_
     start_frame->pid = pid;
     start_frame->argv = copy_argv(process_manager, argv);
 
-    registers64_t* call_frame = (registers64_t*)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame) - sizeof(registers64_t)); 
+    registers64_t* call_frame = (registers64_t*) (process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame) - sizeof(registers64_t)); 
     call_frame->rip = (uint64_t)start_process_wrapper;
     call_frame->rsp = (uint64_t)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame));
     call_frame->ss = 0x0;

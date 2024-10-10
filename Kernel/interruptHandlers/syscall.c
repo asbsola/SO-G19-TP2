@@ -8,11 +8,8 @@
 #include <drivers/soundDriver.h>
 #include <interruptHandlers/interrupts.h>
 #include <lib.h>
-#include <managers/memoryManager.h>
-#include <managers/processManager.h>
 
-extern memoryManagerADT the_memory_manager;
-extern processManagerADT the_process_manager;
+#include <managers/kernel_managers.h>
 
 uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
 {
@@ -158,13 +155,44 @@ uint64_t sys_ps(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t
     return get_ps_data(the_process_manager, the_memory_manager);
 }
 
+uint64_t sys_create_process(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
+    return create_process(the_process_manager, get_current_process(the_scheduler), rdi, (uint64_t (*)(char**, int))rsi, (char**)rdx);
+}
+
+uint64_t sys_exit_process_by_pid(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
+    return exit_process(the_process_manager, rdi, rsi);
+}
+
+uint64_t sys_block_process_by_pid(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
+    return block_process(the_process_manager, rdi);
+}
+
+uint64_t sys_kill_process_by_pid(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
+    return kill_process(the_process_manager, rdi);
+}
+
+uint64_t sys_unblock_process_by_pid(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
+    return unblock_process(the_process_manager, rdi);
+}
+
+uint64_t sys_get_pid(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
+    return get_current_process(the_scheduler);
+}
+
+uint64_t sys_wait_process(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
+    return wait_process(the_process_manager, rdi); 
+}
+
 uint64_t (*syscalls[])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t) = {
     sys_read, sys_write, sys_put_text,
     sys_set_font_size, sys_draw_square, sys_get_screen_width,
     sys_get_screen_height, sys_get_time, sys_get_key_pressed, sys_get_character_pressed,
     sys_clear_text_buffer, sys_get_cpu_vendor, sys_beep, sys_delay,
     sys_print_registers, sys_clear_screen,
-    sys_malloc, sys_free, sys_get_usable_memory_size, sys_get_free_memory_size, sys_get_total_memory_size, sys_ps};
+    sys_malloc, sys_free, sys_get_usable_memory_size, sys_get_free_memory_size, sys_get_total_memory_size, 
+    sys_ps, sys_create_process, sys_exit_process_by_pid, sys_block_process_by_pid, sys_kill_process_by_pid, sys_unblock_process_by_pid,
+    sys_get_pid, sys_wait_process
+};
 
 uint64_t syscall_handler(const registers64_t *registers)
 {

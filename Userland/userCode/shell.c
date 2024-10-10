@@ -172,16 +172,22 @@ void mem()
     printf("Occupied memory: %d\n", sys_get_usable_memory_size() - sys_get_free_memory_size());
 }
 
-void ps(){
+const char* process_priority_names[] = {"LOW", "MEDIUM", "HIGH"};
+const char* process_status_names[] = {"RUNNING", "READY", "BLOCKED", "EXITED", "KILLED"};
+
+void ps() {
     process_info_t * processes = (process_info_t *)sys_ps();
     for (int i = 0; processes[i].pid != -1; i++){
-        printf("Process %d\n", i);
+        printf("\nProcess %d\n", i);
         printf("\tPID: %d\n", processes[i].pid);
+
         if(processes[i].parent_pid == -1) printf("\tParent PID: -1\n");
         else printf("\tParent PID: %d\n", processes[i].parent_pid);
-        printf("\tPriority: %d\n", processes[i].priority);
-        printf("\tStatus: %d\n", processes[i].status);
-        printf("\tForeground: %d\n", processes[i].is_in_foreground);
+
+        printf("\tPriority: %s\n", process_priority_names[processes[i].priority]); 
+        printf("\tStatus: %s\n", process_status_names[processes[i].status]);
+
+        printf("\tForeground: %s IN FOREGROUND\n", (processes[i].is_in_foreground == IN_FOREGROUND) ? "" : "NOT");
         printf("\tStack pointer: %d\n", processes[i].stack_pointer);
         printf("\tBase pointer: %d\n", processes[i].base_pointer);
     }

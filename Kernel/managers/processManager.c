@@ -1,7 +1,9 @@
-#include "drivers/videoDriver.h"
-#include "idle.h"
-#include <managers/processManager.h>
+#include <drivers/videoDriver.h>
+#include <idle.h>
 #include <registers.h>
+#include <managers/processManager.h>
+
+#define MAX(a, b) ((a)<(b)?(b):(a))
 
 extern void start_process_wrapper();
 extern void go_to_scheduler();
@@ -9,6 +11,7 @@ extern void go_to_scheduler();
 struct processManagerCDT
 {
     uint64_t num_processes;
+    uint64_t max_pid;
     memoryManagerADT memory_manager;
     schedulerADT scheduler;
     processControlBlockADT processes[MAX_PROCESSES];
@@ -47,6 +50,7 @@ processManagerADT init_process_manager(memoryManagerADT memory_manager, schedule
     process_manager->memory_manager = memory_manager;
     process_manager->scheduler = scheduler;
     process_manager->num_processes = 0;
+    process_manager->max_pid = 0;
 
     char* argv[] = {"idle", NULL};
     create_process(process_manager, -1, NOT_IN_FOREGROUND, idle, argv);
@@ -96,6 +100,7 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_
 
     process_manager->processes[pid] = process_pcb;
     process_manager->num_processes++;
+    process_manager->max_pid = MAX(process_manager->max_pid, pid);
 
     schedule_process(process_manager->scheduler, process_pcb);
 
@@ -146,6 +151,20 @@ int unblock_process(processManagerADT process_manager, pid_t pid)
     return 0;
 }
 
+int remove_process(processManagerADT process_manager, pid_t pid){
+    if(process_manager->processes[pid] == NULL)
+        return -1;
+    mem_free(process_manager->memory_manager, process_manager->processes[pid]);
+    process_manager->processes[pid] = NULL;
+    process_manager->num_processes--;
+    if(pid == process_manager->max_pid){
+        int i;
+        for(i=pid-1; i>=0 && process_manager->processes[i] == NULL; i--);
+        process_manager->max_pid = i;
+    }
+    return 0;
+}
+
 int kill_process(processManagerADT process_manager, pid_t pid) {
     if (pid == IDLE_PROCESS_PID || pid >= MAX_PROCESSES || process_manager->processes[pid] == NULL)
         return -1;
@@ -156,8 +175,7 @@ int kill_process(processManagerADT process_manager, pid_t pid) {
 
     process_manager->processes[pid]->status = KILLED;
     mem_free(process_manager->memory_manager, process_manager->processes[pid]->stack);
-    process_manager->processes[pid] = NULL;
-    process_manager->num_processes--;
+    remove_process(process_manager, pid);
 
     if(get_current_process(process_manager->scheduler) == pid)
         go_to_scheduler();
@@ -171,13 +189,11 @@ int wait_process(processManagerADT process_manager, pid_t pid){
         _hlt();
     }
     int ret = process_manager->processes[pid]->ret;
-    mem_free(process_manager->memory_manager, process_manager->processes[pid]);
-    process_manager->processes[pid] = NULL;
-    process_manager->num_processes -= 1;
+    remove_process(process_manager, pid);
     return ret;
 }
 
-processControlBlockADT* get_pcbs(processManagerADT process_manager) {
+processControlBlockADT* get_processes(processManagerADT process_manager) {
     return process_manager->processes;
 }
 
@@ -185,18 +201,26 @@ uint64_t get_num_processes(processManagerADT process_manager){
     return process_manager->num_processes;
 }
 
+uint64_t get_max_pid(processManagerADT process_manager){
+    return process_manager->max_pid;
+}
+
 uint64_t get_ps_data(processManagerADT process_manager, memoryManagerADT mem_manager) {
     process_info_t * processes = (process_info_t *) mem_alloc(mem_manager, sizeof(process_info_t) * (process_manager->num_processes + 1));
-    for(int i = 0; i < process_manager->num_processes; i++) {
-        processes[i].pid = process_manager->processes[i]->pid;
-        processes[i].parent_pid = process_manager->processes[i]->parent_pid;
-        processes[i].priority = process_manager->processes[i]->priority;
-        processes[i].stack_pointer = (void *)process_manager->processes[i]->rsp;
-        processes[i].base_pointer = process_manager->processes[i]->stack;
-        processes[i].status = process_manager->processes[i]->status;
-        processes[i].is_in_foreground = process_manager->processes[i]->is_in_foreground;
+    int index = 0;
+    for(int i = 0; i < process_manager->max_pid+1; i++) {
+        if(process_manager->processes[i] != NULL){
+            processes[index].pid = process_manager->processes[i]->pid;
+            processes[index].parent_pid = process_manager->processes[i]->parent_pid;
+            processes[index].priority = process_manager->processes[i]->priority;
+            processes[index].stack_pointer = (void *)process_manager->processes[i]->rsp;
+            processes[index].base_pointer = process_manager->processes[i]->stack;
+            processes[index].status = process_manager->processes[i]->status;
+            processes[index].is_in_foreground = process_manager->processes[i]->is_in_foreground;
+            index++;
+        }
     }
-    processes[process_manager->num_processes].pid = -1;
+    processes[index].pid = -1;
 
     return (uint64_t)processes;
 }

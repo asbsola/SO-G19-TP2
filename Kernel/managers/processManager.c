@@ -1,10 +1,13 @@
-#include "drivers/videoDriver.h"
-#include "idle.h"
+#include <idle.h>
+#include <utils/string.h>
 #include <managers/processManager.h>
 #include <registers.h>
 
 extern void start_process_wrapper();
 extern void go_to_scheduler();
+
+char** copy_argv(processManagerADT processes_manager, char** argv);
+char* fallback[] = { NULL };
 
 struct processManagerCDT
 {
@@ -60,7 +63,7 @@ pid_t get_lowest_unused_pid(processManagerADT process_manager){
     return pid;
 }
 
-pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_t is_in_foreground, uint64_t (*process_start)(char**, int), char* argv[]) {
+pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_t is_in_foreground, uint64_t (*process_start)(char**, int), char** argv) {
     if (process_manager->num_processes >= MAX_PROCESSES)
         return -1;
 
@@ -83,7 +86,7 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_
     start_frame->process_manager = process_manager;
     start_frame->process_start = process_start;
     start_frame->pid = pid;
-    start_frame->argv = argv;
+    start_frame->argv = copy_argv(process_manager, argv);
 
     registers64_t* call_frame = (registers64_t*)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame) - sizeof(registers64_t)); 
     call_frame->rip = (uint64_t)start_process_wrapper;
@@ -199,4 +202,33 @@ uint64_t get_ps_data(processManagerADT process_manager, memoryManagerADT mem_man
     processes[process_manager->num_processes].pid = -1;
 
     return (uint64_t)processes;
+}
+
+char** copy_argv(processManagerADT processes_manager, char** argv) {
+    uint64_t size_of_argv;
+    for (size_of_argv = 0; argv[size_of_argv] != NULL; size_of_argv++);
+
+    char** argv_copy = (char**)mem_alloc(processes_manager->memory_manager, (size_of_argv + 1) * sizeof(char*));
+
+    if (argv_copy == NULL)
+        return fallback;
+
+    for (uint64_t i = 0; i < size_of_argv; i++) {
+        uint64_t len = my_strlen(argv[i]);
+
+        char* arg = (char*)mem_alloc(processes_manager->memory_manager, len * sizeof(char));
+        if (arg == NULL) {
+            for (uint64_t j = 0; j < i; j++)
+                mem_free(processes_manager->memory_manager, argv_copy[j]);
+
+            mem_free(processes_manager->memory_manager, argv_copy);
+            return fallback;
+        }
+
+        my_strcpy(arg, argv[i]);
+        argv_copy[i] = arg;
+    }
+
+    argv_copy[size_of_argv] = NULL;
+    return argv_copy;
 }

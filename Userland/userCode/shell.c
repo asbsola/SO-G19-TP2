@@ -40,22 +40,28 @@ void run_shell()
         int argc = 0;
         char** argv = get_args(shell_input, &argc);
         char* last_arg = get_last_arg(argv);
+        uint8_t executed_command = 0;
 
         uint8_t in_background = (last_arg != NULL && last_arg[0] == '&');
 
         for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++) {
             if (strcmp(argv[0], modules[i].module_name) == 0) {
                 if (modules[i].module_type == PROCESS) {
+                    executed_command = 1;
                     sys_create_process((in_background) ? NOT_IN_FOREGROUND : IN_FOREGROUND, modules[i].module, argv);
                     if (!in_background) sys_wait();
                 }
                 else if (modules[i].module_type == BUILT_IN) {
+                    executed_command = 1;
                     modules[i].module(argv, argc);
                 }
 
                 break;
             }
         }
+
+        if (!executed_command) 
+            printf("Unknown command: %s\n", argv[0]);
 
         free_args(argv);
     }

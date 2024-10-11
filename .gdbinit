@@ -1,4 +1,4 @@
-target remote 172.20.166.155:1234
+target remote host.docker.internal:1234
 add-symbol-file Kernel/kernel.elf 0x100000
 add-symbol-file Userland/0000-userCode.elf 0xE00000
 

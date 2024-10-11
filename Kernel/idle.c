@@ -2,7 +2,7 @@
 #include <drivers/videoDriver.h>
 #include <interruptHandlers/interrupts.h>
 #include <managers/processManager.h>
-#include <shell.h>
+#include <shell_caller.h>
 
 extern processManagerADT the_process_manager;
 

@@ -6,7 +6,7 @@
 #include <drivers/pitDriver.h>
 #include <interruptHandlers/interrupts.h>
 
-#include <shell.h>
+#include <shell_caller.h>
 
 #include <managers/memoryManager.h>
 #include <managers/processManager.h>

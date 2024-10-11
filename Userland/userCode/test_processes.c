@@ -24,28 +24,27 @@ uint64_t test_processes(char **argv, int argc) {
 
     uint64_t iter = 0;
 
-    /*
-    if (argc != 1)
+    if (argc != 2 || (max_processes = satoi(argv[1])) <= 0) {
+        puts_with_color("test_processes: ERROR must provide max_processes (tops at 50)\n", 0xFF0000);
         return -1;
+    }
 
-    if ((max_processes = satoi(argv[0])) <= 0)
-        return -1;
-        */
-    max_processes = 50;
+    max_processes = (max_processes > 50) ? 50 : max_processes; 
 
     p_rq p_rqs[max_processes];
 
     while (iter++ < MAX_TEST_ITERS) {
 
         puts_with_color("\n-------------------\n", 0xc2daff);
-        puts_with_color("Creating processes...\n", 0xc2daff);
+        puts_with_color("Testing processes -> ", 0xc2daff);
+        printf("iter: %ld of %ld\n", iter, MAX_TEST_ITERS);
+
         // Create max_processes processes
         for (rq = 0; rq < max_processes; rq++) {
             p_rqs[rq].pid = sys_create_process(NOT_IN_FOREGROUND, endless_loop, argvAux);
-            printf("pid: %ld\n", p_rqs[rq].pid);
 
             if (p_rqs[rq].pid == -1) {
-                printf("test_processes: ERROR creating process\n");
+                puts_with_color("test_processes: ERROR creating process\n", 0xFF0000);
                 return -1;
             } else {
                 p_rqs[rq].state = RUNNING_TEST;
@@ -53,18 +52,18 @@ uint64_t test_processes(char **argv, int argc) {
             }
         }
 
+        printf("processes created: %ld\n", rq);
+
         // Randomly kills, blocks or unblocks processes until every one has been killed
         while (alive > 0) {
-            printf("alive: %d\n", alive);
             for (rq = 0; rq < max_processes; rq++) {
                 action = GetUniform(100) % 2;
 
                 switch (action) {
                     case 0:
                         if (p_rqs[rq].state == RUNNING_TEST || p_rqs[rq].state == BLOCKED_TEST) {
-                            printf("KILLING pid: %ld\n", p_rqs[rq].pid);
                             if (sys_kill_process_by_pid(p_rqs[rq].pid) == -1) {
-                                printf("test_processes: ERROR killing process\n");
+                                puts_with_color("test_processes: ERROR killing process\n", 0xFF0000);
                                 return -1;
                             }
                             p_rqs[rq].state = KILLED_TEST;
@@ -74,9 +73,8 @@ uint64_t test_processes(char **argv, int argc) {
 
                     case 1:
                         if (p_rqs[rq].state == RUNNING_TEST) {
-                            printf("BLOCKING pid: %ld\n", p_rqs[rq].pid);
                             if (sys_block_process_by_pid(p_rqs[rq].pid) == -1) {
-                                printf("test_processes: ERROR blocking process\n");
+                                puts_with_color("test_processes: ERROR blocking process\n", 0xFF0000);
                                 return -1;
                             }
                             p_rqs[rq].state = BLOCKED_TEST;
@@ -88,9 +86,8 @@ uint64_t test_processes(char **argv, int argc) {
             // Randomly unblocks processes
             for (rq = 0; rq < max_processes; rq++)
                 if (p_rqs[rq].state == BLOCKED_TEST && GetUniform(100) % 2) {
-                    printf("UN BLOCKING pid: %ld\n", p_rqs[rq].pid);
                     if (sys_unblock_process_by_pid(p_rqs[rq].pid) == -1) {
-                        printf("test_processes: ERROR unblocking process\n");
+                        puts_with_color("test_processes: ERROR unblocking process\n", 0xFF0000);
                         return -1;
                     }
                     p_rqs[rq].state = RUNNING_TEST;

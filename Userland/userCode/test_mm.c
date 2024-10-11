@@ -16,10 +16,17 @@ uint64_t test_mm(char** argv, int argc) {
     uint8_t rq;
     uint32_t total;
 
-    uint64_t max_memory = sys_get_usable_memory_size();
-    printf("Usable memory: %ld\n", max_memory);
+    uint64_t usable_memory = sys_get_usable_memory_size();
+    printf("Usable memory: %ld\n", usable_memory);
 
-    max_memory = max_memory / 2;
+    uint64_t max_memory;
+    if (argc != 2 || (max_memory = satoi(argv[1])) <= 0) {
+        puts_with_color("test_mm: ERROR must provide max_memory (tops at usable_memory / 2)\n", 0xFF0000);
+        return -1;
+    }
+
+    uint64_t half_usable = usable_memory / 2;
+    max_memory = (max_memory > half_usable) ? half_usable : max_memory;
 
     uint64_t count = 0;
     while (count++ < MAX_ITERS) {

@@ -12,7 +12,7 @@ ModuleDescriptor modules[] = {
     {"song", "plays a short tune while displaying graphics", PROCESS, song},
     {"calculator", "positive integer calculator", PROCESS, calculator},
     {"eliminator", "eliminator game", PROCESS, eliminator},
-    {"jump", "jumps to address given by user in decimal (1407583 causes invalid opcode >:) )", PROCESS, jump},
+    {"jump", "jumps to address given by user in decimal (12345 causes invalid opcode)", PROCESS, jump},
     {"test_mm", "tests the memory manager", PROCESS, test_mm},
     {"test_processes", "tests processes", PROCESS, test_processes},
     {"test_priority", "tests priority", PROCESS, test_prio},
@@ -70,12 +70,18 @@ void run_shell()
 
 uint64_t help(char** argv, int argc)
 {
+
+    puts_with_color("arguments are separated by ' ' (spaces).\nadd & at the last argument of a command to run in background (only for processes).\n\n", 0xc2daff);
+
     puts("available modules:\n");
 
     puts("\t- exit: exit to kernel.\n");
 
-    for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++)
-        printf("\t- %s: %s.\n", modules[i].module_name, modules[i].module_description);
+    for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++) {
+        printf("\t- %s - ", (modules[i].module_type == BUILT_IN) ? "built-in" : "process "); 
+        puts_with_color(modules[i].module_name, 0x006fb5fb);
+        printf(": %s.\n", modules[i].module_description);
+    }
 
     putchar('\n');
 

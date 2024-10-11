@@ -9,6 +9,7 @@ int main() {
         puts_with_color("[SYSTEM INFO]\n\n", 0x006fb6fb);
         char* argv_info[] = {"info", NULL};
         info(argv_info, 1);
+
         puts_with_color("[HELP]\n\n", 0x006fb6fb);
         char* argv_help[] = {"help", NULL};
         help(argv_help, 1);

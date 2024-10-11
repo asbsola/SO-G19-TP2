@@ -4,7 +4,7 @@
 #define BITS_PER_BYTE 8
 #define BITS_PER_BLOCK 2
 #define BLOCKS_PER_BYTE (BITS_PER_BYTE / BITS_PER_BLOCK)
-#define BLOCK_SIZE 256
+#define BLOCK_SIZE 512
 typedef uint8_t *memoryBitMap;
 
 struct memoryManagerCDT

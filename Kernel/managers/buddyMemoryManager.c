@@ -79,7 +79,7 @@ uint64_t get_free_memory_size(memoryManagerADT mem_manager)
 
 uint64_t get_total_memory_size(memoryManagerADT mem_manager)
 {
-    return (uint64_t)(mem_manager->memory_start - (void *)mem_manager) + mem_manager->memory_size;
+    return (uint64_t)((uint64_t)mem_manager->memory_start - (uint64_t)mem_manager) + mem_manager->memory_size;
 }
 
 void *allocate_mem_recursive(memoryNode *tree, uint64_t size, uint64_t chunk_size, void *chunk_start, uint64_t node_index, uint64_t height)

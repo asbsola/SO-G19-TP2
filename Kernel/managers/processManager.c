@@ -10,6 +10,7 @@ extern void start_process_wrapper();
 extern void go_to_scheduler();
 
 char** copy_argv(processManagerADT processes_manager, char** argv);
+void free_argv(processManagerADT process_manager, char** argv);
 char* fallback[] = { NULL };
 
 struct processManagerCDT
@@ -80,6 +81,8 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_
 
     pid_t pid = get_lowest_unused_pid(process_manager);
 
+    char** argv_copy = copy_argv(process_manager, argv);
+
     process_pcb->pid = pid;
     process_pcb->stack = stack;
     process_pcb->parent_pid = parent_pid;
@@ -87,12 +90,13 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_
     process_pcb->priority = LOW;
     process_pcb->is_waiting = NOT_WAITING;
     process_pcb->is_in_foreground = is_in_foreground;
+    process_pcb->argv = argv_copy;
 
     struct startFrame *start_frame = (startFrame *)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame));
     start_frame->process_manager = process_manager;
     start_frame->process_start = process_start;
     start_frame->pid = pid;
-    start_frame->argv = copy_argv(process_manager, argv);
+    start_frame->argv = argv_copy;
 
     registers64_t* call_frame = (registers64_t*) (process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame) - sizeof(registers64_t)); 
     call_frame->rip = (uint64_t)start_process_wrapper;
@@ -129,7 +133,6 @@ int exit_process(processManagerADT process_manager, pid_t pid, int64_t status)
 
     check_parent_waiting(process_manager, pid);
 
-    mem_free(process_manager->memory_manager, process_manager->processes[pid]->stack);
 
     for (pid_t i = 0; i <= process_manager->max_pid; i++)
         if (process_manager->processes[i] != NULL && process_manager->processes[i]->parent_pid == pid)
@@ -169,7 +172,11 @@ int unblock_process(processManagerADT process_manager, pid_t pid)
 int remove_process(processManagerADT process_manager, pid_t pid){
     if(process_manager->processes[pid] == NULL)
         return -1;
+
+    free_argv(process_manager, process_manager->processes[pid]->argv);
+    mem_free(process_manager->memory_manager, process_manager->processes[pid]->stack);
     mem_free(process_manager->memory_manager, process_manager->processes[pid]);
+
     process_manager->processes[pid] = NULL;
     process_manager->num_processes--;
     if(pid == process_manager->max_pid){
@@ -192,8 +199,6 @@ int kill_process(processManagerADT process_manager, pid_t pid) {
     process_manager->processes[pid]->status = KILLED;
 
     check_parent_waiting(process_manager, pid);
-
-    mem_free(process_manager->memory_manager, process_manager->processes[pid]->stack);
 
     if(get_current_process(process_manager->scheduler) == pid){
         remove_process(process_manager, pid);
@@ -231,9 +236,11 @@ int wait(processManagerADT process_manager){
         if (pcb == NULL) continue;
 
         if (pcb->parent_pid == my_pid) {
+            uint64_t ret = pcb->ret;
             switch (pcb->status) {
                 case EXITED:
-                    return pcb->ret;
+                    remove_process(process_manager, pcb->pid);
+                    return ret;
                 case KILLED:
                     return -1;
                 default:
@@ -304,4 +311,11 @@ char** copy_argv(processManagerADT processes_manager, char** argv) {
 
     argv_copy[size_of_argv] = NULL;
     return argv_copy;
+}
+
+void free_argv(processManagerADT process_manager, char** argv) {
+    for (uint64_t i = 0; argv[i] != NULL; i++)
+        mem_free(process_manager->memory_manager, argv[i]);
+
+    mem_free(process_manager->memory_manager, argv);
 }

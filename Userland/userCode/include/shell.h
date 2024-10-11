@@ -37,5 +37,7 @@ uint64_t mem(char** argv, int argc);
 uint64_t ps(char** argv, int argc);
 
 void run_shell();
+char** get_args(const char* input);
+void free_args(char** args);
 
 #endif

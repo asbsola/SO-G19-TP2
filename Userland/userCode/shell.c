@@ -31,21 +31,24 @@ void run_shell()
         sys_set_font_size(current_font_size);
         puts_with_color("shell> ", 0x006fb5fb);
         scanf("%s", shell_input);
+
+        char** argv = get_args(shell_input);
+
         for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++) {
-            if (strcmp(shell_input, modules[i].module_name) == 0) {
+            if (strcmp(argv[0], modules[i].module_name) == 0) {
                 if (modules[i].module_type == PROCESS) {
-                    char* argv[] = {modules[i].module_name, NULL};
                     sys_create_process(NOT_IN_FOREGROUND, modules[i].module, argv);
                     sys_wait();
                 }
                 else if (modules[i].module_type == BUILT_IN) {
-                    char* argv[] = {modules[i].module_name, NULL};
                     modules[i].module(argv, 1);
                 }
 
                 break;
             }
         }
+
+        free_args(argv);
     }
 }
 
@@ -222,5 +225,46 @@ uint64_t ps(char** argv, int argc) {
         printf("\tBase pointer: %d\n", processes[i].base_pointer);
     }
 
+    sys_free(processes); 
+
     return 0;
+}
+
+char** get_args(const char* input) {
+    uint64_t num_args = 1;
+    for (uint64_t i = 0; input[i] != '\0'; i++)
+        num_args += (input[i] == ' ');
+
+    char** args = sys_malloc((num_args + 1) * sizeof(char*));
+
+    uint64_t arg_start = 0;
+    uint64_t arg_count = 0;
+
+    for (uint64_t i = 0; ; i++) {
+        if (input[i] == ' ' || input[i] == '\0') {
+            uint64_t arg_len = i - arg_start;
+            char* arg = sys_malloc((arg_len + 1) * sizeof(char));
+
+            for (uint64_t j = 0; j < arg_len; j++)
+                arg[j] = input[arg_start + j];
+
+            arg[arg_len] = '\0';
+
+            args[arg_count++] = arg;
+
+            if (input[i] == '\0')
+                break;
+            arg_start = i + 1;
+        }
+    }
+
+    args[arg_count] = NULL;
+    return args;
+}
+
+void free_args(char** args) {
+    for (uint64_t i = 0; args[i] != NULL; i++)
+        sys_free(args[i]);
+
+    sys_free(args);
 }

@@ -16,11 +16,13 @@ uint64_t test_mm(char** argv, int argc) {
     uint8_t rq;
     uint32_t total;
 
+    uint8_t in_background = (argc > 2 && argv[argc - 1][0] == '&');
+
     uint64_t usable_memory = sys_get_usable_memory_size();
-    printf("Usable memory: %ld\n", usable_memory);
+    if (!in_background) printf("Usable memory: %ld\n", usable_memory);
 
     uint64_t max_memory;
-    if (argc != 2 || (max_memory = satoi(argv[1])) <= 0) {
+    if (argc < 2 || (max_memory = satoi(argv[1])) <= 0) {
         puts_with_color("test_mm: ERROR must provide max_memory (tops at usable_memory / 2)\n", 0xFF0000);
         return -1;
     }
@@ -34,8 +36,10 @@ uint64_t test_mm(char** argv, int argc) {
         total = 0;
         uint64_t free_memory = sys_get_free_memory_size();
 
-        puts_with_color("\n\nStart test iteration\n", 0xc2daff);
-        printf("Free memory: %ld, Allocating memory...\n\n", free_memory);
+        if (!in_background) {
+            puts_with_color("\n\nStart test iteration\n", 0xc2daff);
+            printf("Free memory: %ld, Allocating memory...\n\n", free_memory);
+        }
 
         // Request as many blocks as we can
         while (rq < MAX_BLOCKS && total < max_memory && free_memory != 0) {
@@ -45,7 +49,10 @@ uint64_t test_mm(char** argv, int argc) {
             if (mm_rqs[rq].address) {
                 free_memory = sys_get_free_memory_size();
                 total += mm_rqs[rq].size;
-                printf("Allocated memory: %d - Free memory: %ld, Ptr: %ld\n", mm_rqs[rq].size, free_memory, (uint64_t)mm_rqs[rq].address);
+
+                if (!in_background)
+                    printf("Allocated memory: %d - Free memory: %ld, Ptr: %ld\n", mm_rqs[rq].size, free_memory, (uint64_t)mm_rqs[rq].address);
+
                 rq++;
             }
         }
@@ -69,7 +76,8 @@ uint64_t test_mm(char** argv, int argc) {
             if (mm_rqs[i].address)
                 sys_free(mm_rqs[i].address);
 
-        puts_with_color("-----------------------------------\n", 0xc2daff);
+        if (!in_background)
+            puts_with_color("-----------------------------------\n", 0xc2daff);
     }
 
     return 0;

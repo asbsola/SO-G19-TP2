@@ -20,6 +20,8 @@ ModuleDescriptor modules[] = {
 
 static int current_font_size = 1;
 
+char* get_last_arg(char** args);
+
 void run_shell()
 {
 
@@ -33,12 +35,15 @@ void run_shell()
         scanf("%s", shell_input);
 
         char** argv = get_args(shell_input);
+        char* last_arg = get_last_arg(argv);
+
+        uint8_t in_background = (last_arg != NULL && last_arg[0] == '&');
 
         for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++) {
             if (strcmp(argv[0], modules[i].module_name) == 0) {
                 if (modules[i].module_type == PROCESS) {
-                    sys_create_process(NOT_IN_FOREGROUND, modules[i].module, argv);
-                    sys_wait();
+                    sys_create_process((in_background) ? NOT_IN_FOREGROUND : IN_FOREGROUND, modules[i].module, argv);
+                    if (!in_background) sys_wait();
                 }
                 else if (modules[i].module_type == BUILT_IN) {
                     modules[i].module(argv, 1);
@@ -261,6 +266,13 @@ char** get_args(const char* input) {
 
     args[arg_count] = NULL;
     return args;
+}
+
+char* get_last_arg(char** args) {
+    for (uint64_t i = 0; args[i] != NULL; i++)
+        if (args[i + 1] == NULL) return args[i];
+
+    return NULL;
 }
 
 void free_args(char** args) {

@@ -4,7 +4,7 @@
 #include <def.h>
 #include <stddef.h>
 
-#define MAX_TEST_ITERS 100
+#define MAX_TEST_ITERS 1000
 
 enum State { RUNNING_TEST,
     BLOCKED_TEST,
@@ -20,24 +20,27 @@ uint64_t test_processes(char **argv, int argc) {
     uint8_t alive = 0;
     uint8_t action;
     uint64_t max_processes;
-    char *argvAux[] = {NULL};
+    char *argvAux[] = {"endless_loop", NULL};
 
     uint64_t iter = 0;
 
-    if (argc != 2 || (max_processes = satoi(argv[1])) <= 0) {
+    if (argc < 2 || (max_processes = satoi(argv[1])) <= 0) {
         puts_with_color("test_processes: ERROR must provide max_processes (tops at 50)\n", 0xFF0000);
         return -1;
     }
+
+    uint8_t in_background = (argc > 2 && argv[argc - 1][0] == '&');
 
     max_processes = (max_processes > 50) ? 50 : max_processes; 
 
     p_rq p_rqs[max_processes];
 
     while (iter++ < MAX_TEST_ITERS) {
-
-        puts_with_color("\n-------------------\n", 0xc2daff);
-        puts_with_color("Testing processes -> ", 0xc2daff);
-        printf("iter: %ld of %ld\n", iter, MAX_TEST_ITERS);
+        if (!in_background) {
+            puts_with_color("\n-------------------\n", 0xc2daff);
+            puts_with_color("Testing processes -> ", 0xc2daff);
+            printf("iter: %ld of %ld\n", iter, MAX_TEST_ITERS);
+        }
 
         // Create max_processes processes
         for (rq = 0; rq < max_processes; rq++) {
@@ -52,7 +55,8 @@ uint64_t test_processes(char **argv, int argc) {
             }
         }
 
-        printf("processes created: %ld\n", rq);
+        if (!in_background)
+            printf("processes created: %ld\n", rq);
 
         // Randomly kills, blocks or unblocks processes until every one has been killed
         while (alive > 0) {

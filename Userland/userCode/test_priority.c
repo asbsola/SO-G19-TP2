@@ -14,62 +14,74 @@
 processPriority prio[TOTAL_PROCESSES] = {LOW, MEDIUM, HIGH};
 
 uint64_t test_prio(char **argv, int argc) {
-  pid_t pids[TOTAL_PROCESSES];
+    pid_t pids[TOTAL_PROCESSES];
 
-  
-  char *argvAux[] = {"endless_loop", NULL};
-  uint64_t i;
+    uint8_t in_background = (argc > 1 && argv[argc - 1][0] == '&');
 
-  for (i = 0; i < TOTAL_PROCESSES; i++){
-    pids[i] = sys_create_process(NOT_IN_FOREGROUND, endless_loop, argvAux);
-    if (pids[i] == -1) {
-      puts_with_color("test_processes: ERROR creating process\n", 0xFF0000);
-      return -1;
-    }
-}
+    char *argvAux[] = {"endless_loop", NULL};
+    uint64_t i;
 
-  bussy_wait(WAIT);
-  printf("\nCHANGING PRIORITIES...\n");
-
-  for (i = 0; i < TOTAL_PROCESSES; i++)
-    if(sys_nicent(pids[i], prio[i]) == -1){
-      puts_with_color("test_processes: ERROR changing priority\n", 0xFF0000);
-      return -1;
+    for (i = 0; i < TOTAL_PROCESSES; i++){
+        pids[i] = sys_create_process(NOT_IN_FOREGROUND, endless_loop, argvAux);
+        if (pids[i] == -1) {
+            puts_with_color("test_processes: ERROR creating process\n", 0xFF0000);
+            return -1;
+        }
     }
 
-  bussy_wait(WAIT);
-  printf("\nBLOCKING...\n");
+    bussy_wait(WAIT);
 
-  for (i = 0; i < TOTAL_PROCESSES; i++)
-    if(sys_block_process_by_pid(pids[i]) == -1){
-      puts_with_color("test_processes: ERROR blocking process\n", 0xFF0000);
-      return -1;
-    }
+    if (!in_background)
+        puts_with_color("\nCHANGING PRIORITIES...\n", 0xc2daff);
 
-  printf("CHANGING PRIORITIES WHILE BLOCKED...\n");
+    for (i = 0; i < TOTAL_PROCESSES; i++)
+        if(sys_nicent(pids[i], prio[i]) == -1){
+            puts_with_color("test_processes: ERROR changing priority\n", 0xFF0000);
+            return -1;
+        }
 
-  for (i = 0; i < TOTAL_PROCESSES; i++)
-    if(sys_nicent(pids[i], MEDIUM)==-1){
-      puts_with_color("test_processes: ERROR changing priority while blocked\n", 0xFF0000);
-      return -1;
-    }
+    bussy_wait(WAIT);
 
-  printf("UNBLOCKING...\n");
+    if (!in_background)
+        puts_with_color("\nBLOCKING...\n", 0xc2daff);
 
-  for (i = 0; i < TOTAL_PROCESSES; i++)
-    if(sys_unblock_process_by_pid(pids[i])==-1){
-      puts_with_color("test_processes: ERROR unblocking process\n", 0xFF0000);
-      return -1;
-    }
+    for (i = 0; i < TOTAL_PROCESSES; i++)
+        if(sys_block_process_by_pid(pids[i]) == -1){
+            puts_with_color("test_processes: ERROR blocking process\n", 0xFF0000);
+            return -1;
+        }
 
-  bussy_wait(WAIT);
-  printf("\nKILLING...\n");
+    if (!in_background)
+        puts_with_color("CHANGING PRIORITIES WHILE BLOCKED...\n", 0xc2daff);
 
-  for (i = 0; i < TOTAL_PROCESSES; i++)
-    if(sys_kill_process_by_pid(pids[i])){
-      puts_with_color("test_processes: ERROR killing process\n", 0xFF0000);
-      return -1;
-    }
-  puts_with_color("Test finished\n", 0xFF0FF0);
-  return 0;
+    for (i = 0; i < TOTAL_PROCESSES; i++)
+        if(sys_nicent(pids[i], MEDIUM)==-1){
+            puts_with_color("test_processes: ERROR changing priority while blocked\n", 0xFF0000);
+            return -1;
+        }
+
+    if (!in_background)
+        puts_with_color("UNBLOCKING...\n", 0xc2daff);
+
+    for (i = 0; i < TOTAL_PROCESSES; i++)
+        if(sys_unblock_process_by_pid(pids[i])==-1){
+            puts_with_color("test_processes: ERROR unblocking process\n", 0xFF0000);
+            return -1;
+        }
+
+    bussy_wait(WAIT);
+
+    if (!in_background)
+        puts_with_color("\nKILLING...\n", 0xc2daff);
+
+    for (i = 0; i < TOTAL_PROCESSES; i++)
+        if(sys_kill_process_by_pid(pids[i])){
+            puts_with_color("test_processes: ERROR killing process\n", 0xFF0000);
+            return -1;
+        }
+
+    if (!in_background)
+        puts_with_color("Test finished\n", 0x00FF00);
+
+    return 0;
 }

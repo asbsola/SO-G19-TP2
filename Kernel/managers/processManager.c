@@ -85,7 +85,7 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_
 
     process_pcb->pid = pid;
     process_pcb->stack = stack;
-    process_pcb->parent_pid = is_in_foreground ? parent_pid : IDLE_PROCESS_PID;
+    process_pcb->parent_pid = parent_pid;
     process_pcb->status = READY;
     process_pcb->priority = LOW;
     process_pcb->is_waiting = NOT_WAITING;

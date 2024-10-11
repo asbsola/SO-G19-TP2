@@ -18,7 +18,8 @@ ModuleDescriptor modules[] = {
     {"test_priority", "tests priority", PROCESS, test_prio},
     {"mem", "displays memory status", BUILT_IN, mem},
     {"ps", "displays information about processes", BUILT_IN, ps},
-    {"nicent", "change priority", BUILT_IN, nicent}};
+    {"nicent", "changes process priority by PID", BUILT_IN, nicent},
+    {"kill", "terminates a process by its PID", BUILT_IN, kill}};
 
 static int current_font_size = 1;
 
@@ -315,6 +316,19 @@ uint64_t nicent(char** argv, int argc) {
         puts("nicent: ERROR changing priority\n");
         return -1;
     }
+
+    return 0;
+}
+
+uint64_t kill(char** argv, int argc) {
+    if (argc < 2) {
+        puts_with_color("kill: ERROR must provide pid\n", 0xFF0000);
+        return -1;
+    }
+
+    int pid = atoi(argv[1]);
+
+    sys_kill_process_by_pid(pid);
 
     return 0;
 }

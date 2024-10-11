@@ -4,7 +4,7 @@
 #include <def.h>
 #include <stddef.h>
 
-#define MAX_TEST_ITERS 5
+#define MAX_TEST_ITERS 300
 
 enum State { RUNNING_TEST,
     BLOCKED_TEST,

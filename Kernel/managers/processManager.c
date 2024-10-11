@@ -295,9 +295,9 @@ char** copy_argv(processManagerADT processes_manager, char** argv) {
         return fallback;
 
     for (uint64_t i = 0; i < size_of_argv; i++) {
-        uint64_t len = my_strlen(argv[i]);
+        uint64_t len = str_len(argv[i]);
 
-        char* arg = (char*)mem_alloc(processes_manager->memory_manager, len * sizeof(char));
+        char* arg = (char*)mem_alloc(processes_manager->memory_manager, (len + 1) * sizeof(char));
         if (arg == NULL) {
             for (uint64_t j = 0; j < i; j++)
                 mem_free(processes_manager->memory_manager, argv_copy[j]);
@@ -306,7 +306,7 @@ char** copy_argv(processManagerADT processes_manager, char** argv) {
             return fallback;
         }
 
-        my_strcpy(arg, argv[i]);
+        str_cpy(arg, argv[i]);
         argv_copy[i] = arg;
     }
 

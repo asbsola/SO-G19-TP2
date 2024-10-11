@@ -32,6 +32,7 @@ typedef struct
     processPriority priority;
     void *stack_pointer;
     void *base_pointer;
+    const char* name;
     uint8_t is_in_foreground;
     processStatus status;
 } process_info_t;

@@ -276,6 +276,7 @@ uint64_t get_ps_data(processManagerADT process_manager, memoryManagerADT mem_man
             processes[index].base_pointer = process_manager->processes[i]->stack;
             processes[index].status = process_manager->processes[i]->status;
             processes[index].is_in_foreground = process_manager->processes[i]->is_in_foreground;
+            processes[index].name = process_manager->processes[i]->argv[0];
             index++;
         }
     }

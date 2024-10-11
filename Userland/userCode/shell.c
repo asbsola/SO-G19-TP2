@@ -213,6 +213,7 @@ uint64_t ps(char** argv, int argc) {
     for (int i = 0; processes[i].pid != -1; i++){
         printf("\nProcess %d\n", i);
         printf("\tPID: %d\n", processes[i].pid);
+        printf("\tName: %s\n", processes[i].name);
 
         if(processes[i].parent_pid == -1) printf("\tParent PID: -1\n");
         else printf("\tParent PID: %d\n", processes[i].parent_pid);

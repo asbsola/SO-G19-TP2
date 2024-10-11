@@ -57,10 +57,12 @@ int deschedule_process(schedulerADT scheduler, processControlBlockADT process){
 }
 
 
-processControlBlockADT get_next_aux(processControlBlockADT next, schedulerADT scheduler, processPriority priority){
+processControlBlockADT get_next_aux(processControlBlockADT next, schedulerADT scheduler, int priority){
+    
+
     if(next == NULL || scheduler->current_process->priority == priority){
         if(scheduler->executions_counter <= priority ){
-            scheduler->executions_counter++;
+            
             next=(processControlBlockADT)list_next(scheduler->process_list[priority]);
         }else{
             scheduler->executions_counter=0;
@@ -71,14 +73,16 @@ processControlBlockADT get_next_aux(processControlBlockADT next, schedulerADT sc
 
 processControlBlockADT next_process(schedulerADT scheduler){
 
-
-    processControlBlockADT next = scheduler->current_process;
+    processControlBlockADT current = scheduler->current_process;
     for(int priority = HIGH; priority >= LOW; priority--){
-        next = get_next_aux(next, scheduler, priority);
-        if(next != NULL) break;
+        current = get_next_aux(current, scheduler, priority);
+        if(current != scheduler->current_process){
+            scheduler->executions_counter++;
+            break;
+        };
     }
     
-    return next;
+    return current;
 }
 
 void handle_status(schedulerADT scheduler, processControlBlockADT process){

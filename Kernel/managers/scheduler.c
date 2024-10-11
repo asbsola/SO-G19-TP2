@@ -57,33 +57,39 @@ int deschedule_process(schedulerADT scheduler, processControlBlockADT process){
 }
 
 
-processControlBlockADT get_next_aux(processControlBlockADT next, schedulerADT scheduler, int priority){
-    
-
-    if(next == NULL || scheduler->current_process->priority == priority){
-        if(scheduler->executions_counter <= priority ){
-            
-            next=(processControlBlockADT)list_next(scheduler->process_list[priority]);
-        }else{
-            scheduler->executions_counter=0;
-        }
-    }
-    return next;
+int denominator(schedulerADT scheduler){
+    return 4*list_size(scheduler->process_list[HIGH]) + 2*list_size(scheduler->process_list[MEDIUM]) + list_size(scheduler->process_list[LOW]);
 }
+
+int get_probability_low(schedulerADT scheduler){
+    return 10000/denominator(scheduler);
+}
+
+int get_probability_medium(schedulerADT scheduler){
+    return 20000/denominator(scheduler);
+}
+int get_probability_high(schedulerADT scheduler){
+    return 40000/denominator(scheduler);
+}
+
+int get_next_priority(schedulerADT scheduler){
+    
+    uint32_t random = GetUniform(10000);
+    if(random < get_probability_high(scheduler) && !list_is_empty(scheduler->process_list[HIGH])){
+        return HIGH;
+    }else if(random < get_probability_high(scheduler) + get_probability_medium(scheduler) && !list_is_empty(scheduler->process_list[MEDIUM])){
+        return MEDIUM;
+    }
+
+    return LOW;
+}
+
+
 
 processControlBlockADT next_process(schedulerADT scheduler){
-
-    processControlBlockADT current = scheduler->current_process;
-    for(int priority = HIGH; priority >= LOW; priority--){
-        current = get_next_aux(current, scheduler, priority);
-        if(current != scheduler->current_process){
-            scheduler->executions_counter++;
-            break;
-        };
-    }
-    
-    return current;
+    return list_next(scheduler->process_list[get_next_priority(scheduler)]);
 }
+
 
 void handle_status(schedulerADT scheduler, processControlBlockADT process){
     switch (process->status) {

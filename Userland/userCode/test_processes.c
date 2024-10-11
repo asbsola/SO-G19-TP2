@@ -4,7 +4,7 @@
 #include <def.h>
 #include <stddef.h>
 
-#define MAX_TEST_ITERS 100
+#define MAX_TEST_ITERS 5
 
 enum State { RUNNING_TEST,
     BLOCKED_TEST,
@@ -25,13 +25,13 @@ uint64_t test_processes(char **argv, int argc) {
     uint64_t iter = 0;
 
     if (argc < 2 || (max_processes = satoi(argv[1])) <= 0) {
-        puts_with_color("test_processes: ERROR must provide max_processes (tops at 50)\n", 0xFF0000);
+        puts_with_color("test_processes: ERROR must provide max_processes (tops at 250)\n", 0xFF0000);
         return -1;
     }
 
     uint8_t in_background = (argc > 2 && argv[argc - 1][0] == '&');
 
-    max_processes = (max_processes > 50) ? 50 : max_processes; 
+    max_processes = (max_processes > 250) ? 250 : max_processes; 
 
     p_rq p_rqs[max_processes];
 

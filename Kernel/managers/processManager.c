@@ -85,7 +85,7 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_
 
     process_pcb->pid = pid;
     process_pcb->stack = stack;
-    process_pcb->parent_pid = parent_pid;
+    process_pcb->parent_pid = is_in_foreground ? parent_pid : IDLE_PROCESS_PID;
     process_pcb->status = READY;
     process_pcb->priority = LOW;
     process_pcb->is_waiting = NOT_WAITING;
@@ -323,7 +323,7 @@ void free_argv(processManagerADT process_manager, char** argv) {
 
 
 uint64_t nicent(processManagerADT process_manager, pid_t pid, processPriority priority){
-    if(pid >= MAX_PROCESSES || process_manager->processes[pid] == NULL || process_manager->processes[pid]->status == EXITED || process_manager->processes[pid]->status == KILLED)
+    if( pid == IDLE_PROCESS_PID || pid >= MAX_PROCESSES || process_manager->processes[pid] == NULL || process_manager->processes[pid]->status == EXITED || process_manager->processes[pid]->status == KILLED)
         return -1;
     
     if(process_manager->processes[pid]->status == BLOCKED){

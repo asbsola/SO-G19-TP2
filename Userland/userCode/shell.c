@@ -17,7 +17,8 @@ ModuleDescriptor modules[] = {
     {"test_processes", "tests processes", PROCESS, test_processes},
     {"test_priority", "tests priority", PROCESS, test_prio},
     {"mem", "displays memory status", BUILT_IN, mem},
-    {"ps", "displays information about processes", BUILT_IN, ps}};
+    {"ps", "displays information about processes", BUILT_IN, ps},
+    {"nicent", "change priority", BUILT_IN, nicent}};
 
 static int current_font_size = 1;
 
@@ -28,14 +29,16 @@ void run_shell()
 
     char shell_input[MAX_SHELL_INPUT];
     shell_input[0] = 0;
-
+    sys_nicent(sys_get_pid(), HIGH);
+    
     while (strcmp(shell_input, "exit") != 0)
     {
         sys_set_font_size(current_font_size);
         puts_with_color("shell> ", 0x006fb5fb);
         scanf("%s", shell_input);
 
-        char** argv = get_args(shell_input);
+        int argc = 0;
+        char** argv = get_args(shell_input, &argc);
         char* last_arg = get_last_arg(argv);
 
         uint8_t in_background = (last_arg != NULL && last_arg[0] == '&');
@@ -47,7 +50,7 @@ void run_shell()
                     if (!in_background) sys_wait();
                 }
                 else if (modules[i].module_type == BUILT_IN) {
-                    modules[i].module(argv, 1);
+                    modules[i].module(argv, argc);
                 }
 
                 break;
@@ -237,7 +240,7 @@ uint64_t ps(char** argv, int argc) {
     return 0;
 }
 
-char** get_args(const char* input) {
+char** get_args(const char* input, int* argc) {
     uint64_t num_args = 1;
     for (uint64_t i = 0; input[i] != '\0'; i++)
         num_args += (input[i] == ' ');
@@ -264,7 +267,7 @@ char** get_args(const char* input) {
             arg_start = i + 1;
         }
     }
-
+    *argc = arg_count;
     args[arg_count] = NULL;
     return args;
 }
@@ -281,4 +284,31 @@ void free_args(char** args) {
         sys_free(args[i]);
 
     sys_free(args);
+}
+
+uint64_t nicent(char** argv, int argc) {
+    
+    if (argc < 3) {
+        puts_with_color("nicent: ERROR must provide pid and priority\n", 0xFF0000);
+        return -1;
+    }
+    
+    uint64_t pid = atoi(argv[1]);
+    uint64_t priority;
+
+
+    if(strcmp(argv[2], "LOW") == 0) priority = 0;
+    else if(strcmp(argv[2], "MEDIUM") == 0) priority = 1;
+    else if(strcmp(argv[2], "HIGH") == 0) priority = 2;
+    else {
+        puts_with_color("nicent: ERROR priority must be LOW, MEDIUM or HIGH\n", 0xFF0000);
+        return -1;
+    }
+
+    if (sys_nicent(pid, priority) == -1) {
+        puts("nicent: ERROR changing priority\n");
+        return -1;
+    }
+
+    return 0;
 }

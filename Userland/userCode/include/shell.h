@@ -36,9 +36,10 @@ uint64_t test_processes(char** argv, int argc);
 uint64_t test_prio(char** argv, int argc);
 uint64_t mem(char** argv, int argc);
 uint64_t ps(char** argv, int argc);
+uint64_t nicent(char** argv, int argc);
 
 void run_shell();
-char** get_args(const char* input);
+char** get_args(const char* input, int* argc);
 void free_args(char** args);
 
 #endif

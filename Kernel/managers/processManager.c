@@ -320,3 +320,16 @@ void free_argv(processManagerADT process_manager, char** argv) {
 
     mem_free(process_manager->memory_manager, argv);
 }
+
+
+uint64_t nicent(processManagerADT process_manager, pid_t pid, processPriority priority){
+    if(pid >= MAX_PROCESSES || process_manager->processes[pid] == NULL || process_manager->processes[pid]->status == EXITED || process_manager->processes[pid]->status == KILLED)
+        return -1;
+    
+    if(process_manager->processes[pid]->status == BLOCKED){
+        process_manager->processes[pid]->priority = priority;
+        return 0;
+    }
+    change_process_priority(process_manager->scheduler, process_manager->processes[pid], process_manager->processes[pid]->priority, priority);
+    return 0;
+}

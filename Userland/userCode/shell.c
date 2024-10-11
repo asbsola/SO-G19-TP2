@@ -15,6 +15,7 @@ ModuleDescriptor modules[] = {
     {"jump", "jumps to address given by user in decimal (1407583 causes invalid opcode >:) )", PROCESS, jump},
     {"test_mm", "tests the memory manager", PROCESS, test_mm},
     {"test_processes", "tests processes", PROCESS, test_processes},
+    {"test_priority", "tests priority", PROCESS, test_prio},
     {"mem", "displays memory status", BUILT_IN, mem},
     {"ps", "displays information about processes", BUILT_IN, ps}};
 

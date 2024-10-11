@@ -25,6 +25,7 @@ uint64_t sys_get_usable_memory_size(uint64_t rdi, uint64_t rsi, uint64_t rdx, ui
 uint64_t sys_get_free_memory_size(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9);
 uint64_t sys_get_total_memory_size(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9);
 uint64_t sys_ps(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9);
+uint64_t sys_nicent(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9);
 
 uint64_t syscall_handler(const registers64_t *registers);
 

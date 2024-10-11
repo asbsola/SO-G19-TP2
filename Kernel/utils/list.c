@@ -105,3 +105,14 @@ int list_is_empty(const ListADT list) {
     if (list == NULL) return 1;
     return list->size == 0;
 }
+
+void * get_element(const ListADT list, void *data){
+    if (list == NULL || list_is_empty(list) || data == NULL) return NULL;
+
+    ListNode* current = list->head;
+    while(current->data != data) {
+        if (current == list->last) return NULL;
+        current = current->next;
+    }
+    return current->data;
+}

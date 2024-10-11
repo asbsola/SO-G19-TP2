@@ -33,6 +33,7 @@ uint64_t eliminator(char** argv, int argc);
 uint64_t jump(char** argv, int argc);
 uint64_t test_mm(char** argv, int argc);
 uint64_t test_processes(char** argv, int argc);
+uint64_t test_prio(char** argv, int argc);
 uint64_t mem(char** argv, int argc);
 uint64_t ps(char** argv, int argc);
 

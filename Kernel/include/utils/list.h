@@ -21,5 +21,7 @@ size_t list_size(const ListADT list);
 
 int list_is_empty(const ListADT list);
 
+void * get_element(const ListADT list, void *data);
+
 
 #endif

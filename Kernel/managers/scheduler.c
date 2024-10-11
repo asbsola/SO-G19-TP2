@@ -116,3 +116,11 @@ uint64_t context_switch(schedulerADT scheduler, uint64_t rsp){
     scheduler->current_process->status = RUNNING;
     return scheduler->current_process->rsp;
 }
+
+
+int change_process_priority(schedulerADT scheduler, processControlBlockADT process, processPriority old_priority, processPriority new_priority){
+    deschedule_process(scheduler, process);
+    process->priority = new_priority;
+    schedule_process(scheduler, process);
+    return 0;
+}

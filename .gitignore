@@ -7,6 +7,7 @@ compile_flags.txt
 
 compile.sh
 run.sh
+.gdbinit
 
 #Binary Files
 *.bin

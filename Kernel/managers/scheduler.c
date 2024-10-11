@@ -13,6 +13,12 @@ struct schedulerCDT {
     uint8_t executions_counter;
 };
 
+void free_process_list(ListADT process_list[], int size){
+    for(int i = 0; i < size; i++){
+        free_list(process_list[i]);
+    }
+}
+
 schedulerADT init_scheduler(memoryManagerADT memory_manager){
     schedulerADT scheduler = mem_alloc(memory_manager, sizeof(struct schedulerCDT));
     if (scheduler == NULL) return NULL;
@@ -35,11 +41,7 @@ schedulerADT init_scheduler(memoryManagerADT memory_manager){
     return scheduler;
 }
 
-void free_process_list(ListADT process_list[], int size){
-    for(int i = 0; i < size; i++){
-        free_list(process_list[i]);
-    }
-}
+
 
 pid_t get_current_process(schedulerADT scheduler){
     if(scheduler->current_process == NULL) return -1;
@@ -71,9 +73,11 @@ processControlBlockADT next_process(schedulerADT scheduler){
 
 
     processControlBlockADT next = scheduler->current_process;
-    next = get_next_aux(next, scheduler, HIGH);
-    next = get_next_aux(next, scheduler, MEDIUM);
-    next = get_next_aux(next, scheduler, LOW);
+    for(int priority = HIGH; priority >= LOW; priority--){
+        next = get_next_aux(next, scheduler, priority);
+        if(next != NULL) break;
+    }
+    
     return next;
 }
 
@@ -83,13 +87,13 @@ void handle_status(schedulerADT scheduler, processControlBlockADT process){
         process->status = READY;
         break;
     case BLOCKED:
-        list_remove(scheduler->process_list, process);
+        list_remove(scheduler->process_list[process->priority], process);
         break;
     case EXITED:
-        list_remove(scheduler->process_list, process);
+        list_remove(scheduler->process_list[process->priority], process);
         break;
     case KILLED:
-        list_remove(scheduler->process_list, process);
+        list_remove(scheduler->process_list[process->priority], process);
     default:
         break;
     }

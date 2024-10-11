@@ -11,7 +11,7 @@ all: $(MODULE)
 
 $(MODULE): $(OBJECTS) $(OBJECTS_ASM)
 	$(GCC) $(GCCFLAGS) -T userCode.ld _loader.c $(OBJECTS) $(OBJECTS_ASM) -o ../$(MODULE)
-	#$(GCC) $(GCCFLAGS) -T userCode.ld -Wl,--oformat=elf64-x86-64 _loader.c $(OBJECTS) $(OBJECTS_ASM) -o ../0000-userCode.elf
+	$(GCC) $(GCCFLAGS) -T userCode.ld -no-pie -Wl,--oformat=elf64-x86-64 _loader.c $(OBJECTS) $(OBJECTS_ASM) -o ../0000-userCode.elf
 
 %.o: %.c
 	$(GCC) $(GCCFLAGS) -I./include -I./../../include -c $< -o $@

@@ -16,6 +16,7 @@ ModuleDescriptor modules[] = {
     {"test_mm", "tests the memory manager", PROCESS, test_mm},
     {"test_processes", "tests processes", PROCESS, test_processes},
     {"test_priority", "tests priority", PROCESS, test_prio},
+    {"test_priority_dist", "tests priority distribution", PROCESS, test_prio_dist},
     {"mem", "displays memory status", BUILT_IN, mem},
     {"ps", "displays information about processes", BUILT_IN, ps},
     {"nicent", "changes process priority by PID", BUILT_IN, nicent},

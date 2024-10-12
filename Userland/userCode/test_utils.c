@@ -62,5 +62,14 @@ uint64_t endless_loop(char** argv, int argc) {
     while (1) ;
 }
 
+int counters[] = {0, 0, 0};
+uint64_t endless_counter(char** argv, int argc) {
+    int index = atoi(argv[1]);
+    while (1){
+        counters[index]++;
+        __asm__("hlt");
+    }
+}
+
 void endless_loop_print(uint64_t wait) {
 }

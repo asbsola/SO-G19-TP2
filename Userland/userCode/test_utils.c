@@ -1,5 +1,6 @@
 #include <std.h>
 #include <test_utils.h>
+#include <lib.h>
 
 // Random
 static uint32_t m_z = 362436069;
@@ -58,6 +59,17 @@ void bussy_wait(uint64_t n) {
         ;
 }
 
+uint64_t bussy_wait_proc(char** argv, int argc) {
+    uint64_t n = 0;
+    if (argc < 2 || (n = satoi(argv[1])) <= 0) {
+        return -1;
+    }
+
+    for (uint64_t i = 0; i < n; i++) ;
+
+    return 0;
+}
+
 uint64_t endless_loop(char** argv, int argc) {
     while (1) ;
 }
@@ -67,7 +79,7 @@ uint64_t endless_counter(char** argv, int argc) {
     int index = atoi(argv[1]);
     while (1){
         counters[index]++;
-        __asm__("hlt");
+        _hlt();
     }
 }
 

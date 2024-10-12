@@ -29,6 +29,7 @@ global sys_kill_process_by_pid
 global sys_unblock_process_by_pid
 global sys_get_pid
 global sys_wait
+global sys_wait_pid
 global sys_nicent
 
 %macro syscall 1
@@ -131,5 +132,8 @@ sys_get_pid:
 sys_wait:
     syscall 28
 
-sys_nicent:
+sys_wait_pid:
     syscall 29
+
+sys_nicent:
+    syscall 30

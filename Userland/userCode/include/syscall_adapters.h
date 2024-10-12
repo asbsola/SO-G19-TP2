@@ -32,7 +32,8 @@ int sys_block_process_by_pid(pid_t pid);
 int sys_kill_process_by_pid(pid_t pid);
 int sys_unblock_process_by_pid(pid_t pid);
 pid_t sys_get_pid();
-int sys_wait();
+int64_t sys_wait();
+int64_t sys_wait_pid();
 uint64_t sys_nicent(pid_t pid, processPriority priority);
 
 #endif

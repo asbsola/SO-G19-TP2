@@ -14,7 +14,7 @@ typedef struct processControlBlockCDT
     uint64_t rsp;
     uint64_t ret;
     uint8_t is_in_foreground;
-    uint8_t is_waiting;
+    uint8_t parent_is_waiting;
 } processControlBlockCDT;
 
 typedef struct processControlBlockCDT *processControlBlockADT;

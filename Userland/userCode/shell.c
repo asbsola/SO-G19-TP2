@@ -49,8 +49,8 @@ void run_shell()
             if (strcmp(argv[0], modules[i].module_name) == 0) {
                 if (modules[i].module_type == PROCESS) {
                     executed_command = 1;
-                    sys_create_process((in_background) ? NOT_IN_FOREGROUND : IN_FOREGROUND, modules[i].module, argv);
-                    if (!in_background) sys_wait();
+                    pid_t pid = sys_create_process((in_background) ? NOT_IN_FOREGROUND : IN_FOREGROUND, modules[i].module, argv);
+                    if (!in_background) sys_wait_pid(pid);
                 }
                 else if (modules[i].module_type == BUILT_IN) {
                     executed_command = 1;
@@ -334,7 +334,10 @@ uint64_t kill(char** argv, int argc) {
 
     int pid = atoi(argv[1]);
 
-    sys_kill_process_by_pid(pid);
+    if(sys_kill_process_by_pid(pid) == -1){
+        puts_with_color("kill: ERROR could not kill process\n", 0xFF0000);
+        return -1;
+    }
 
     return 0;
 }

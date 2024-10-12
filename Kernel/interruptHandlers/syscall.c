@@ -183,6 +183,10 @@ uint64_t sys_wait(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64
     return wait(the_process_manager); 
 }
 
+uint64_t sys_wait_pid(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
+    return wait_process(the_process_manager, rdi); 
+}
+
 uint64_t sys_nicent(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
     return nicent(the_process_manager, rdi, rsi);
 }
@@ -195,7 +199,7 @@ uint64_t (*syscalls[])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_
     sys_print_registers, sys_clear_screen,
     sys_malloc, sys_free, sys_get_usable_memory_size, sys_get_free_memory_size, sys_get_total_memory_size, 
     sys_ps, sys_create_process, sys_exit_process_by_pid, sys_block_process_by_pid, sys_kill_process_by_pid, sys_unblock_process_by_pid,
-    sys_get_pid, sys_wait, sys_nicent
+    sys_get_pid, sys_wait, sys_wait_pid,  sys_nicent
 };
 
 uint64_t syscall_handler(const registers64_t *registers)

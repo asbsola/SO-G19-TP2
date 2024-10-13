@@ -35,5 +35,6 @@ pid_t sys_get_pid();
 int64_t sys_wait();
 int64_t sys_wait_pid();
 uint64_t sys_nicent(pid_t pid, processPriority priority);
+void sys_yield();
 
 #endif

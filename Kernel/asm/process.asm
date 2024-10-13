@@ -1,14 +1,14 @@
 section .text
 
 global start_process_wrapper 
-global go_to_scheduler
+global yield
 extern start_process
 
 start_process_wrapper:
     mov rdi, rsp
     call start_process
 
-go_to_scheduler:
+yield:
     push rbp
     mov rbp, rsp
 

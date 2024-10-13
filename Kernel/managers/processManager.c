@@ -7,7 +7,7 @@
 #define MAX(a, b) ((a)<(b)?(b):(a))
 
 extern void start_process_wrapper();
-extern void go_to_scheduler();
+extern void yield();
 
 char** copy_argv(processManagerADT processes_manager, char** argv);
 void free_argv(processManagerADT process_manager, char** argv);
@@ -160,7 +160,7 @@ int exit_process(processManagerADT process_manager, pid_t pid, int64_t status){
             process_manager->processes[i]->parent_pid = IDLE_PROCESS_PID;
 
     if(get_current_process(process_manager->scheduler) == pid)
-        go_to_scheduler();
+        yield();
     else
         deschedule_process(process_manager->scheduler, process_manager->processes[pid]);
     return 0;
@@ -173,7 +173,7 @@ int block_process(processManagerADT process_manager, pid_t pid){
     process_manager->processes[pid]->status = BLOCKED;
 
     if(get_current_process(process_manager->scheduler) == pid)
-        go_to_scheduler();
+        yield();
     else
         deschedule_process(process_manager->scheduler, process_manager->processes[pid]);
     return 0;
@@ -222,7 +222,7 @@ int kill_process(processManagerADT process_manager, pid_t pid) {
 
     if(get_current_process(process_manager->scheduler) == pid){
         remove_process(process_manager, pid);
-        go_to_scheduler();
+        yield();
     }
     else{
         if(was_ready) deschedule_process(process_manager->scheduler, process_manager->processes[pid]);

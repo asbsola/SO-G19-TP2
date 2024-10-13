@@ -5,15 +5,22 @@
 #include <stddef.h>
 #include <std.h>
 
-#define WAIT_MILLIS 10000
-#define TOTAL_PROCESSES 99
+#define WAIT_MILLIS 20000
 
 extern processPriority prio[TOTAL_PROCESSES];
 
 extern int counters[];
 
 uint64_t test_prio_dist(char **argv, int argc) {
+    
     pid_t pids[TOTAL_PROCESSES];
+
+    uint64_t max_processes;
+    if (argc < 2 || (max_processes = satoi(argv[1])) <= 0) {
+        puts_with_color("test_priority_dist: ERROR must provide max_processes (tops at 250)\n", 0xFF0000);
+        return -1;
+    }
+    max_processes = (max_processes > TOTAL_PROCESSES) ? TOTAL_PROCESSES : max_processes; 
 
     uint8_t in_background = (argc > 1 && argv[argc - 1][0] == '&');
 
@@ -23,21 +30,36 @@ uint64_t test_prio_dist(char **argv, int argc) {
     char **argvs[3] = {argvAux1, argvAux2, argvAux3};
 
     if (!in_background)
-        puts_with_color("Creating processes...\n", 0xc2daff);
-    for (int i = 0; i < TOTAL_PROCESSES; i++){
+        puts_with_color("Creating and blocking processes...\n", 0xc2daff);
+    for (int i = 0; i < max_processes; i++){
         pids[i] = sys_create_process(NOT_IN_FOREGROUND, endless_counter, argvs[i%3]);
         if (pids[i] == -1) {
             puts_with_color("test_priority_dist: ERROR creating process\n", 0xFF0000);
+            return -1;
+        }
+        if(sys_block_process_by_pid(pids[i]) == -1){
+            puts_with_color("test_priority_dist: ERROR blocking process\n", 0xFF0000);
             return -1;
         }
         sys_nicent(pids[i], i%3);
     }
 
     if (!in_background)
+        puts_with_color("Unblocking...\n", 0xc2daff);
+
+    for(int i=0; i<max_processes; i++){
+        if(sys_unblock_process_by_pid(pids[i]) == -1){
+            puts_with_color("test_priority_dist: ERROR unblocking process\n", 0xFF0000);
+            return -1;
+        }
+    }
+
+    if (!in_background)
         puts_with_color("Waiting...\n", 0xc2daff);
-    sys_delay(WAIT_MILLIS);
     
-    for (int i = 0; i < TOTAL_PROCESSES; i++){
+    bussy_wait(WAIT_MILLIS);
+    
+    for (int i = 0; i < max_processes; i++){
         if(sys_kill_process_by_pid(pids[i]) == -1){
             puts_with_color("test_priority_dist: ERROR killing process\n", 0xFF0000);
             return -1;

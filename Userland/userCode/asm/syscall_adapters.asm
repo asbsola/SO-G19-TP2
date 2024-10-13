@@ -31,6 +31,7 @@ global sys_get_pid
 global sys_wait
 global sys_wait_pid
 global sys_nicent
+global sys_yield
 
 %macro syscall 1
     push rbp
@@ -137,3 +138,6 @@ sys_wait_pid:
 
 sys_nicent:
     syscall 30
+
+sys_yield:
+    syscall 31

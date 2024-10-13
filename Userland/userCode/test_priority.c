@@ -6,9 +6,7 @@
 #include <std.h>
 
 
-#define MINOR_WAIT 1000000 // TODO: Change this value to prevent a process from flooding the screen
-#define WAIT 10000000      // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
-
+#define MILLIS 1000
 
 processPriority prio[TOTAL_PROCESSES] = {LOW, MEDIUM, HIGH};
 
@@ -31,6 +29,9 @@ uint64_t test_prio(char **argv, int argc) {
     char *argvAux[] = {"endless_loop", NULL};
     uint64_t i;
 
+    if (!in_background)
+        puts_with_color("\nCREATING PROCESSES...\n", 0xc2daff);
+    
     for (i = 0; i < max_processes; i++){
         pids[i] = sys_create_process(NOT_IN_FOREGROUND, endless_loop, argvAux);
         if (pids[i] == -1) {
@@ -39,7 +40,7 @@ uint64_t test_prio(char **argv, int argc) {
         }
     }
 
-    bussy_wait(WAIT);
+    bussy_wait(MILLIS);
 
     if (!in_background)
         puts_with_color("\nCHANGING PRIORITIES...\n", 0xc2daff);
@@ -50,7 +51,7 @@ uint64_t test_prio(char **argv, int argc) {
             return -1;
         }
 
-    bussy_wait(WAIT);
+    bussy_wait(MILLIS);
 
     if (!in_background)
         puts_with_color("\nBLOCKING...\n", 0xc2daff);
@@ -61,6 +62,8 @@ uint64_t test_prio(char **argv, int argc) {
             return -1;
         }
 
+    bussy_wait(MILLIS);
+
     if (!in_background)
         puts_with_color("CHANGING PRIORITIES WHILE BLOCKED...\n", 0xc2daff);
 
@@ -70,6 +73,8 @@ uint64_t test_prio(char **argv, int argc) {
             return -1;
         }
 
+    bussy_wait(MILLIS);
+    
     if (!in_background)
         puts_with_color("UNBLOCKING...\n", 0xc2daff);
 
@@ -79,7 +84,7 @@ uint64_t test_prio(char **argv, int argc) {
             return -1;
         }
 
-    bussy_wait(WAIT);
+    bussy_wait(MILLIS);
 
     if (!in_background)
         puts_with_color("\nKILLING...\n", 0xc2daff);

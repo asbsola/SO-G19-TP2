@@ -110,7 +110,7 @@ A continuación, se detallan las instrucciones para compilar y ejecutar los test
 El \texttt{processManager} proporciona varias funciones importantes para la gestión de procesos. \\
 \texttt{init\_process\_manager} inicializa el gestor de procesos. \texttt{create\_process} permite crear un proceso. \texttt{exit\_process} finaliza un proceso con un código de estado, pero no lo borra de la tabla de procesos, mientras que \texttt{kill\_process} hace algo similar, pero lo borra de la tabla de procesos mediante \texttt{remove\_process}. \texttt{block\_process} y \texttt{unblock\_process} controlan su estado de ejecución. Para obtener información sobre los procesos en ejecución, se pueden utilizar funciones como \texttt{get\_processes}, \texttt{get\_num\_processes}, \texttt{get\_max\_pid} y \texttt{get\_ps\_data}. Además, \texttt{wait\_process} permite que un proceso espere a la finalización de un proceso hijo, y \texttt{nicent} ajusta la prioridad de un proceso.
 
-En la creación de procesos armamos el stack de tal manera que al ejecutarse el próximo context switch sea análogo a un proeso que ya estaba ejecutando. El la creación del proceso seteamos el registro \texttt{rip} para saltar a una función wrapper, la misma se encarga de llamar a la función dada con \texttt{argv} y \texttt{argc} (tanto el puntero a la función, pid y argv usados por el wrapper se cargan en el stack). Además, la función wrapper hace un exit del proceso al terminar la ejecución del mismo.
+En la creación de procesos armamos el stack de tal manera que al ejecutarse el próximo context switch sea análogo a un proeso que ya estaba ejecutando. En la creación del proceso seteamos el registro \texttt{rip} para saltar a una función wrapper, la misma se encarga de llamar a la función dada con \texttt{argv} y \texttt{argc} (tanto el puntero a la función, pid y argv usados por el wrapper se cargan en el stack). Además, la función wrapper hace un exit del proceso al terminar la ejecución del mismo.
 
 \section {Scheduler}
 El scheduler es el encargado de gestionar todo lo relacionado con los cambios de contexto. \\ \texttt{init\_scheduler} inicializa el scheduler. Para gestionar los procesos, se utiliza \texttt{schedule\_process} para agregar un proceso al scheduler, y \texttt{deschedule\_process} para removerlo. \texttt{get\_current\_process} devuelve el proceso actualmente en ejecución. La función \texttt{change\_process\_priority} permite cambiar al proceso de lista. Finalmente, \texttt{context\_switch} realiza el cambio de contexto entre procesos, permitiendo la alternancia en la ejecución de distintos procesos.
@@ -119,7 +119,7 @@ Para el scheduler, se decidió usar un vector con listas; cada posición del vec
 Al momento de hacer un \texttt{context\_switch}, se elige el siguiente proceso a ejecutar de manera pseudoaleatoria. Se decidió que un proceso con prioridad \texttt{HIGH} tiene el doble de probabilidades de ser elegido que un proceso con prioridad \texttt{MEDIUM}, y uno con prioridad \texttt{MEDIUM} tiene el doble de probabilidades de ser elegido que uno con prioridad \texttt{LOW}. Para garantizar que se cumpla esta distribución de probabilidad (teniendo en cuenta la cantidad de procesos de cada prioridad), se planteo el siguiente sistema de ecuaciones.
 
 \begin{equation*}
-\text{Sean } h, m, l \in [0; 100] \text{ las probabilidades de ejecutar un proceso de dicha prioridad.}
+\text{Sean } h, m, l \in [0; 1] \text{ las probabilidades de ejecutar un proceso de dicha prioridad.}
 \end{equation*}
 \begin{equation*}
 h = 2m
@@ -128,55 +128,55 @@ h = 2m
 m = 2l
 \end{equation*}
 \begin{equation*}
-\text{Sean } h\_len, m\_len, l\_len \in \mathbb{N} \text{ los largos de las listas de prioridad.}
+\text{Sean } h\_len, m\_len, l\_len \in \mathbb{N} \text{ las longitudes de las listas de prioridad.}
 \end{equation*}
 \begin{equation*}
-100 = h * h\_len + m * m\_len + l * l\_len
+1 = h * h\_len + m * m\_len + l * l\_len
 \end{equation*}
 Resolviendo el sistema se obtiene,
 
 \begin{equation*}
-h = \frac{400}{4 h\_len + 2 m\_len + l\_len}
+h = \frac{4}{4 h\_len + 2 m\_len + l\_len}
 \end{equation*}
 
 \begin{equation*}
-m = \frac{200}{4 h\_len + 2 m\_len + l\_len}
+m = \frac{2}{4 h\_len + 2 m\_len + l\_len}
 \end{equation*}
 
 \begin{equation*}
-l = \frac{100}{4 h\_len + 2 m\_len + l\_len}
+l = \frac{1}{4 h\_len + 2 m\_len + l\_len}
 \end{equation*}
 Si $h\_len, m\_len, l\_len$ son 0, las mismas formulas todavía valen. El caso donde todos son 0 no lo consideramos, pues siempre existe el proceso idle.
 
 Luego las probabilidades de correr un proceso de una lista de prioridades particular es,
 
 \begin{equation*}
-h\_list = h * h\_len = h\_len *  \frac{400}{4 h\_len + 2 m\_len + l\_len}
+h\_list = h * h\_len = h\_len *  \frac{4}{4 h\_len + 2 m\_len + l\_len}
 \end{equation*}
 
 \begin{equation*}
-m\_list = m * m\_len = m\_len * = \frac{200}{4 h\_len + 2 m\_len + l\_len}
+m\_list = m * m\_len = m\_len * = \frac{2}{4 h\_len + 2 m\_len + l\_len}
 \end{equation*}
 
 \begin{equation*}
-l\_list = l * l\_len = l\_len * \frac{100}{4 h\_len + 2 m\_len + l\_len}
+l\_list = l * l\_len = l\_len * \frac{1}{4 h\_len + 2 m\_len + l\_len}
 \end{equation*}
 
 Dichas probabilidades las usamos al momento de hacer el context switch para decidir de que lista de prioridades vamos a correr el siguiente proceso.
 
 \section {Idle}
-El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede matar ni bloquear. Su función es, si los tuviera, liberar a sus hijo que esten en estado \texttt{EXITED} y luego ejecuta la instrucction halt que suspende al procesador hasta la siguiente interrupción. El mimso al comenzar es el encargado de crear el proceso \texttt{shell}.
+El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede matar ni bloquear. Su función es, si los tuviera, liberar a sus hijo que esten en estado \texttt{EXITED} y luego ejecuta yield para ceder la cpu a otro proceso. El mimso al comenzar es el encargado de crear el proceso \texttt{shell}.
 
 \section {Shell}
 La shell posee comandos que corren como procesos y otros que son comando built-in. Ejecutando el comando help se puede ver una lista con todos los comandos dispoibles y si son procesos o built-in. Para todos los modulos que corren como procesos, se les puede poner como último argumento \texttt{\&} para que corran en background.
 
-La diferencia entre correr un proceso en background o foreground es que si el proceso está en foreground la shell hace un wait que espera a que el proceso termine y no si está en background. Los procesos pueden elegir si imprimir o no al buffer de texto si están en background.
+La diferencia entre correr un proceso en background o foreground es que si el proceso está en foreground la shell hace un \texttt{waitpid} que espera a que el proceso termine y no si está en background. Los procesos pueden elegir si imprimir o no al buffer de texto si están en background.
 
 Se crearon varios módulos para probar el funcionamiento del sistema e inspeccionar el estado del mismo. Estos módulos son:
 \begin{itemize}
     \item \texttt{test\_processes}: El mismo espera como argumento la cantidad de procesos a testear, teniendo un maximo de 250. Si bien se le realizaron modificaciones, este test fue provisto por la catedra.
     \item \texttt{test\_priority}: El mismo espera como argumento la cantidad de procesos a testear, teniendo un maximo de 250. Si bien se le realizaron modificaciones, este test fue provisto por la catedra.
-    \item \texttt{test\_priority\_dist}: Crea 99 procesos, un tercio de los procesos con cada probabilidad. Y luego muestra la cantidad de veces que se ejecutaron procesos con cada una de las probabilidades.
+    \item \texttt{test\_priority\_dist}: El mismo espera como argumento la cantidad de procesos a testear, y ejecuta fracciones iguales de procesos con cada prioridad. Y luego muestra la cantidad de veces que se ejecutaron los procesos con cada una de las prioridades.
     \item \texttt{test\_idle\_cleanup}: Muestra que el idle borre bien a todos los hijos que esten en estado \texttt{EXITED}.
     \item \texttt{ps}: Imprime una lista de procesos con información sobre los mismos.
     \item \texttt{nicent}: Permite modificar la prioridad de un proceso. Espera como argumento el pid del proceso y la nueva prioridad. Las posibles prioridades son \texttt{HIGH, MEDIUM, LOW}.
@@ -188,6 +188,6 @@ Se crearon varios módulos para probar el funcionamiento del sistema e inspeccio
     \item Se decidió crear un archivo \texttt{\texttt{def.h}} para definir las constantes y estructuras que se usan tanto del lado del kernel como del userland.
     \item Se decidió que al momento de crear un proceso el mismo se cree con prioridad \texttt{LOW}.
     \item Se decidió que al hacerle kill a un proceso, se les hace kill a toda su descendencia.
-    \item Se decició que los procesos ejecutados siguan en la lista de PCBs hasta que mueran o terminen y se les haga \texttt{wait}.
+    \item Se decició que los procesos ejecutados siguan en la lista de PCBs hasta que mueran o terminen y se les haga \texttt{wait}. Por dicho motivo la shell tiene un comando \texttt{cleanup} para limpiar los procesos \texttt{EXITED} a los que no se les hizo \texttt{wait}.
 \end{itemize}
 \end{document}

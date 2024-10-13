@@ -104,7 +104,39 @@ A continuación, se detallan las instrucciones para compilar y ejecutar los test
 
     Siendo memoryAmount la cantidad de memoria que se desea asignar.
 \end{enumerate}
-
 \end{enumerate}
 
+\section {Process Manager}
+El \texttt{processManager} proporciona varias funciones importantes para la gestión de procesos.\newline
+\texttt{init\_process\_manager} inicializa el gestor de procesos. \texttt{create\_process} permite crear un proceso. \texttt{exit\_process} finaliza un proceso con un código de estado, pero no lo borra de la tabla de procesos, mientras que \texttt{kill\_process} hace algo similar, pero lo borra de la tabla de procesos mediante \texttt{remove\_process}. \texttt{block\_process} y \texttt{unblock\_process} controlan su estado de ejecución. Para obtener información sobre los procesos en ejecución, se pueden utilizar funciones como \texttt{get\_processes}, \texttt{get\_num\_processes}, \texttt{get\_max\_pid} y \texttt{get\_ps\_data}. Además, \texttt{wait\_process} permite que un proceso espere a la finalización de un proceso hijo, y \texttt{nicent} ajusta la prioridad de un proceso.
+
+\section {Scheduler}
+El scheduler es el encargado de gestionar todo lo relacionado con los cambios de contexto. \texttt{init\_scheduler} inicializa el scheduler. Para gestionar los procesos, se utiliza \texttt{schedule\_process} para agregar un proceso al scheduler, y \texttt{deschedule\_process} para removerlo. \texttt{get\_current\_process} devuelve el proceso actualmente en ejecución. La función \texttt{change\_process\_priority} permite cambiar al proceso de lista. Finalmente, \texttt{context\_switch} realiza el cambio de contexto entre procesos, permitiendo la alternancia en la ejecución de distintos procesos.
+
+Para el scheduler, se decidió usar un vector con listas; cada posición del vector representa una prioridad distinta, y en cada lista se guardan los procesos con esa prioridad. Las prioridades son \texttt{HIGH, MEDIUM, LOW}.
+Al momento de hacer un \texttt{context\_switch}, se decidió que un proceso con prioridad \texttt{HIGH} tiene el doble de probabilidades de ser elegido que un proceso con prioridad \texttt{MEDIUM}, y uno con prioridad \texttt{MEDIUM} tiene el doble de probabilidades de ser elegido que uno con prioridad \texttt{LOW}.
+
+\section {Idle}
+El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede matar ni bloquear. Su función es, si los tuviera, liberar a sus hijo que esten en estado \texttt{EXITED} y luego ejecuta la instrucction halt que suspende al procesador hasta la siguiente interrupción. El mimso al comenzar es el encargado de crear el proceso \texttt{shell}.
+
+\section {Shell}
+La shell posee comandos que corren como procesos y otros que son comando built-in. Ejecutando el comando help se puede ver una lista con todos los comandos dispoibles y si son procesos o built-in. Para todos los modulos que corren como procesos, se les puede poner el argumento \texttt{\&} para que corran en background.
+
+Se crearon varios módulos para probar el funcionamiento del sistema e inspeccionar el estado del mismo. Estos módulos son:
+\begin{itemize}
+    \item \texttt{test\_processes}: El mismo espera como argumento la cantidad de procesos a testear, teniendo un maximo de 250. Si bien se le realizaron modificaciones, este test fue provisto por la catedra.
+    \item \texttt{test\_priority}: El mismo espera como argumento la cantidad de procesos a testear, teniendo un maximo de 250. Si bien se le realizaron modificaciones, este test fue provisto por la catedra.
+    \item \texttt{test\_priority\_dist}: Crea 99 procesos, un tercio de los procesos con cada probabilidad. Y luego muestra la cantidad de veces que se ejecutarion procesos con cada una de las probabilidades.
+    \item \texttt{test\_idle\_cleanup}: Muestra que el idle borre bien a todos los hijos que esten en estado \texttt{EXITED}.
+    \item \texttt{ps}: Imprime una lista de procesos con información sobre los mismos.
+    \item \texttt{nicent}: Permite modificar la prioridad de un proceso. Espera como argumento el pid del proceso y la nueva prioridad. Las posibles prioridades son \texttt{HIGH, MEDIUM, LOW}.
+    \item \texttt{kill}: Permite modificar la prioridad de un proceso. Espera como argumento el pid del proceso.
+\end{itemize}
+
+\section {Otras decisiones de diseño}
+\begin{itemize}
+    \item Se decidió crear un archivo \texttt{\texttt{def.h}} para definir las constantes y estructuras que se usan tanto del lado del kernel como del userland.
+    \item Se decidió que al momento de crear un proceso el mismo se cree con prioridad \texttt{LOW}.
+    \item Se decidió que al hacerle kill a un proceso, se les hace kill a toda su descendencia.
+\end{itemize}
 \end{document}

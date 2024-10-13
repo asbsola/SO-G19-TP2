@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #define MAX_TEST_ITERS 300
+#define TOTAL_PROCESSES 250
 
 enum State { RUNNING_TEST,
     BLOCKED_TEST,
@@ -21,6 +22,7 @@ uint64_t test_processes(char **argv, int argc) {
     uint8_t action;
     uint64_t max_processes;
     char *argvAux[] = {"endless_loop", NULL};
+    p_rq p_rqs[TOTAL_PROCESSES];
 
     uint64_t iter = 0;
 
@@ -31,9 +33,9 @@ uint64_t test_processes(char **argv, int argc) {
 
     uint8_t in_background = (argc > 2 && argv[argc - 1][0] == '&');
 
-    max_processes = (max_processes > 250) ? 250 : max_processes; 
+    max_processes = (max_processes > TOTAL_PROCESSES) ? TOTAL_PROCESSES : max_processes; 
 
-    p_rq p_rqs[max_processes];
+    
 
     while (iter++ < MAX_TEST_ITERS) {
         if (!in_background) {

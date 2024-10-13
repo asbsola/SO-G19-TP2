@@ -21,7 +21,8 @@ ModuleDescriptor modules[] = {
     {"mem", "displays memory status", BUILT_IN, mem},
     {"ps", "displays information about processes", BUILT_IN, ps},
     {"nicent", "changes process priority by PID", BUILT_IN, nicent},
-    {"kill", "terminates a process by its PID", BUILT_IN, kill}};
+    {"kill", "terminates a process by its PID", BUILT_IN, kill},
+    {"cleanup", "removes all exited processes ()", BUILT_IN, cleanup}};
 
 static int current_font_size = 1;
 
@@ -52,7 +53,8 @@ void run_shell()
                 if (modules[i].module_type == PROCESS) {
                     executed_command = 1;
                     pid_t pid = sys_create_process(modules[i].module, argv);
-                    if (!in_background) sys_wait_pid(pid);
+                    int64_t* ret;
+                    if (!in_background) sys_wait_pid(pid, *ret);
                 }
                 else if (modules[i].module_type == BUILT_IN) {
                     executed_command = 1;
@@ -342,5 +344,11 @@ uint64_t kill(char** argv, int argc) {
         return -1;
     }
 
+    return 0;
+}
+
+uint64_t cleanup(char** argv, int argc) {
+    int64_t ret;
+    while(sys_wait(&ret) != -1);
     return 0;
 }

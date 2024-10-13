@@ -67,6 +67,20 @@ int invalid_pid(processManagerADT process_manager, pid_t pid){
     return pid < 0 || pid >= MAX_PROCESSES || process_manager->processes[pid] == NULL;
 }
 
+int is_child(processManagerADT process_manager, pid_t my_pid, pid_t child_pid) {
+    if(invalid_pid(process_manager, my_pid) || invalid_pid(process_manager, child_pid))
+        return 0;
+    return process_manager->processes[child_pid]->parent_pid == my_pid;
+}
+
+int has_children(processManagerADT process_manager, pid_t my_pid) {
+    for (pid_t pid = 0; pid <= process_manager->max_pid; pid++) {
+        if(is_child(process_manager, my_pid, pid))
+            return 1;
+    }
+    return 0;
+}
+
 pid_t get_lowest_unused_pid(processManagerADT process_manager){
     pid_t pid;
     for (pid = IDLE_PROCESS_PID; process_manager->processes[pid] != NULL && pid <= process_manager->max_pid; pid++);
@@ -125,28 +139,42 @@ void check_waiting_parent(processManagerADT process_manager, pid_t pid){
         unblock_process(process_manager, parent_pid);
 }
 
-int check_finnished_children(processManagerADT process_manager, pid_t my_pid, uint64_t* ret){
+int check_finnished_child(processManagerADT process_manager, pid_t my_pid, pid_t child_pid, uint64_t* ret, processStatus* status){
+    if(!is_child(process_manager, my_pid, child_pid)) return 0;
+    processControlBlockADT pcb = process_manager->processes[child_pid];
+    switch (pcb->status) {
+        case EXITED:
+            pcb->parent_is_waiting = NOT_WAITING;
+            *ret = pcb->ret;
+            *status = pcb->status;
+            remove_process(process_manager, pcb->pid);
+            return 1;
+        case KILLED:
+            *status = pcb->status;
+            return 1;
+        default:
+            return 0;
+    }
+}
+
+void stop_waiting_parent(processManagerADT process_manager, pid_t parent_pid){
+    for (pid_t pid = 0; pid <= process_manager->max_pid; pid++)
+        if(is_child(process_manager, parent_pid, pid) && process_manager->processes[pid]->status != KILLED)
+            process_manager->processes[pid]->parent_is_waiting = NOT_WAITING;
+}
+
+int check_finnished_children(processManagerADT process_manager, pid_t my_pid, int64_t* ret, processStatus* status){
     for (pid_t pid = 0; pid <= process_manager->max_pid; pid++) {
-        processControlBlockADT pcb = process_manager->processes[pid];
-        if (pcb == NULL) continue;
-        if (pcb->parent_pid == my_pid) {
-            switch (pcb->status) {
-                case EXITED:
-                    remove_process(process_manager, pcb->pid);
-                    *ret = pcb->ret;
-                    return 1;
-                case KILLED:
-                    return 1;
-                default:
-                    break;
-            }
+        if (check_finnished_child(process_manager, my_pid, pid, ret, status) == 1){
+            stop_waiting_parent(process_manager, my_pid);
+            return 1;
         }
     }
     return 0;
 }
 
 int exit_process(processManagerADT process_manager, pid_t pid, int64_t status){
-    if (pid == IDLE_PROCESS_PID || invalid_pid(process_manager, pid))
+    if (pid == IDLE_PROCESS_PID || invalid_pid(process_manager, pid) || process_manager->processes[pid]->status==KILLED)
         return -1;
 
     process_manager->processes[pid]->status = EXITED;
@@ -166,7 +194,7 @@ int exit_process(processManagerADT process_manager, pid_t pid, int64_t status){
 }
 
 int block_process(processManagerADT process_manager, pid_t pid){
-    if (invalid_pid(process_manager, pid))
+    if (invalid_pid(process_manager, pid) || process_manager->processes[pid]->status==KILLED)
         return -1;
 
     process_manager->processes[pid]->status = BLOCKED;
@@ -180,7 +208,7 @@ int block_process(processManagerADT process_manager, pid_t pid){
 
 int unblock_process(processManagerADT process_manager, pid_t pid)
 {
-    if (invalid_pid(process_manager, pid))
+    if (invalid_pid(process_manager, pid) || process_manager->processes[pid]->status==KILLED)
         return -1;
 
     process_manager->processes[pid]->status = READY;
@@ -207,7 +235,7 @@ int remove_process(processManagerADT process_manager, pid_t pid){
 }
 
 int kill_process(processManagerADT process_manager, pid_t pid) {
-    if (pid == IDLE_PROCESS_PID || invalid_pid(process_manager, pid))
+    if (pid == IDLE_PROCESS_PID || invalid_pid(process_manager, pid) || process_manager->processes[pid]->status==KILLED)
         return -1;
 
     for (pid_t pid_i = 0; pid_i <= process_manager->max_pid; pid_i++)
@@ -230,58 +258,42 @@ int kill_process(processManagerADT process_manager, pid_t pid) {
     return 0;
 }
 
-int has_children(processManagerADT process_manager, pid_t my_pid) {
-    for (pid_t pid = 0; pid <= process_manager->max_pid; pid++) {
-        if (process_manager->processes[pid] == NULL) continue;
-
-        if (process_manager->processes[pid]->parent_pid == my_pid)
-            return 1;
-    }
-
-    return 0;
-}
-
-int is_child(processManagerADT process_manager, pid_t my_pid, pid_t child_pid) {
-    if(invalid_pid(process_manager, my_pid) || invalid_pid(process_manager, child_pid))
-        return 0;
-    return process_manager->processes[child_pid]->parent_pid == my_pid;
-}
-
-uint64_t wait(processManagerADT process_manager){
+uint64_t wait(processManagerADT process_manager, int64_t* ret){
     pid_t my_pid = get_current_process(process_manager->scheduler);
-    uint64_t ret;
 
     if (!has_children(process_manager, my_pid))
         return -1;
 
-    if(check_finnished_children(process_manager, my_pid, &ret))
-        return ret;
+    for(int pid = 0; pid<process_manager->max_pid; pid++)
+        if(is_child(process_manager, my_pid, pid))
+            process_manager->processes[pid]->parent_is_waiting = WAITING;
+
+    processStatus status;
+    if(check_finnished_children(process_manager, my_pid, &ret, &status))
+        return status;
     block_process(process_manager, my_pid);
-    if(check_finnished_children(process_manager, my_pid, &ret))
-        return ret;
+    if(check_finnished_children(process_manager, my_pid, &ret, &status))
+        return status;
 
     return -1;
 }
 
-uint64_t wait_process(processManagerADT process_manager, pid_t child_pid){
+uint64_t wait_process(processManagerADT process_manager, pid_t child_pid, int64_t *ret){
     pid_t my_pid = get_current_process(process_manager->scheduler);
 
     if (!is_child(process_manager, my_pid, child_pid))
         return -1;
-
+    
     process_manager->processes[child_pid]->parent_is_waiting = WAITING;
-    block_process(process_manager, my_pid);
 
-    uint64_t ret = process_manager->processes[child_pid]->ret;
-    switch (process_manager->processes[child_pid]->status) {
-        case EXITED:
-            remove_process(process_manager, child_pid);
-            return ret;
-        case KILLED:
-            return -1;
-        default:
-            return -1;
-    }
+    processStatus status;
+    if(check_finnished_child(process_manager, my_pid, child_pid, &ret, &status))
+        return status;
+    block_process(process_manager, my_pid);
+    if(check_finnished_child(process_manager, my_pid, child_pid, &ret, &status))
+        return status;
+    
+    return -1;
 }
 
 processControlBlockADT* get_processes(processManagerADT process_manager) {
@@ -355,7 +367,7 @@ void free_argv(processManagerADT process_manager, char** argv) {
 
 
 uint64_t nicent(processManagerADT process_manager, pid_t pid, processPriority priority){
-    if( pid == IDLE_PROCESS_PID || invalid_pid(process_manager, pid) || process_manager->processes[pid]->status == EXITED || process_manager->processes[pid]->status == KILLED)
+    if( pid == IDLE_PROCESS_PID || invalid_pid(process_manager, pid) || process_manager->processes[pid]->status == EXITED || process_manager->processes[pid]->status==KILLED)
         return -1;
     
     if(process_manager->processes[pid]->status == BLOCKED){

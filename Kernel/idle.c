@@ -5,6 +5,7 @@
 #include <shell_caller.h>
 
 extern processManagerADT the_process_manager;
+extern void yield();
 
 void remove_orphans(processManagerADT process_manager){
     processControlBlockADT* processes = get_processes(process_manager);
@@ -26,6 +27,6 @@ uint64_t idle(char** argv, int argc){
     
     while(1) {
         remove_orphans(the_process_manager);
-        _hlt();
+        yield();
     }
 }

@@ -5,7 +5,6 @@
 #include <stddef.h>
 #include <std.h>
 
-
 #define MILLIS 1000
 
 processPriority prio[TOTAL_PROCESSES] = {LOW, MEDIUM, HIGH};
@@ -15,14 +14,11 @@ uint64_t test_prio(char **argv, int argc) {
     
     uint64_t max_processes;
 
-
     if (argc < 2 || (max_processes = satoi(argv[1])) <= 0) {
         puts_with_color("test_processes: ERROR must provide max_processes (tops at 250)\n", 0xFF0000);
         return -1;
     }
     max_processes = (max_processes > TOTAL_PROCESSES) ? TOTAL_PROCESSES : max_processes; 
-
-
 
     uint8_t in_background = (argc > 2 && argv[argc - 1][0] == '&');
 

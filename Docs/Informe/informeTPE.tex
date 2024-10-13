@@ -2,7 +2,7 @@
 \title{\textbf{Trabajo Práctico 2} \\ [1ex]
 \large Instituto Tecnológico de Buenos Aires - Sistemas Operativos (72.11) \\ [1ex]
 \large Grupo 19 }
-\date{23 de septiembre de 2024}
+\date{14 de octubre de 2024}
 \author{
 \textbf{Ignacio Searles}\\
 isearles@itba.edu.ar\\
@@ -49,7 +49,7 @@ El presente informe trata sobre el desarrollo de un kernel que administra los re
 
 Ambos memory managers, al momento de su inicialización, reciben la cantidad de memoria que van a administrar. De esa memoria, consumen una parte para almacenar los datos necesarios para su funcionamiento.
 
-Para los testeos del memory manager, se decidió que cuando se compila fuera del kernel, este corra indefinidamente, ya que se puede terminar la ejecución matando el proceso desde la shell. En cambio, cuando se compilan y ejecutan los tests dentro del kernel, se decidió que corran una cantidad determinada de veces, dado que el sistema implementado no posee procesos y no es posible frenar la ejecución del test.
+Para los testeos del memory manager, se decidió que cuando se compila fuera del kernel, este corra indefinidamente, ya que se puede terminar la ejecución matando el proceso desde la shell. En cambio, cuando se compilan y ejecutan los tests dentro del kernel, se decidió que corran una cantidad determinada de veces, aún así se puede detener la ejecución del mismo mediate un kill del proceso de testeo.
 
 \subsection {Bitmap Memory Manager}
 

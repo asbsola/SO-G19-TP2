@@ -194,7 +194,7 @@ int exit_process(processManagerADT process_manager, pid_t pid, int64_t status){
 }
 
 int block_process(processManagerADT process_manager, pid_t pid){
-    if (invalid_pid(process_manager, pid) || process_manager->processes[pid]->status==KILLED)
+    if (pid == IDLE_PROCESS_PID || invalid_pid(process_manager, pid) || process_manager->processes[pid]->status!=READY)
         return -1;
 
     process_manager->processes[pid]->status = BLOCKED;
@@ -208,7 +208,7 @@ int block_process(processManagerADT process_manager, pid_t pid){
 
 int unblock_process(processManagerADT process_manager, pid_t pid)
 {
-    if (invalid_pid(process_manager, pid) || process_manager->processes[pid]->status==KILLED)
+    if (invalid_pid(process_manager, pid) || process_manager->processes[pid] != BLOCKED)
         return -1;
 
     process_manager->processes[pid]->status = READY;

@@ -170,6 +170,8 @@ El idle es un proceso que se crea al inicializar el process manager, el mismo no
 \section {Shell}
 La shell posee comandos que corren como procesos y otros que son comando built-in. Ejecutando el comando help se puede ver una lista con todos los comandos dispoibles y si son procesos o built-in. Para todos los modulos que corren como procesos, se les puede poner como último argumento \texttt{\&} para que corran en background.
 
+La diferencia entre correr un proceso en background o foreground es que si el proceso está en foreground la shell hace un wait que espera a que el proceso termine y no si está en background. Los procesos pueden elegir si imprimir o no al buffer de texto si están en background.
+
 Se crearon varios módulos para probar el funcionamiento del sistema e inspeccionar el estado del mismo. Estos módulos son:
 \begin{itemize}
     \item \texttt{test\_processes}: El mismo espera como argumento la cantidad de procesos a testear, teniendo un maximo de 250. Si bien se le realizaron modificaciones, este test fue provisto por la catedra.

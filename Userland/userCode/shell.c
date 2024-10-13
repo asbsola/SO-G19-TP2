@@ -53,8 +53,8 @@ void run_shell()
                 if (modules[i].module_type == PROCESS) {
                     executed_command = 1;
                     pid_t pid = sys_create_process(modules[i].module, argv);
-                    int64_t* ret;
-                    if (!in_background) sys_wait_pid(pid, *ret);
+                    int64_t ret;
+                    if (!in_background) sys_wait_pid(pid, &ret);
                 }
                 else if (modules[i].module_type == BUILT_IN) {
                     executed_command = 1;

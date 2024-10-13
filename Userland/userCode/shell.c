@@ -51,7 +51,7 @@ void run_shell()
             if (strcmp(argv[0], modules[i].module_name) == 0) {
                 if (modules[i].module_type == PROCESS) {
                     executed_command = 1;
-                    pid_t pid = sys_create_process((in_background) ? NOT_IN_FOREGROUND : IN_FOREGROUND, modules[i].module, argv);
+                    pid_t pid = sys_create_process(modules[i].module, argv);
                     if (!in_background) sys_wait_pid(pid);
                 }
                 else if (modules[i].module_type == BUILT_IN) {
@@ -245,7 +245,8 @@ uint64_t ps(char** argv, int argc) {
         printf("\tPriority: %s\n", process_priority_names[processes[i].priority]); 
         printf("\tStatus: %s\n", process_status_names[processes[i].status]);
 
-        printf("\tForeground: %s IN FOREGROUND\n", (processes[i].is_in_foreground == IN_FOREGROUND) ? "" : "NOT");
+        if(sys_get_pid() == processes[i].parent_pid)
+            printf("\tForeground: %s IN FOREGROUND\n", (processes[i].parent_is_waiting == WAITING) ? "" : "NOT");
         printf("\tStack pointer: %d\n", processes[i].stack_pointer);
         printf("\tBase pointer: %d\n", processes[i].base_pointer);
     }

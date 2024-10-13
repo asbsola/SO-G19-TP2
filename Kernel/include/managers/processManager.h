@@ -16,7 +16,7 @@ typedef struct processManagerCDT *processManagerADT;
 
 processManagerADT init_process_manager(memoryManagerADT memory_manager, schedulerADT scheduler);
 
-pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_t is_in_foreground, uint64_t (*process_start)(char **, int), char *argv[]);
+pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint64_t (*process_start)(char **, int), char *argv[]);
 
 int exit_process(processManagerADT process_manager, pid_t pid, int64_t status);
 int block_process(processManagerADT process_manager, pid_t pid);

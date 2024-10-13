@@ -46,7 +46,7 @@ uint64_t test_processes(char **argv, int argc) {
 
         // Create max_processes processes
         for (rq = 0; rq < max_processes; rq++) {
-            p_rqs[rq].pid = sys_create_process(NOT_IN_FOREGROUND, endless_loop, argvAux);
+            p_rqs[rq].pid = sys_create_process(endless_loop, argvAux);
 
             if (p_rqs[rq].pid == -1) {
                 puts_with_color("test_processes: ERROR creating process\n", 0xFF0000);

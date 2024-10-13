@@ -21,7 +21,7 @@ uint64_t test_idle_cleanup(char** argv, int argc) {
         puts_with_color("Creating processes...\n", 0xFFFFFF);
 
     for (uint64_t i = 0; i < children_count; i++) {
-        sys_create_process(NOT_IN_FOREGROUND, bussy_wait_proc, argvAux);
+        sys_create_process(bussy_wait_proc, argvAux);
     }
 
     if (!in_background)

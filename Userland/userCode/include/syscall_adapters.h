@@ -26,7 +26,7 @@ uint64_t sys_get_usable_memory_size();
 uint64_t sys_get_free_memory_size();
 uint64_t sys_get_total_memory_size();
 void * sys_ps();
-pid_t sys_create_process(uint8_t is_in_foreground, uint64_t (*process_start)(char**, int), char** argv);
+pid_t sys_create_process(uint64_t (*process_start)(char**, int), char** argv);
 int sys_exit_process_by_pid(pid_t pid, int64_t status);
 int sys_block_process_by_pid(pid_t pid);
 int sys_kill_process_by_pid(pid_t pid);

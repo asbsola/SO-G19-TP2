@@ -34,7 +34,7 @@ typedef struct
     void *stack_pointer;
     void *base_pointer;
     const char* name;
-    uint8_t is_in_foreground;
+    uint8_t parent_is_waiting;
     processStatus status;
 } process_info_t;
 

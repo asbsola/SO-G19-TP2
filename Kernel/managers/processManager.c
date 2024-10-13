@@ -58,7 +58,7 @@ processManagerADT init_process_manager(memoryManagerADT memory_manager, schedule
     process_manager->max_pid = 0;
 
     char* argv[] = {"idle", NULL};
-    create_process(process_manager, -1, NOT_IN_FOREGROUND, idle, argv);
+    create_process(process_manager, -1, idle, argv);
 
     return process_manager;
 }
@@ -73,7 +73,7 @@ pid_t get_lowest_unused_pid(processManagerADT process_manager){
     return pid;
 }
 
-pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_t is_in_foreground, uint64_t (*process_start)(char**, int), char** argv) {
+pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint64_t (*process_start)(char**, int), char** argv) {
     if (process_manager->num_processes >= MAX_PROCESSES)
         return -1;
 
@@ -93,7 +93,6 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint8_
     process_pcb->status = READY;
     process_pcb->priority = LOW;
     process_pcb->parent_is_waiting = NOT_WAITING;
-    process_pcb->is_in_foreground = is_in_foreground;
     process_pcb->argv = argv_copy;
 
     struct startFrame *start_frame = (startFrame *)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame));
@@ -308,7 +307,7 @@ uint64_t get_ps_data(processManagerADT process_manager, memoryManagerADT mem_man
             processes[index].stack_pointer = (void *)process_manager->processes[i]->rsp;
             processes[index].base_pointer = process_manager->processes[i]->stack;
             processes[index].status = process_manager->processes[i]->status;
-            processes[index].is_in_foreground = process_manager->processes[i]->is_in_foreground;
+            processes[index].parent_is_waiting = process_manager->processes[i]->parent_is_waiting;
             processes[index].name = process_manager->processes[i]->argv[0];
             index++;
         }

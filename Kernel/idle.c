@@ -22,7 +22,7 @@ uint64_t idle(char** argv, int argc){
     write_to_video_text_buffer("GRUPO 21\n", 9, 0x006fb5fb);
 
     char* shell_args[] = {"shell", NULL};
-    create_process(the_process_manager, 0, IN_FOREGROUND, (uint64_t (*)(char**, int))(SHELL_CODE_ADDRESS), shell_args);
+    create_process(the_process_manager, 0, (uint64_t (*)(char**, int))(SHELL_CODE_ADDRESS), shell_args);
     
     while(1) {
         remove_orphans(the_process_manager);

@@ -31,6 +31,6 @@ uint64_t wait(processManagerADT process_manager, int64_t* ret);
 uint64_t wait_process(processManagerADT process_manager, pid_t child_pid, int64_t *ret);
 uint64_t nicent(processManagerADT process_manager, pid_t pid, processPriority priority);
 
-void kill_signal(processManagerADT process_manager);
+uint64_t kill_signal(processManagerADT process_manager, int recursive);
 
 #endif

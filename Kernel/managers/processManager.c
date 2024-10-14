@@ -67,6 +67,10 @@ int invalid_pid(processManagerADT process_manager, pid_t pid){
     return pid < 0 || pid >= MAX_PROCESSES || process_manager->processes[pid] == NULL;
 }
 
+int has_finnished(processManagerADT process_manager, pid_t pid){
+    return invalid_pid(process_manager, pid) || process_manager->processes[pid]->status == EXITED || process_manager->processes[pid]->status == KILLED;
+}
+
 int is_child(processManagerADT process_manager, pid_t my_pid, pid_t child_pid) {
     if(invalid_pid(process_manager, my_pid) || invalid_pid(process_manager, child_pid))
         return 0;
@@ -140,7 +144,7 @@ void check_waiting_parent(processManagerADT process_manager, pid_t pid){
 }
 
 int check_finnished_child(processManagerADT process_manager, pid_t my_pid, pid_t child_pid, int64_t* ret, processStatus* status){
-    if(!is_child(process_manager, my_pid, child_pid)) return 0;
+    if(!is_child(process_manager, my_pid, child_pid) || !has_finnished(process_manager, child_pid)) return 0;
     processControlBlockADT pcb = process_manager->processes[child_pid];
     switch (pcb->status) {
         case EXITED:
@@ -159,7 +163,7 @@ int check_finnished_child(processManagerADT process_manager, pid_t my_pid, pid_t
 
 void stop_waiting_parent(processManagerADT process_manager, pid_t parent_pid){
     for (pid_t pid = 0; pid <= process_manager->max_pid; pid++)
-        if(is_child(process_manager, parent_pid, pid) && process_manager->processes[pid]->status != KILLED)
+        if(is_child(process_manager, parent_pid, pid))
             process_manager->processes[pid]->parent_is_waiting = NOT_WAITING;
 }
 
@@ -174,7 +178,7 @@ int check_finnished_children(processManagerADT process_manager, pid_t my_pid, in
 }
 
 int exit_process(processManagerADT process_manager, pid_t pid, int64_t status){
-    if (pid == IDLE_PROCESS_PID || invalid_pid(process_manager, pid) || process_manager->processes[pid]->status==KILLED)
+    if (pid == IDLE_PROCESS_PID || has_finnished(process_manager, pid))
         return -1;
 
     process_manager->processes[pid]->status = EXITED;
@@ -194,7 +198,7 @@ int exit_process(processManagerADT process_manager, pid_t pid, int64_t status){
 }
 
 int block_process(processManagerADT process_manager, pid_t pid){
-    if (pid == IDLE_PROCESS_PID || invalid_pid(process_manager, pid) || process_manager->processes[pid]->status!=READY)
+    if (pid == IDLE_PROCESS_PID || has_finnished(process_manager, pid))
         return -1;
 
     process_manager->processes[pid]->status = BLOCKED;
@@ -235,7 +239,7 @@ int remove_process(processManagerADT process_manager, pid_t pid){
 }
 
 int kill_process(processManagerADT process_manager, pid_t pid) {
-    if (pid == IDLE_PROCESS_PID || invalid_pid(process_manager, pid) || process_manager->processes[pid]->status==KILLED)
+    if (pid == IDLE_PROCESS_PID || invalid_pid(process_manager, pid))
         return -1;
 
     for (pid_t pid_i = 0; pid_i <= process_manager->max_pid; pid_i++)
@@ -367,7 +371,7 @@ void free_argv(processManagerADT process_manager, char** argv) {
 
 
 uint64_t nicent(processManagerADT process_manager, pid_t pid, processPriority priority){
-    if( pid == IDLE_PROCESS_PID || invalid_pid(process_manager, pid) || process_manager->processes[pid]->status == EXITED || process_manager->processes[pid]->status==KILLED)
+    if( pid == IDLE_PROCESS_PID || has_finnished(process_manager, pid))
         return -1;
     
     if(process_manager->processes[pid]->status == BLOCKED){

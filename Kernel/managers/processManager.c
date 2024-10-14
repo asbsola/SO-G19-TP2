@@ -208,7 +208,7 @@ int block_process(processManagerADT process_manager, pid_t pid){
 
 int unblock_process(processManagerADT process_manager, pid_t pid)
 {
-    if (invalid_pid(process_manager, pid) || process_manager->processes[pid] != BLOCKED)
+    if (invalid_pid(process_manager, pid) || process_manager->processes[pid]->status != BLOCKED)
         return -1;
 
     process_manager->processes[pid]->status = READY;

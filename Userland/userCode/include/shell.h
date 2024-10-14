@@ -41,6 +41,7 @@ uint64_t ps(char** argv, int argc);
 uint64_t nicent(char** argv, int argc);
 uint64_t kill(char** argv, int argc);
 uint64_t cleanup(char** argv, int argc);
+uint64_t block(char** argv, int argc);
 
 void run_shell();
 char** get_args(const char* input, int* argc);

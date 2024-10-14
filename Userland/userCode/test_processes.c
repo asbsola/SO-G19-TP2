@@ -85,7 +85,7 @@ uint64_t test_processes(char **argv, int argc) {
                 switch (action) {
                     case 0:
                         if (p_rqs[rq].state == RUNNING_TEST || p_rqs[rq].state == BLOCKED_TEST) {
-                            if (sys_kill_process_by_pid(p_rqs[rq].pid) == -1) {
+                            if (sys_kill_process_by_pid(p_rqs[rq].pid,0) == -1) {
                                 puts_with_color("test_processes: ERROR killing process\n", 0xFF0000);
                                 return -1;
                             }

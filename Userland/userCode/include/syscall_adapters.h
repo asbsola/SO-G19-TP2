@@ -29,7 +29,7 @@ void * sys_ps();
 pid_t sys_create_process(uint64_t (*process_start)(char**, int), char** argv);
 int sys_exit_process_by_pid(pid_t pid, int64_t status);
 int sys_block_process_by_pid(pid_t pid);
-int sys_kill_process_by_pid(pid_t pid);
+int sys_kill_process_by_pid(pid_t pid, uint64_t recursive);
 int sys_unblock_process_by_pid(pid_t pid);
 pid_t sys_get_pid();
 int64_t sys_wait(int64_t* ret);

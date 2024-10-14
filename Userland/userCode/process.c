@@ -3,6 +3,8 @@
 #include <syscall_adapters.h>
 #include <process.h>
 
+#define RECURSIVE 1
+
 void exit_self(int64_t status) {
     pid_t pid = sys_get_pid();
     sys_exit_process_by_pid(pid, status);
@@ -10,7 +12,7 @@ void exit_self(int64_t status) {
 
 void kill_self() {
     pid_t pid = sys_get_pid();
-    sys_kill_process_by_pid(pid);
+    sys_kill_process_by_pid(pid, !RECURSIVE);
 }
 
 void block_self() {

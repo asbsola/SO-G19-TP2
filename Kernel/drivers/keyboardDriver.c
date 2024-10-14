@@ -43,8 +43,8 @@ void keyboard_handler(processManagerADT process_manager, const registers64_t * r
     }
     if(cntrl_down && map_to_ascii[scan_code] == 'c'){
         cntrl_down = 0;
-        char** argvAux = {NULL};
-        create_process(process_manager, IDLE_PROCESS_PID, killer, argvAux);
+        char* argv[] = {"killer", NULL};
+        create_process(process_manager, IDLE_PROCESS_PID, killer, argv);
         return;
     }
     if(scan_code == ESCAPE_CODE_PRESSED){

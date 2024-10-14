@@ -248,7 +248,6 @@ int kill_process(processManagerADT process_manager, pid_t pid) {
         if (process_manager->processes[pid_i] != NULL && process_manager->processes[pid_i]->parent_pid == pid)
             kill_process(process_manager, pid_i);
 
-    char was_ready = process_manager->processes[pid]->status == READY;
     process_manager->processes[pid]->status = KILLED;
 
     check_waiting_parent(process_manager, pid);
@@ -258,10 +257,20 @@ int kill_process(processManagerADT process_manager, pid_t pid) {
         yield();
     }
     else{
-        if(was_ready) deschedule_process(process_manager->scheduler, process_manager->processes[pid]);
+        deschedule_process(process_manager->scheduler, process_manager->processes[pid]);
         remove_process(process_manager, pid);
     }
     return 0;
+}
+
+pid_t get_grandparent_pid(processManagerADT process_manager, pid_t pid){
+    return process_manager->processes[process_manager->processes[pid]->parent_pid]->parent_pid;
+}
+
+void kill_signal(processManagerADT process_manager){
+    for(int pid = 0; pid <= process_manager->max_pid; pid++)
+        if(pid != IDLE_PROCESS_PID && process_manager->processes[pid]->parent_is_waiting == WAITING && get_grandparent_pid(process_manager, pid) == IDLE_PROCESS_PID)
+            kill_process(process_manager, pid);
 }
 
 uint64_t wait(processManagerADT process_manager, int64_t* ret){

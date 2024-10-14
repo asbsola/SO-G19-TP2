@@ -23,3 +23,8 @@ run.sh
 *.o
 
 .cache
+
+
+strace_out
+report.tasks
+PVS-Studio.log

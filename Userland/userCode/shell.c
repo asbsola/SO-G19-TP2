@@ -24,7 +24,7 @@ ModuleDescriptor modules[] = {
     {"mem", "displays memory status", BUILT_IN, mem},
     {"ps", "displays information about processes", BUILT_IN, ps},
     {"nicent", "changes process priority by PID", BUILT_IN, nicent},
-    {"kill", "terminates a process by its PID", BUILT_IN, kill},
+    {"kill", "terminates a process by its PID. If the flag 'r' is provided, it also terminates all its descendants", BUILT_IN, kill},
     {"cleanup", "removes all exited processes", BUILT_IN, cleanup},
     {"block", "blocks a procces by a PID", BUILT_IN, block},
     {"unblock", "unblocks a procces by a PID", BUILT_IN, unblock},

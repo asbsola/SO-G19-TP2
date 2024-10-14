@@ -8,8 +8,7 @@
 #include <interruptHandlers/interrupts.h>
 #include <def.h>
 
-#define PROCESS_STACK_SIZE (1<<13) // 8KB
-#define MAX_PROCESSES 256
+
 #define IDLE_PROCESS_PID 0
 
 typedef struct processManagerCDT *processManagerADT;

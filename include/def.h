@@ -3,6 +3,16 @@
 
 #include <stdint.h>
 
+//------------------------------------------------------------
+
+#define PROCESS_STACK_SIZE (1<<13) // 8KB
+#define MAX_PROCESSES 256
+#define MEMORY_MANAGER_MEM_SIZE (1<<22) // 4MB
+
+//------------------------------------------------------------
+
+
+
 #define NOT_IN_FOREGROUND 0
 #define IN_FOREGROUND 1
 #define PRIORITY_LEVELS 3

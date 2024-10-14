@@ -199,7 +199,7 @@ A continuación se detallan algunos módulos que sirven para testear el funciona
     \item El sistema solo puede manejar 4MB de memoria.
 \end{itemize}
 
-Si bien están estas limitaciones, el sistema fue diseñado de tal manera que se pueden cambiar fácilmente.
+Si bien estan estas limitaciones, el sistema fue diseñado de tal manera que se pueden cambiar fácilmente.
 En el archivo \texttt{def.h} se encuentran las constantes que definen estas limitaciones.
 
 

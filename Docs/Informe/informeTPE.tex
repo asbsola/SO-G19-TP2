@@ -165,7 +165,7 @@ l\_list = l * l\_len = l\_len * \frac{1}{4 h\_len + 2 m\_len + l\_len}
 Dichas probabilidades las usamos al momento de hacer el context switch para decidir de que lista de prioridades vamos a correr el siguiente proceso.
 
 \section {Idle}
-El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede matar ni bloquear. Su función es, si los tuviera, liberar a sus hijo que esten en estado \texttt{EXITED} y luego ejecuta la instrucction halt que suspende al procesador hasta la siguiente interrupción. El mimso al comenzar es el encargado de crear el proceso \texttt{shell}.
+El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede terminar, bloquear, ni cambiar su prioridad. Su función es, si los tuviera, liberar a sus hijo que esten en estado \texttt{EXITED} y luego ejecuta la instrucction halt que suspende al procesador hasta la siguiente interrupción. El mimso al comenzar es el encargado de crear el proceso \texttt{shell}.
 
 \section {Shell}
 La shell posee comandos que corren como procesos y otros que son comando built-in. Ejecutando el comando help se puede ver una lista con todos los comandos dispoibles y si son procesos o built-in. Para todos los modulos que corren como procesos, se les puede poner como último argumento \texttt{\&} para que corran en background.

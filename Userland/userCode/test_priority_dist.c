@@ -12,7 +12,6 @@ extern processPriority prio[TOTAL_PROCESSES];
 extern int counters[];
 
 uint64_t test_prio_dist(char **argv, int argc) {
-    
     pid_t pids[TOTAL_PROCESSES];
 
     uint64_t max_processes;

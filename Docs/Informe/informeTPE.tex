@@ -128,7 +128,7 @@ h = 2m
 m = 2l
 \end{equation*}
 \begin{equation*}
-\text{Sean } h\_len, m\_len, l\_len \in \mathbb{N} \text{ los largos de las listas de prioridad.}
+\text{Sean } h\_len, m\_len, l\_len \in \mathbb{N} \text{ las longitudes de las listas de prioridad.}
 \end{equation*}
 \begin{equation*}
 1 = h * h\_len + m * m\_len + l * l\_len
@@ -165,18 +165,18 @@ l\_list = l * l\_len = l\_len * \frac{1}{4 h\_len + 2 m\_len + l\_len}
 Dichas probabilidades las usamos al momento de hacer el context switch para decidir de que lista de prioridades vamos a correr el siguiente proceso.
 
 \section {Idle}
-El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede terminar, bloquear, ni cambiar su prioridad. Su función es, si los tuviera, liberar a sus hijo que esten en estado \texttt{EXITED} y luego ejecuta la instrucction halt que suspende al procesador hasta la siguiente interrupción. El mimso al comenzar es el encargado de crear el proceso \texttt{shell}.
+El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede terminar, bloquear, ni cambiar su prioridad. Su función es, si los tuviera, liberar a sus hijo que esten en estado \texttt{EXITED} y luego ejecutar yield para ceder la cpu a otro proceso. El mimso al comenzar es el encargado de crear el proceso \texttt{shell}.
 
 \section {Shell}
 La shell posee comandos que corren como procesos y otros que son comando built-in. Ejecutando el comando help se puede ver una lista con todos los comandos dispoibles y si son procesos o built-in. Para todos los modulos que corren como procesos, se les puede poner como último argumento \texttt{\&} para que corran en background.
 
-La diferencia entre correr un proceso en background o foreground es que si el proceso está en foreground la shell hace un wait que espera a que el proceso termine y no si está en background. Los procesos pueden elegir si imprimir o no al buffer de texto si están en background.
+La diferencia entre correr un proceso en background o foreground es que si el proceso está en foreground la shell hace un \texttt{waitpid} que espera a que el proceso termine y no si está en background. Los procesos pueden elegir si imprimir o no al buffer de texto si están en background.
 
 Se crearon varios módulos para probar el funcionamiento del sistema e inspeccionar el estado del mismo. Estos módulos son:
 \begin{itemize}
     \item \texttt{test\_processes}: El mismo espera como argumento la cantidad de procesos a testear, teniendo un maximo de 250. Si bien se le realizaron modificaciones, este test fue provisto por la catedra.
     \item \texttt{test\_priority}: El mismo espera como argumento la cantidad de procesos a testear, teniendo un maximo de 250. Si bien se le realizaron modificaciones, este test fue provisto por la catedra.
-    \item \texttt{test\_priority\_dist}: Crea 99 procesos, un tercio de los procesos con cada probabilidad. Y luego muestra la cantidad de veces que se ejecutaron procesos con cada una de las probabilidades.
+    \item \texttt{test\_priority\_dist}: El mismo espera como argumento la cantidad de procesos a testear, y ejecuta fracciones iguales de procesos con cada prioridad. Y luego muestra la cantidad de veces que se ejecutaron los procesos con cada una de las prioridades.
     \item \texttt{test\_idle\_cleanup}: Muestra que el idle borre bien a todos los hijos que esten en estado \texttt{EXITED}.
     \item \texttt{ps}: Imprime una lista de procesos con información sobre los mismos.
     \item \texttt{nicent}: Permite modificar la prioridad de un proceso. Espera como argumento el pid del proceso y la nueva prioridad. Las posibles prioridades son \texttt{HIGH, MEDIUM, LOW}.
@@ -188,6 +188,6 @@ Se crearon varios módulos para probar el funcionamiento del sistema e inspeccio
     \item Se decidió crear un archivo \texttt{\texttt{def.h}} para definir las constantes y estructuras que se usan tanto del lado del kernel como del userland.
     \item Se decidió que al momento de crear un proceso el mismo se cree con prioridad \texttt{LOW}.
     \item Se decidió que al hacerle kill a un proceso, se les hace kill a toda su descendencia.
-    \item Se decició que los procesos ejecutados siguan en la lista de PCBs hasta que mueran o terminen y se les haga \texttt{wait}.
+    \item Se decició que los procesos ejecutados siguan en la lista de PCBs hasta que mueran o terminen y se les haga \texttt{wait}. Por dicho motivo la shell tiene un comando \texttt{cleanup} para limpiar los procesos \texttt{EXITED} a los que no se les hizo \texttt{wait}.
 \end{itemize}
 \end{document}

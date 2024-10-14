@@ -139,7 +139,7 @@ void check_waiting_parent(processManagerADT process_manager, pid_t pid){
         unblock_process(process_manager, parent_pid);
 }
 
-int check_finnished_child(processManagerADT process_manager, pid_t my_pid, pid_t child_pid, uint64_t* ret, processStatus* status){
+int check_finnished_child(processManagerADT process_manager, pid_t my_pid, pid_t child_pid, int64_t* ret, processStatus* status){
     if(!is_child(process_manager, my_pid, child_pid)) return 0;
     processControlBlockADT pcb = process_manager->processes[child_pid];
     switch (pcb->status) {
@@ -269,10 +269,10 @@ uint64_t wait(processManagerADT process_manager, int64_t* ret){
             process_manager->processes[pid]->parent_is_waiting = WAITING;
 
     processStatus status;
-    if(check_finnished_children(process_manager, my_pid, &ret, &status))
+    if(check_finnished_children(process_manager, my_pid, ret, &status))
         return status;
     block_process(process_manager, my_pid);
-    if(check_finnished_children(process_manager, my_pid, &ret, &status))
+    if(check_finnished_children(process_manager, my_pid, ret, &status))
         return status;
 
     return -1;
@@ -287,10 +287,10 @@ uint64_t wait_process(processManagerADT process_manager, pid_t child_pid, int64_
     process_manager->processes[child_pid]->parent_is_waiting = WAITING;
 
     processStatus status;
-    if(check_finnished_child(process_manager, my_pid, child_pid, &ret, &status))
+    if(check_finnished_child(process_manager, my_pid, child_pid, ret, &status))
         return status;
     block_process(process_manager, my_pid);
-    if(check_finnished_child(process_manager, my_pid, child_pid, &ret, &status))
+    if(check_finnished_child(process_manager, my_pid, child_pid, ret, &status))
         return status;
     
     return -1;

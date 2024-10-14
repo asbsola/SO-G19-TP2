@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <std.h>
 
 uint32_t strcmp(const char* s1, const char* s2) {
@@ -54,24 +56,33 @@ void puts_with_color(const char* s, uint32_t hexColor) {
 }
 
 char itoa_buff[ITOA_BUFF_MAX_SIZE] = {0};
-char* itoa(uint64_t num, char* dest, uint32_t dest_max_len) {
-    itoa_buff[0] = 0;
+
+char* itoa(int64_t num, char* dest, uint32_t dest_max_len) {
+    itoa_buff[0] = 0; 
+
+    int is_negative = 0;
+
+    if (num < 0) {
+        is_negative = 1;
+        num = -num; 
+    }
 
     uint32_t i;
     for (i = 0; num != 0; num /= 10)
         itoa_buff[i++] = num % 10;
 
     if (i == 0) i = 1;
+    if(is_negative) i++;
 
     uint32_t j;
     for (j = 0; j < dest_max_len && j < i; j++)
         dest[j] = itoa_buff[i - j - 1] + '0';
 
     dest[j] = '\0';
+    if(is_negative) dest[0] = '-';
 
     return dest;
 }
-
 uint32_t get_fmt_num_args(const char* fmt) {
     uint32_t count = 0;
     for (uint32_t i = 0; fmt[i] != '\0'; i++) {
@@ -102,7 +113,7 @@ void printf(const char* fmt, ...) {
         }
         else if (fmt[i] == '%' && fmt[i + 1] == 'd') {
             char temp[ITOA_BUFF_MAX_SIZE];
-            itoa(va_arg(arg_list, uint32_t), temp, ITOA_BUFF_MAX_SIZE);
+            itoa(va_arg(arg_list, int32_t), temp, ITOA_BUFF_MAX_SIZE);
 
             for (uint32_t j = 0; k < PRINTF_PRINT_BUFF_MAX_SIZE && temp[j] != '\0'; j++)
                 printf_buff[k++] = temp[j];
@@ -111,7 +122,7 @@ void printf(const char* fmt, ...) {
         }
         else if (fmt[i] == '%' && fmt[i + 1] == 'l' && fmt[i + 2] == 'd') {
             char temp[ITOA_BUFF_MAX_SIZE];
-            itoa(va_arg(arg_list, uint64_t), temp, ITOA_BUFF_MAX_SIZE);
+            itoa(va_arg(arg_list, int64_t), temp, ITOA_BUFF_MAX_SIZE);
 
             for (uint64_t j = 0; k < PRINTF_PRINT_BUFF_MAX_SIZE && temp[j] != '\0'; j++)
                 printf_buff[k++] = temp[j];

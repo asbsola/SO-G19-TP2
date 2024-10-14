@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <drivers/keyboardDriver.h>
 #include <lib.h>
+#include <killer.h>
 
 uint8_t key_buffer[MAX_SIZE_KEY_BUFFER];
 static int first_key_index = 0;
@@ -42,7 +43,8 @@ void keyboard_handler(processManagerADT process_manager, const registers64_t * r
     }
     if(cntrl_down && map_to_ascii[scan_code] == 'c'){
         cntrl_down = 0;
-        kill_signal(process_manager);
+        char** argvAux = {NULL};
+        create_process(process_manager, IDLE_PROCESS_PID, killer, argvAux);
         return;
     }
     if(scan_code == ESCAPE_CODE_PRESSED){

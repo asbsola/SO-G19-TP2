@@ -276,10 +276,10 @@ pid_t get_grandparent_pid(processManagerADT process_manager, pid_t pid){
     return process_manager->processes[process_manager->processes[pid]->parent_pid]->parent_pid;
 }
 
-uint64_t kill_signal(processManagerADT process_manager){
+uint64_t kill_signal(processManagerADT process_manager, int recursive){
     for(int pid = 0; pid <= process_manager->max_pid; pid++)
         if(pid != IDLE_PROCESS_PID && process_manager->processes[pid]->parent_is_waiting == WAITING && get_grandparent_pid(process_manager, pid) == IDLE_PROCESS_PID)
-            return kill_process(process_manager, pid, 0);
+            return kill_process(process_manager, pid, recursive);
     return -1;
 }
 

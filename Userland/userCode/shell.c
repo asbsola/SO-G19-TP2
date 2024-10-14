@@ -26,7 +26,8 @@ ModuleDescriptor modules[] = {
     {"nicent", "changes process priority by PID", BUILT_IN, nicent},
     {"kill", "terminates a process by its PID", BUILT_IN, kill},
     {"cleanup", "removes all exited processes ()", BUILT_IN, cleanup},
-    {"block", "toggles the state of a process between blocked and unblocked by a PID", BUILT_IN, block}};
+    {"block", "blocks a procces by a PID", BUILT_IN, block},
+    {"unblock", "unblocks a procces by a PID", BUILT_IN, unblock}};
 
 static int current_font_size = 1;
 
@@ -364,6 +365,17 @@ uint64_t block(char** argv, int argc) {
         return -1;
     }
     int pid = atoi(argv[1]);
+    
     return sys_block_process_by_pid(pid);
+}
+
+uint64_t unblock(char** argv, int argc) {
+    if (argc < 2) {
+        puts_with_color("kill: ERROR must provide pid\n", 0xFF0000);
+        return -1;
+    }
+    int pid = atoi(argv[1]);
+    
+    return sys_unblock_process_by_pid(pid);
 }
 

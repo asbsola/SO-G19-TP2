@@ -17,7 +17,7 @@ void puts(const char *s);
 void puts_with_color(const char* s, uint32_t hexColor);
 
 #define ITOA_BUFF_MAX_SIZE 100
-char* itoa(uint64_t num, char* dest, uint32_t dest_max_len);
+char* itoa(int64_t num, char* dest, uint32_t dest_max_len);
 
 #define PRINTF_PRINT_BUFF_MAX_SIZE 2048
 void printf(const char* fmt, ...);

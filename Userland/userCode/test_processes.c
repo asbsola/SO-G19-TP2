@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <std.h>
 #include <syscall_adapters.h>
 #include <test_utils.h>
@@ -39,7 +41,7 @@ uint64_t test_processes(char **argv, int argc) {
         if (!in_background) {
             puts_with_color("\n-------------------\n", 0xc2daff);
             puts_with_color("Testing processes -> ", 0xc2daff);
-            printf("iter: %ld of %ld\n", iter, max_iters);
+            printf("iter: %ld of %ld\n", (uint64_t)iter, (uint64_t)max_iters);
         }
 
         // Create max_processes processes

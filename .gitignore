@@ -3,6 +3,9 @@
 .gdb_history
 .gdbinit
 .vscode
+.vim
+.config
+.viminfo
 compile_flags.txt
 
 compile.sh

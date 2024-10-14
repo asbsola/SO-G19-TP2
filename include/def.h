@@ -11,8 +11,6 @@
 
 //------------------------------------------------------------
 
-
-
 #define NOT_IN_FOREGROUND 0
 #define IN_FOREGROUND 1
 #define PRIORITY_LEVELS 3

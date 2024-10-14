@@ -89,7 +89,7 @@ int has_children(processManagerADT process_manager, pid_t my_pid) {
 
 pid_t get_lowest_unused_pid(processManagerADT process_manager){
     pid_t pid;
-    for (pid = IDLE_PROCESS_PID; process_manager->processes[pid] != NULL && pid <= process_manager->max_pid; pid++);
+    for (pid = 0; process_manager->processes[pid] != NULL && pid <= process_manager->max_pid; pid++);
     return pid;
 }
 
@@ -179,10 +179,10 @@ int check_finnished_children(processManagerADT process_manager, pid_t my_pid, in
     return 0;
 }
 
-void update_childs_ppid(processManagerADT process_manager, pid_t pid){
-    for (pid_t i = 0; i <= process_manager->max_pid; i++)
-        if (process_manager->processes[i] != NULL && process_manager->processes[i]->parent_pid == pid)
-            process_manager->processes[i]->parent_pid = IDLE_PROCESS_PID;
+void update_childs_ppid(processManagerADT process_manager, pid_t my_pid){
+    for (pid_t pid = 0; pid <= process_manager->max_pid; pid++)
+        if (is_child(process_manager, my_pid, pid))
+            process_manager->processes[pid]->parent_pid = IDLE_PROCESS_PID;
 }
 
 int exit_process(processManagerADT process_manager, pid_t pid, int64_t status){
@@ -227,7 +227,7 @@ int unblock_process(processManagerADT process_manager, pid_t pid)
 }
 
 int remove_process(processManagerADT process_manager, pid_t pid){
-    if(process_manager->processes[pid] == NULL)
+    if(invalid_pid(process_manager, pid))
         return -1;
 
     free_argv(process_manager, process_manager->processes[pid]->argv);
@@ -244,10 +244,10 @@ int remove_process(processManagerADT process_manager, pid_t pid){
     return 0;
 }
 
-void kill_recursive(processManagerADT process_manager, pid_t pid, uint64_t recursive){
-    for (pid_t i = 0; i <= process_manager->max_pid; i++)
-            if (process_manager->processes[i] != NULL && process_manager->processes[i]->parent_pid == pid)
-                kill_process(process_manager, i, recursive);
+void kill_recursive(processManagerADT process_manager, pid_t my_pid, uint64_t recursive){
+    for (pid_t pid = 0; pid <= process_manager->max_pid; pid++)
+            if (is_child(process_manager, my_pid, pid))
+                kill_process(process_manager, pid, recursive);
 }
 
 int kill_process(processManagerADT process_manager, pid_t pid, uint64_t recursive) {
@@ -277,7 +277,7 @@ pid_t get_grandparent_pid(processManagerADT process_manager, pid_t pid){
 }
 
 uint64_t kill_signal(processManagerADT process_manager, int recursive){
-    for(int pid = 0; pid <= process_manager->max_pid; pid++)
+    for(pid_t pid = 0; pid <= process_manager->max_pid; pid++)
         if(pid != IDLE_PROCESS_PID && process_manager->processes[pid]->parent_is_waiting == WAITING && get_grandparent_pid(process_manager, pid) == IDLE_PROCESS_PID)
             return kill_process(process_manager, pid, recursive);
     return -1;
@@ -289,7 +289,7 @@ uint64_t wait(processManagerADT process_manager, int64_t* ret){
     if (!has_children(process_manager, my_pid))
         return -1;
 
-    for(int pid = 0; pid<=process_manager->max_pid; pid++)
+    for(pid_t pid = 0; pid<=process_manager->max_pid; pid++)
         if(is_child(process_manager, my_pid, pid))
             process_manager->processes[pid]->parent_is_waiting = WAITING;
 

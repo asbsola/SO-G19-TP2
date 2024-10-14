@@ -179,6 +179,12 @@ int check_finnished_children(processManagerADT process_manager, pid_t my_pid, in
     return 0;
 }
 
+void update_ppid(processManagerADT process_manager, pid_t pid){
+    for (pid_t i = 0; i <= process_manager->max_pid; i++)
+        if (process_manager->processes[i] != NULL && process_manager->processes[i]->parent_pid == pid)
+            process_manager->processes[i]->parent_pid = IDLE_PROCESS_PID;
+}
+
 int exit_process(processManagerADT process_manager, pid_t pid, int64_t status){
     if (pid == IDLE_PROCESS_PID || has_finnished(process_manager, pid))
         return -1;
@@ -188,9 +194,7 @@ int exit_process(processManagerADT process_manager, pid_t pid, int64_t status){
 
     check_waiting_parent(process_manager, pid);
 
-    for (pid_t i = 0; i <= process_manager->max_pid; i++)
-        if (process_manager->processes[i] != NULL && process_manager->processes[i]->parent_pid == pid)
-            process_manager->processes[i]->parent_pid = IDLE_PROCESS_PID;
+    update_ppid(process_manager, pid);
 
     if(get_current_process(process_manager->scheduler) == pid)
         yield();
@@ -244,9 +248,7 @@ int kill_process(processManagerADT process_manager, pid_t pid) {
     if (pid == IDLE_PROCESS_PID || invalid_pid(process_manager, pid))
         return -1;
 
-    for (pid_t pid_i = 0; pid_i <= process_manager->max_pid; pid_i++)
-        if (process_manager->processes[pid_i] != NULL && process_manager->processes[pid_i]->parent_pid == pid)
-            kill_process(process_manager, pid_i);
+    update_ppid(process_manager, pid);
 
     process_manager->processes[pid]->status = KILLED;
 

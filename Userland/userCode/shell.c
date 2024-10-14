@@ -25,7 +25,7 @@ ModuleDescriptor modules[] = {
     {"ps", "displays information about processes", BUILT_IN, ps},
     {"nicent", "changes process priority by PID", BUILT_IN, nicent},
     {"kill", "terminates a process by its PID", BUILT_IN, kill},
-    {"cleanup", "removes all exited processes ()", BUILT_IN, cleanup},
+    {"cleanup", "removes all exited processes", BUILT_IN, cleanup},
     {"block", "blocks a procces by a PID", BUILT_IN, block},
     {"unblock", "unblocks a procces by a PID", BUILT_IN, unblock},
     {"loop", "prints its PID every n seconds", PROCESS, loop}};
@@ -344,9 +344,16 @@ uint64_t kill(char** argv, int argc) {
         return -1;
     }
 
+    uint64_t kill_recursive = 0;
+
+    if(argc >= 2 && argv[2][0] == 'r') {
+        kill_recursive = 1;
+    }
+
     int pid = atoi(argv[1]);
 
-    if(sys_kill_process_by_pid(pid) == -1){
+
+    if(sys_kill_process_by_pid(pid, kill_recursive) == -1){
         puts_with_color("kill: ERROR could not kill process\n", 0xFF0000);
         return -1;
     }

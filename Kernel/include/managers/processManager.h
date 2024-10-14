@@ -20,7 +20,7 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint64
 
 int exit_process(processManagerADT process_manager, pid_t pid, int64_t status);
 int block_process(processManagerADT process_manager, pid_t pid);
-int kill_process(processManagerADT process_manager, pid_t pid);
+int kill_process(processManagerADT process_manager, pid_t pid, uint64_t recursive);
 int unblock_process(processManagerADT process_manager, pid_t pid);
 int remove_process(processManagerADT process_manager, pid_t pid);
 

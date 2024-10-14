@@ -28,5 +28,5 @@ void exceptionDispatcher(int id, const registers64_t *registers) {
 
     update_frame_buffer();
 
-    kill_process(the_process_manager, get_current_process(the_scheduler));
+    kill_process(the_process_manager, get_current_process(the_scheduler), 1);
 }

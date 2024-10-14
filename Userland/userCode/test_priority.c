@@ -88,7 +88,7 @@ uint64_t test_prio(char **argv, int argc) {
         puts_with_color("\nKILLING...\n", 0xc2daff);
 
     for (i = 0; i < max_processes; i++)
-        if(sys_kill_process_by_pid(pids[i])){
+        if(sys_kill_process_by_pid(pids[i],0)){
             puts_with_color("test_processes: ERROR killing process\n", 0xFF0000);
             return -1;
         }

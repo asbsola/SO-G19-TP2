@@ -19,7 +19,7 @@ sabassi@itba.edu.ar\\
 
 \usepackage{multicol}
 \usepackage{graphicx, wrapfig}
-\graphicspath{ {imágenes/} }
+\graphicspath{ {imagenes/} }
 
 \usepackage{float}
 \usepackage{amsmath}
@@ -49,7 +49,7 @@ El presente informe trata sobre el desarrollo de un kernel que administra los re
 
 Ambos memory managers, al momento de su inicialización, reciben la cantidad de memoria que van a administrar. De esa memoria, consumen una parte para almacenar los datos necesarios para su funcionamiento.
 
-Para los tests del memory manager, se decidió que cuando se compila fuera del kernel, este corra indefinidamente, ya que se puede terminar la ejecución matando el proceso desde la shell. En cambio, cuando se compilan y ejecutan los tests dentro del kernel, se decidió que corran una cantidad determinada de veces, aún así se puede detener la ejecución del mismo mediante un kill del proceso de testeo.
+Para los testeos del memory manager, se decidió que cuando se compila fuera del kernel, este corra indefinidamente, ya que se puede terminar la ejecución matando el proceso desde la shell. En cambio, cuando se compilan y ejecutan los tests dentro del kernel, se decidió que corran una cantidad determinada de veces, aún así se puede detener la ejecución del mismo mediate un kill del proceso de testeo.
 
 \subsection {Bitmap Memory Manager}
 
@@ -110,7 +110,7 @@ A continuación, se detallan las instrucciones para compilar y ejecutar los test
 El process manager proporciona varias funciones importantes para la gestión de procesos. \\
 \texttt{init\_process\_manager} inicializa el gestor de procesos. \texttt{create\_process} permite crear un proceso. \texttt{exit\_process} finaliza un proceso con un código de estado, pero no lo borra de la tabla de procesos, mientras que \texttt{kill\_process} hace algo similar, pero lo borra de la tabla de procesos mediante \texttt{remove\_process}. \texttt{block\_process} y \texttt{unblock\_process} controlan su estado de ejecución. Para obtener información sobre los procesos en ejecución, se pueden utilizar funciones como \texttt{get\_processes}, \texttt{get\_num\_processes}, \texttt{get\_max\_pid} y \texttt{get\_ps\_data}. Además, \texttt{wait\_process} permite que un proceso espere a la finalización de un proceso hijo, y \texttt{nicent} ajusta la prioridad de un proceso.
 
-En la creación de procesos armamos el stack de tal manera que al ejecutarse el próximo context switch sea análogo a un proceso que ya estaba ejecutando. Durante la creación del proceso seteamos el registro \texttt{rip} para saltar a una función wrapper, la misma se encarga de llamar a la función dada con \texttt{argv} y \texttt{argc} (tanto el puntero a la función, pid y argv usados por el wrapper se cargan en el stack). Además, la función wrapper hace un exit del proceso al terminar la ejecución del mismo.
+En la creación de procesos armamos el stack de tal manera que al ejecutarse el próximo context switch sea análogo a un proeso que ya estaba ejecutando. Durante la creación del proceso seteamos el registro \texttt{rip} para saltar a una función wrapper, la misma se encarga de llamar a la función dada con \texttt{argv} y \texttt{argc} (tanto el puntero a la función, pid y argv usados por el wrapper se cargan en el stack). Además, la función wrapper hace un exit del proceso al terminar la ejecución del mismo.
 
 \section {Scheduler}
 El scheduler es el encargado de gestionar todo lo relacionado con los cambios de contexto. \\ \texttt{init\_scheduler} inicializa el scheduler. Para gestionar los procesos, se utiliza \texttt{schedule\_process} para agregar un proceso al scheduler, y \texttt{deschedule\_process} para removerlo. \texttt{get\_current\_process} devuelve el proceso actualmente en ejecución. La función \texttt{change\_process\_priority} permite cambiar al proceso de lista. Finalmente, \texttt{context\_switch} realiza el cambio de contexto entre procesos, permitiendo la alternancia en la ejecución de distintos procesos.
@@ -165,19 +165,19 @@ l\_list = l * l\_len = l\_len * \frac{1}{4 h\_len + 2 m\_len + l\_len}
 Dichas probabilidades las usamos al momento de hacer el context switch para decidir de que lista de prioridades vamos a correr el siguiente proceso.
 
 \section {Idle}
-El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede terminar, bloquear, ni cambiar su prioridad. Su función es, si los tuviera, liberar a sus hijo que estén en estado \texttt{EXITED} y luego ejecutar yield para ceder la cpu a otro proceso. El mismo al comenzar es el encargado de crear el proceso \texttt{shell}.
+El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede terminar, bloquear, ni cambiar su prioridad. Su función es, si los tuviera, liberar a sus hijo que esten en estado \texttt{EXITED} y luego ejecutar yield para ceder la cpu a otro proceso. El mimso al comenzar es el encargado de crear el proceso \texttt{shell}.
 
 \section {Shell}
-La shell posee comandos que corren como procesos y otros que son comando built-in. Ejecutando el comando help se puede ver una lista con todos los comandos disponibles y si son procesos o built-in. Para todos los módulos que corren como procesos, se les puede poner como último argumento \texttt{\&} para que corran en background.
+La shell posee comandos que corren como procesos y otros que son comando built-in. Ejecutando el comando help se puede ver una lista con todos los comandos dispoibles y si son procesos o built-in. Para todos los modulos que corren como procesos, se les puede poner como último argumento \texttt{\&} para que corran en background.
 
 La diferencia entre correr un proceso en background o foreground es que si el proceso está en foreground la shell hace un \texttt{waitpid} que espera a que el proceso termine y no si está en background. Los procesos pueden elegir si imprimir o no al buffer de texto si están en background.
 \texttt{\newline}
-A continuación se detallan algunos módulos que sirven para testear el funcionamiento del sistema:
+A continuación se detallan algunos modulos que sirven para testear el funcionamiento del sistema:
 \begin{itemize}
-    \item \texttt{test\_processes}: El mismo espera los siguientes argumentos: \texttt{cantidad\_iteraciones}, \newline \texttt{cantidad\_procesos} y opcionalmente \texttt{\&}. Si bien se le realizaron modificaciones, este test fue provisto por la cátedra.
-    \item \texttt{test\_priority}:  El mismo espera los siguientes argumentos: \texttt{cantidad\_procesos}, teniendo un máximo de 250; y opcionalmente \texttt{\&}. Si bien se le realizaron modificaciones, este test fue provisto por la cátedra.
-    \item \texttt{test\_priority\_dist}:  El mismo espera los siguientes argumentos: \texttt{cantidad\_procesos}, teniendo un máximo de 250; y opcionalmente \texttt{\&}. Este proceso, ejecuta fracciones iguales de procesos con cada prioridad. Luego, muestra la cantidad de veces que se ejecutaron los procesos con cada una de las prioridades.
-    \item \texttt{test\_idle\_cleanup}: Muestra que el idle borre bien a todos los hijos que estén en estado \texttt{EXITED}.
+    \item \texttt{test\_processes}: El mismo espera los siguientes argumentos: \texttt{cantidad\_iteraciones}, \newline \texttt{cantidad\_procesos} y opcionalmente \texttt{\&}. Si bien se le realizaron modificaciones, este test fue provisto por la catedra.
+    \item \texttt{test\_priority}:  El mismo espera los siguientes argumentos: \texttt{cantidad\_procesos}, teniendo un maximo de 250; y opcionalmente \texttt{\&}. Si bien se le realizaron modificaciones, este test fue provisto por la catedra.
+    \item \texttt{test\_priority\_dist}:  El mismo espera los siguientes argumentos: \texttt{cantidad\_procesos}, teniendo un maximo de 250; y opcionalmente \texttt{\&}. Este proceso, ejecuta fracciones iguales de procesos con cada prioridad. Luego, muestra la cantidad de veces que se ejecutaron los procesos con cada una de las prioridades.
+    \item \texttt{test\_idle\_cleanup}: Muestra que el idle borre bien a todos los hijos que esten en estado \texttt{EXITED}.
     \item \texttt{test\_wait}: El mismo espera los siguientes argumentos: \texttt{cantidad\_iteraciones}, \newline \texttt{cantidad\_procesos} y opcionalmente \texttt{\&}. Este test verifica que waitpid no lance errores.
 
 \end{itemize}
@@ -187,6 +187,6 @@ A continuación se detallan algunos módulos que sirven para testear el funciona
     \item Se decidió crear un archivo \texttt{\texttt{def.h}} para definir las constantes y estructuras que se usan tanto del lado del kernel como del userland.
     \item Se decidió que al momento de crear un proceso el mismo se cree con prioridad \texttt{LOW}.
     \item Se decidió que al hacerle kill a un proceso, se les hace kill a toda su descendencia.
-    \item Se decidió que los procesos ejecutados sigan en la lista de PCBs hasta que mueran o terminen y se les haga \texttt{wait}. Por dicho motivo la shell tiene un comando \texttt{cleanup} para limpiar los procesos \texttt{EXITED} a los que no se les hizo \texttt{wait}.\item En lugar de tener un único comando en la shell que bloquee o desbloquee procesos dependiendo de su estado, se decidió tener dos comandos distintos \texttt{block} y \texttt{unblock}. Ambos reciben el pid del proceso a bloquear o desbloquear.
+    \item Se decició que los procesos ejecutados siguan en la lista de PCBs hasta que mueran o terminen y se les haga \texttt{wait}. Por dicho motivo la shell tiene un comando \texttt{cleanup} para limpiar los procesos \texttt{EXITED} a los que no se les hizo \texttt{wait}.\item En lugar de tener un unico comando en la shell que bloquee o desbloquee procesos dependiendo de su estado, se decidió tener dos comandos distintos \texttt{block} y \texttt{unblock}. Ambos recibien el pid del proceso a bloquear o desbloquear.
 \end{itemize}
 \end{document}

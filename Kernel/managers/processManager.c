@@ -268,7 +268,7 @@ uint64_t wait(processManagerADT process_manager, int64_t* ret){
     if (!has_children(process_manager, my_pid))
         return -1;
 
-    for(int pid = 0; pid<process_manager->max_pid; pid++)
+    for(int pid = 0; pid<=process_manager->max_pid; pid++)
         if(is_child(process_manager, my_pid, pid))
             process_manager->processes[pid]->parent_is_waiting = WAITING;
 

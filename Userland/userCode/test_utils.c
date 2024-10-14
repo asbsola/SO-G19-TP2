@@ -81,5 +81,11 @@ uint64_t endless_counter(char** argv, int argc) {
     }
 }
 
+uint64_t echo(char** argv, int argc) {
+    bussy_wait(atoi(argv[2]));
+
+    return atoi(argv[1]);
+}
+
 void endless_loop_print(uint64_t wait) {
 }

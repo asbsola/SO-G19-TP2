@@ -14,5 +14,6 @@ void bussy_wait(uint64_t n);
 uint64_t bussy_wait_proc(char** argv, int argc);
 uint64_t endless_loop(char** argv, int argc);
 uint64_t endless_counter(char** argv, int argc);
+uint64_t echo(char** argv, int argc);
 void endless_loop_print(uint64_t wait);
 #endif

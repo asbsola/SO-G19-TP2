@@ -28,8 +28,25 @@ uint64_t test_processes(char **argv, int argc) {
 
     uint64_t iter = 0;
 
-    if (argc < 3 || (max_iters = satoi(argv[1])) <= 0 || (max_processes = satoi(argv[2])) <= 0) {
+    
+    if (argc < 3) {
         puts_with_color("test_processes: ERROR must provide max_iters and max_processes (tops at 250)\n", 0xFF0000);
+        return -1;
+    }
+
+    max_iters = satoi(argv[1]);
+    if (max_iters <= 0) {
+        puts_with_color("test_processes: ERROR max_iters must be greater than 0\n", 0xFF0000);
+        return -1;
+    }
+
+    max_processes = satoi(argv[2]);
+    if (max_processes <= 0) {
+        puts_with_color("test_processes: ERROR max_processes must be greater than 0\n", 0xFF0000);
+        return -1;
+    }
+    if(max_processes > TOTAL_PROCESSES){
+        puts_with_color("test_processes: ERROR max_processes must be less than 250\n", 0xFF0000);
         return -1;
     }
 

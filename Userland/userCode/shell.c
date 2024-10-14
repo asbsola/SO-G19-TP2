@@ -26,7 +26,9 @@ ModuleDescriptor modules[] = {
     {"nicent", "changes process priority by PID", BUILT_IN, nicent},
     {"kill", "terminates a process by its PID", BUILT_IN, kill},
     {"cleanup", "removes all exited processes ()", BUILT_IN, cleanup},
-    {"block", "toggles the state of a process between blocked and unblocked by a PID", BUILT_IN, block}};
+    {"block", "blocks a procces by a PID", BUILT_IN, block},
+    {"unblock", "unblocks a procces by a PID", BUILT_IN, unblock},
+    {"loop", "prints its PID every n seconds", PROCESS, loop}};
 
 static int current_font_size = 1;
 
@@ -360,10 +362,43 @@ uint64_t cleanup(char** argv, int argc) {
 
 uint64_t block(char** argv, int argc) {
     if (argc < 2) {
-        puts_with_color("kill: ERROR must provide pid\n", 0xFF0000);
+        puts_with_color("block: ERROR must provide pid\n", 0xFF0000);
         return -1;
     }
     int pid = atoi(argv[1]);
+    
     return sys_block_process_by_pid(pid);
+}
+
+uint64_t unblock(char** argv, int argc) {
+    if (argc < 2) {
+        puts_with_color("unblock: ERROR must provide pid\n", 0xFF0000);
+        return -1;
+    }
+    int pid = atoi(argv[1]);
+    
+    return sys_unblock_process_by_pid(pid);
+}
+
+uint64_t loop(char** argv, int argc) {
+    if (argc < 2) {
+        puts_with_color("loop: ERROR must provide waiting time in seconds\n", 0xFF0000);
+        return -1;
+    }
+    uint8_t in_background = 0;
+
+    if(argc >= 3 && argv[2][0] == '&') {
+        in_background = 1;
+    }
+
+    pid_t pid = sys_get_pid();
+    int time = atoi(argv[1]);
+    
+    while(1) {
+        sys_delay(time * 1000);
+        if(!in_background) printf("My pid is %d\n", pid);
+    }
+
+    return 0;
 }
 

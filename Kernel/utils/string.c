@@ -15,3 +15,7 @@ void str_cpy(char* dest, const char* src) {
 
     dest[i] = '\0';
 }
+
+int str_cmp(const char* s1, const char* s2){
+    // hacelo vos pibe
+}

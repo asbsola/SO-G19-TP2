@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <std.h>
 
-#define WAIT_MILLIS 20000
+#define WAIT_MILLIS 200000
 
 extern processPriority prio[TOTAL_PROCESSES];
 

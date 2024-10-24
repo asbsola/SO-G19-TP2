@@ -7,6 +7,7 @@
 
 #define PROCESS_STACK_SIZE (1<<13) // 8KB
 #define MAX_PROCESSES 256
+#define MAX_SEMAPHORES 256
 #define MEMORY_MANAGER_MEM_SIZE (1<<22) // 4MB
 
 //------------------------------------------------------------
@@ -19,6 +20,7 @@
 #define WAITING 1
 
 typedef int64_t pid_t;
+typedef int64_t sem_t;
 typedef enum
 {
     RUNNING,

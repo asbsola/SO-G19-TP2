@@ -154,7 +154,10 @@ int down_sem(semaphoreManagerADT semaphore_manager, sem_t sem){
         processControlBlockADT current_process = get_process(semaphore_manager->process_manager, current_pid);
         list_add(semADT->waiting_processes, current_process);
         current_process->blocking_sem = semADT;
+
+        release(&semADT->lock);
         block_process(semaphore_manager->process_manager, current_pid);
+        acquire(&semADT->lock);
     }
 
     semADT->value--;

@@ -45,7 +45,7 @@ schedulerADT init_scheduler(memoryManagerADT memory_manager){
 
 
 
-pid_t get_current_process(schedulerADT scheduler){
+pid_t get_current_pid(schedulerADT scheduler){
     if(scheduler->current_process == NULL) return -1;
     return scheduler->current_process->pid;
 }

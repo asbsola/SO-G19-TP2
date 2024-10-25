@@ -113,6 +113,7 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint64
     process_pcb->status = READY;
     process_pcb->priority = LOW;
     process_pcb->parent_is_waiting = NOT_WAITING;
+    process_pcb->blocking_sem = NULL;
     process_pcb->argv = argv_copy;
 
     struct startFrame *start_frame = (startFrame *)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame));
@@ -196,7 +197,7 @@ int exit_process(processManagerADT process_manager, pid_t pid, int64_t status){
 
     update_childs_ppid(process_manager, pid);
 
-    if(get_current_process(process_manager->scheduler) == pid)
+    if(get_current_pid(process_manager->scheduler) == pid)
         yield();
     else
         deschedule_process(process_manager->scheduler, process_manager->processes[pid]);
@@ -209,7 +210,7 @@ int block_process(processManagerADT process_manager, pid_t pid){
 
     process_manager->processes[pid]->status = BLOCKED;
 
-    if(get_current_process(process_manager->scheduler) == pid)
+    if(get_current_pid(process_manager->scheduler) == pid)
         yield();
     else
         deschedule_process(process_manager->scheduler, process_manager->processes[pid]);
@@ -230,9 +231,11 @@ int remove_process(processManagerADT process_manager, pid_t pid){
     if(invalid_pid(process_manager, pid))
         return -1;
 
-    free_argv(process_manager, process_manager->processes[pid]->argv);
-    mem_free(process_manager->memory_manager, process_manager->processes[pid]->stack);
-    mem_free(process_manager->memory_manager, process_manager->processes[pid]);
+    processControlBlockADT process = process_manager->processes[pid];
+    list_remove(process->blocking_sem->waiting_processes, process);
+    free_argv(process_manager, process->argv);
+    mem_free(process_manager->memory_manager, process->stack);
+    mem_free(process_manager->memory_manager, process);
 
     process_manager->processes[pid] = NULL;
     process_manager->num_processes--;
@@ -261,7 +264,7 @@ int kill_process(processManagerADT process_manager, pid_t pid, uint64_t recursiv
 
     check_waiting_parent(process_manager, pid);
 
-    if(get_current_process(process_manager->scheduler) == pid){
+    if(get_current_pid(process_manager->scheduler) == pid){
         remove_process(process_manager, pid);
         yield();
     }
@@ -284,7 +287,7 @@ uint64_t kill_signal(processManagerADT process_manager, int recursive){
 }
 
 uint64_t wait(processManagerADT process_manager, int64_t* ret){
-    pid_t my_pid = get_current_process(process_manager->scheduler);
+    pid_t my_pid = get_current_pid(process_manager->scheduler);
 
     if (!has_children(process_manager, my_pid))
         return -1;
@@ -304,7 +307,7 @@ uint64_t wait(processManagerADT process_manager, int64_t* ret){
 }
 
 uint64_t wait_process(processManagerADT process_manager, pid_t child_pid, int64_t *ret){
-    pid_t my_pid = get_current_process(process_manager->scheduler);
+    pid_t my_pid = get_current_pid(process_manager->scheduler);
 
     if (!is_child(process_manager, my_pid, child_pid))
         return -1;

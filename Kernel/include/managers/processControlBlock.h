@@ -2,6 +2,7 @@
 #define __PCB_H__
 
 #include <def.h>
+#include <managers/semaphore.h>
 
 typedef struct processControlBlockCDT
 {
@@ -14,6 +15,7 @@ typedef struct processControlBlockCDT
     uint64_t rsp;
     uint64_t ret;
     uint8_t parent_is_waiting;
+    semaphoreADT blocking_sem;
 } processControlBlockCDT;
 
 typedef struct processControlBlockCDT *processControlBlockADT;

@@ -5,7 +5,7 @@
 #include <stddef.h>
 
 #define SEM_ID "sem"
-#define TOTAL_PAIR_PROCESSES 1
+#define TOTAL_PAIR_PROCESSES 8
 
 int64_t global; // shared memory
 
@@ -18,8 +18,8 @@ void slowInc(int64_t *p, int64_t inc) {
 
 uint64_t process_inc(char **argv, int argc) {
   uint64_t n;
-  int8_t inc;
-  int8_t use_sem;
+  int64_t inc;
+  int64_t use_sem;
 
   if (argc != 4)
     return -1;
@@ -50,7 +50,7 @@ uint64_t process_inc(char **argv, int argc) {
   return 0;
 }
 
-uint64_t test_sync(char **argv, uint64_t argc) { //{n, use_sem, 0}
+uint64_t test_sync(char **argv, uint64_t argc) {
   uint64_t pids[2 * TOTAL_PAIR_PROCESSES];
 
   if (argc != 3)

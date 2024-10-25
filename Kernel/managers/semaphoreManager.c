@@ -168,7 +168,7 @@ int down_sem(semaphoreManagerADT semaphore_manager, sem_t sem){
 
     acquire(&semADT->lock);
 
-    if (semADT->value == 0) {
+    while (semADT->value == 0) {
         pid_t current_pid = get_current_pid(semaphore_manager->scheduler);
         processControlBlockADT current_process = get_process(semaphore_manager->process_manager, current_pid);
         list_add(semADT->waiting_processes, current_process);

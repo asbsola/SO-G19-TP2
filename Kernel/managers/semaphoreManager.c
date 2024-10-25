@@ -62,6 +62,7 @@ sem_t open_sem(semaphoreManagerADT semaphore_manager, uint64_t value){
 
     semaphore->value = value;
     semaphore->name = NULL;
+    semaphore->lock = 1;
     semaphore->waiting_processes = list_init(semaphore_manager->memory_manager);
 
     semaphore_manager->last_sem = MAX(semaphore_manager->last_sem, sem);
@@ -130,7 +131,12 @@ int up_sem(semaphoreManagerADT semaphore_manager, sem_t sem){
     acquire(&semADT->lock);
 
     semADT->value++;
-    unblock_waiting(semaphore_manager, semADT);
+
+    if (!list_is_empty(semADT->waiting_processes)) {
+        processControlBlockADT processADT = list_next(semADT->waiting_processes);
+        unblock_process(semaphore_manager->process_manager, processADT->pid);
+        list_remove(semADT->waiting_processes, processADT);
+    }
 
     release(&semADT->lock);
     return 0;

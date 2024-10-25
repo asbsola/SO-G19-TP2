@@ -5,7 +5,7 @@
 #include <stddef.h>
 
 #define SEM_ID "sem"
-#define TOTAL_PAIR_PROCESSES 8
+#define TOTAL_PAIR_PROCESSES 10
 
 int64_t global; // shared memory
 

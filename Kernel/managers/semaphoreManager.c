@@ -73,9 +73,11 @@ sem_t open_sem(semaphoreManagerADT semaphore_manager, uint64_t value){
 }
 
 sem_t open_sem_named(semaphoreManagerADT semaphore_manager, uint64_t value, char* name){
-    if(get_sem_named(semaphore_manager, name) != -1) return -1;
+    sem_t sem = get_sem_named(semaphore_manager, name);
+    
+    if(sem != -1) return sem;
 
-    sem_t sem = open_sem(semaphore_manager, value);
+    sem = open_sem(semaphore_manager, value);
     if(sem == -1) return -1;
 
     semaphoreADT semaphore = semaphore_manager->semaphores[sem];

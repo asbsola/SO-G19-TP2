@@ -35,6 +35,7 @@ uint64_t process_inc(char **argv, int argc) {
       printf("test_sync: ERROR opening semaphore\n");
       return -1;
     }
+    printf("test_sync: Semaphore opened\n");
   }
 
   uint64_t i;

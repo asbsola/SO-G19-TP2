@@ -201,7 +201,7 @@ uint64_t sys_yield(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint6
 }
 
 uint64_t sys_sem_open(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
-    return open_sem_named(the_semaphore_manager, rdi, (char *)rsi);
+    return open_sem_named(the_semaphore_manager, rsi, (char *)rdi);
 }
 
 uint64_t sys_sem_close(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){

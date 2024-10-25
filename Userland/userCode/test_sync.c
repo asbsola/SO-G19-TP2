@@ -5,7 +5,7 @@
 #include <stddef.h>
 
 #define SEM_ID "sem"
-#define TOTAL_PAIR_PROCESSES 2
+#define TOTAL_PAIR_PROCESSES 1
 
 int64_t global; // shared memory
 
@@ -47,9 +47,6 @@ uint64_t process_inc(char **argv, int argc) {
       sys_sem_up(SEM_ID);
   }
 
-  if (use_sem)
-    sys_sem_close(SEM_ID);
-
   return 0;
 }
 
@@ -78,6 +75,8 @@ uint64_t test_sync(char **argv, uint64_t argc) { //{n, use_sem, 0}
     sys_wait_pid(pids[i] , &status1);
     sys_wait_pid(pids[i + TOTAL_PAIR_PROCESSES], &status2);
   }
+
+  sys_sem_close(SEM_ID);
 
   printf("Final value: %d\n", global);
 

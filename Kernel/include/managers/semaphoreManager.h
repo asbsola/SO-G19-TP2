@@ -7,7 +7,6 @@
 #include <def.h>
 
 typedef struct semaphoreManagerCDT *semaphoreManagerADT;
-typedef struct semaphoreCDT *semaphoreADT;
 
 semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager, processManagerADT process_manager, schedulerADT scheduler);
 sem_t open_sem(semaphoreManagerADT semaphore_manager, uint64_t value);

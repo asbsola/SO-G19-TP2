@@ -6,13 +6,6 @@
 #include <utils/string.h>
 #define MAX(a, b) ((a)<(b)?(b):(a))
 
-struct semaphoreCDT {
-    uint64_t value;
-    uint8_t lock;
-    char* name;
-    ListADT waiting_processes;
-};
-
 struct semaphoreManagerCDT {
     sem_t last_sem;
     uint64_t num_semaphores;
@@ -94,6 +87,7 @@ void unblock_waiting(semaphoreManagerADT semaphore_manager, semaphoreADT semADT)
     while (!list_is_empty(semADT->waiting_processes)) {
         processControlBlockADT processADT = list_next(semADT->waiting_processes);
         unblock_process(semaphore_manager->process_manager, processADT->pid);
+        processADT->blocking_sem = NULL;
         list_remove(semADT->waiting_processes, processADT);
     }
 }
@@ -154,9 +148,11 @@ int down_sem(semaphoreManagerADT semaphore_manager, sem_t sem){
     acquire(&semADT->lock);
 
     if (semADT->value == 0) {
-        pid_t current = get_current_process(semaphore_manager->scheduler);
-        list_add(semADT->waiting_processes, get_process(semaphore_manager->process_manager, current));
-        block_process(semaphore_manager->process_manager, current);
+        pid_t current_pid = get_current_pid(semaphore_manager->scheduler);
+        processControlBlockADT current_process = get_process(semaphore_manager->process_manager, current_pid);
+        list_add(semADT->waiting_processes, current_process);
+        current_process->blocking_sem = semADT;
+        block_process(semaphore_manager->process_manager, current_pid);
     }
 
     semADT->value--;

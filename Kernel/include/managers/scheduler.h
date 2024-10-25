@@ -12,7 +12,7 @@ schedulerADT init_scheduler(memoryManagerADT memory_manager);
 
 int schedule_process(schedulerADT scheduler, processControlBlockADT process);
 int deschedule_process(schedulerADT scheduler, processControlBlockADT process);
-pid_t get_current_process(schedulerADT scheduler);
+pid_t get_current_pid(schedulerADT scheduler);
 int change_process_priority(schedulerADT scheduler, processControlBlockADT pid, processPriority old_priority, processPriority new_priority);
 
 

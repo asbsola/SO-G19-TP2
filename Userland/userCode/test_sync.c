@@ -24,16 +24,20 @@ uint64_t process_inc(char **argv, int argc) {
   if (argc != 4)
     return -1;
 
-  if ((n = satoi(argv[1])) <= 0)
+  if ((n = satoi(argv[1])) <= 0) {
+    puts_with_color("test_sync: ERROR error max_iters must be greater than 0\n", 0xFF0000);
     return -1;
+  }
   if ((inc = satoi(argv[2])) == 0)
     return -1;
-  if ((use_sem = satoi(argv[3])) < 0)
+  if ((use_sem = satoi(argv[3])) < 0) {
+    puts_with_color("test_sync: ERROR error max_iters must be greater than 0\n", 0xFF0000);
     return -1;
+  }
 
   if (use_sem) {
     if (sys_sem_open(SEM_ID, 1) == -1) {
-      printf("test_sync: ERROR opening semaphore\n");
+      puts_with_color("test_sync: ERROR opening semaphore\n", 0xFF0000);
       return -1;
     }
   }
@@ -53,8 +57,10 @@ uint64_t process_inc(char **argv, int argc) {
 uint64_t test_sync(char **argv, uint64_t argc) {
   uint64_t pids[2 * TOTAL_PAIR_PROCESSES];
 
-  if (argc != 3)
+  if (argc != 3) {
+    puts_with_color("test_processes: ERROR must provide max_iters and use_syncro (0 is no syncro - 1 is syncro).\n", 0xFF0000);
     return -1;
+  }
 
   printf("Starting test_sync\n");
   char *argvDec[] = {"process_inc", argv[1], "-1", argv[2], NULL};

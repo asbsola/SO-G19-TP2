@@ -13,10 +13,14 @@ struct semaphoreManagerCDT {
     memoryManagerADT memory_manager;
     processManagerADT process_manager;
     schedulerADT scheduler;
+
+    uint8_t named_sem_lock;
+    uint8_t sem_lock;
 };
 
 void acquire(uint8_t* lock);
 void release(uint8_t* lock);
+
 
 semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager, processManagerADT process_manager, schedulerADT scheduler){
     semaphoreManagerADT semaphore_manager = mem_alloc(memory_manager, sizeof(struct semaphoreManagerCDT));
@@ -24,6 +28,8 @@ semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager, proc
     semaphore_manager->last_sem = -1;
     semaphore_manager->num_semaphores = 0;
     for(int i=0; i<MAX_SEMAPHORES; i++) semaphore_manager->semaphores[i] = NULL;
+    semaphore_manager->sem_lock = 1;
+    semaphore_manager->named_sem_lock = 1;
     semaphore_manager->memory_manager = memory_manager;
     semaphore_manager->process_manager = process_manager;
     semaphore_manager->scheduler = scheduler;
@@ -46,12 +52,16 @@ sem_t get_sem_named(semaphoreManagerADT semaphore_manager, char* name){
 
 sem_t open_sem(semaphoreManagerADT semaphore_manager, uint64_t value){
     if(semaphore_manager->num_semaphores >= MAX_SEMAPHORES) return -1;
+    acquire(&semaphore_manager->sem_lock);
 
     sem_t sem;
     for(sem = 0; sem < MAX_SEMAPHORES && semaphore_manager->semaphores[sem] != NULL; sem++);
     
     semaphoreADT semaphore = mem_alloc(semaphore_manager->memory_manager, sizeof(struct semaphoreCDT));
-    if(semaphore == NULL) return -1;
+    if(semaphore == NULL) {
+        release(&semaphore_manager->sem_lock);
+        return -1;
+    }
 
     semaphore->value = value;
     semaphore->name = NULL;
@@ -62,26 +72,36 @@ sem_t open_sem(semaphoreManagerADT semaphore_manager, uint64_t value){
     semaphore_manager->num_semaphores++;
     semaphore_manager->semaphores[sem] = semaphore;
 
+    release(&semaphore_manager->sem_lock);
     return sem;
 }
 
 sem_t open_sem_named(semaphoreManagerADT semaphore_manager, uint64_t value, char* name){
+    acquire(&semaphore_manager->named_sem_lock);
     sem_t sem = get_sem_named(semaphore_manager, name);
     
-    if(sem != -1) return sem;
+    if(sem != -1) {
+        release(&semaphore_manager->named_sem_lock);
+        return sem;
+    }
 
     sem = open_sem(semaphore_manager, value);
-    if(sem == -1) return -1;
+    if(sem == -1) {
+        release(&semaphore_manager->named_sem_lock);
+        return -1;
+    }
 
     semaphoreADT semaphore = semaphore_manager->semaphores[sem];
     int len = str_len(name);
     semaphore->name = mem_alloc(semaphore_manager->memory_manager, (len + 1) * sizeof(char));
     if(semaphore->name == NULL){
+        release(&semaphore_manager->named_sem_lock);
         close_sem(semaphore_manager, sem);
         return -1;
     }
     str_cpy(semaphore->name, name);
 
+    release(&semaphore_manager->named_sem_lock);
     return sem;
 }
 

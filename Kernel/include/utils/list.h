@@ -23,5 +23,4 @@ int list_is_empty(const ListADT list);
 
 void * get_element(const ListADT list, void *data);
 
-
 #endif

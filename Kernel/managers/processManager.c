@@ -325,6 +325,12 @@ processControlBlockADT* get_processes(processManagerADT process_manager) {
     return process_manager->processes;
 }
 
+processControlBlockADT get_process(processManagerADT process_manager, pid_t pid) {
+    if (invalid_pid(process_manager, pid)) return NULL;
+
+    return process_manager->processes[pid];
+}
+
 uint64_t get_num_processes(processManagerADT process_manager){
     return process_manager->num_processes;
 }

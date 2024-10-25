@@ -31,3 +31,6 @@ run.sh
 strace_out
 report.tasks
 PVS-Studio.log
+
+
+.bashrc

@@ -32,6 +32,11 @@ global sys_wait
 global sys_wait_pid
 global sys_nicent
 global sys_yield
+global sys_sem_open
+global sys_sem_close
+global sys_sem_up
+global sys_sem_down
+
 
 %macro syscall 1
     push rbp
@@ -141,3 +146,16 @@ sys_nicent:
 
 sys_yield:
     syscall 31
+
+sys_sem_open:
+    syscall 32
+
+sys_sem_close:
+    syscall 33
+
+sys_sem_up:
+    syscall 34
+
+sys_sem_down:
+    syscall 35
+

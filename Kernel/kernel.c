@@ -14,6 +14,7 @@
 #include <managers/memoryManager.h>
 #include <managers/processManager.h>
 #include <managers/scheduler.h>
+#include <managers/semaphoreManager.h>
 
 
 static char managed_memory[MEMORY_MANAGER_MEM_SIZE];
@@ -21,6 +22,7 @@ static char managed_memory[MEMORY_MANAGER_MEM_SIZE];
 memoryManagerADT the_memory_manager = NULL;
 processManagerADT the_process_manager = NULL;
 schedulerADT the_scheduler = NULL;
+semaphoreManagerADT the_semaphore_manager = NULL;
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -73,6 +75,7 @@ int main()
     the_memory_manager = init_memory_manager(managed_memory, MEMORY_MANAGER_MEM_SIZE);
 	the_scheduler = init_scheduler(the_memory_manager);
 	the_process_manager = init_process_manager(the_memory_manager, the_scheduler);
+	the_semaphore_manager = init_semaphore_manager(the_memory_manager, the_process_manager, the_scheduler);
 
     _sti();
 

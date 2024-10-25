@@ -31,7 +31,7 @@ uint64_t process_inc(char **argv, int argc) {
     return -1;
 
   if (use_sem)
-    if (!sys_sem_open(SEM_ID, 1)) {
+    if (sys_sem_open(SEM_ID, 1) == -1) {
       printf("test_sync: ERROR opening semaphore\n");
       return -1;
     }
@@ -53,12 +53,14 @@ uint64_t process_inc(char **argv, int argc) {
 
 uint64_t test_sync(char **argv, uint64_t argc) { //{n, use_sem, 0}
   uint64_t pids[2 * TOTAL_PAIR_PROCESSES];
+  
 
-  if (argc != 2)
+  if (argc != 3)
     return -1;
 
-  char *argvDec[] = {argv[0], "-1", argv[1], NULL};
-  char *argvInc[] = {argv[0], "1", argv[1], NULL};
+  printf("Starting test_sync\n");
+  char *argvDec[] = {argv[1], "-1", argv[2], NULL};
+  char *argvInc[] = {argv[1], "1", argv[2], NULL};
 
   global = 0;
 

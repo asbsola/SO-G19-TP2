@@ -145,13 +145,11 @@ int up_sem(semaphoreManagerADT semaphore_manager, sem_t sem){
 
     acquire(&semADT->lock);
 
-    semADT->value++;
-
     if (!list_is_empty(semADT->waiting_processes)) {
         processControlBlockADT processADT = list_next(semADT->waiting_processes);
         unblock_process(semaphore_manager->process_manager, processADT->pid);
         list_remove(semADT->waiting_processes, processADT);
-    }
+    } else semADT->value++;
 
     release(&semADT->lock);
     return 0;
@@ -168,7 +166,7 @@ int down_sem(semaphoreManagerADT semaphore_manager, sem_t sem){
 
     acquire(&semADT->lock);
 
-    while (semADT->value == 0) {
+    if (semADT->value == 0) {
         pid_t current_pid = get_current_pid(semaphore_manager->scheduler);
         processControlBlockADT current_process = get_process(semaphore_manager->process_manager, current_pid);
         list_add(semADT->waiting_processes, current_process);
@@ -176,13 +174,10 @@ int down_sem(semaphoreManagerADT semaphore_manager, sem_t sem){
 
         release(&semADT->lock);
         block_process(semaphore_manager->process_manager, current_pid);
-        acquire(&semADT->lock);
+        return 0;
     }
-
     semADT->value--;
-
     release(&semADT->lock);
-
     return 0;
 }
 

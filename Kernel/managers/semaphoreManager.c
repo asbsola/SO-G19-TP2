@@ -21,7 +21,6 @@ struct semaphoreManagerCDT {
 void acquire(uint8_t* lock);
 void release(uint8_t* lock);
 
-
 semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager, processManagerADT process_manager, schedulerADT scheduler){
     semaphoreManagerADT semaphore_manager = mem_alloc(memory_manager, sizeof(struct semaphoreManagerCDT));
 
@@ -146,13 +145,11 @@ int up_sem(semaphoreManagerADT semaphore_manager, sem_t sem){
 
     acquire(&semADT->lock);
 
-    semADT->value++;
-
     if (!list_is_empty(semADT->waiting_processes)) {
         processControlBlockADT processADT = list_next(semADT->waiting_processes);
         unblock_process(semaphore_manager->process_manager, processADT->pid);
         list_remove(semADT->waiting_processes, processADT);
-    }
+    } else semADT->value++;
 
     release(&semADT->lock);
     return 0;
@@ -177,13 +174,10 @@ int down_sem(semaphoreManagerADT semaphore_manager, sem_t sem){
 
         release(&semADT->lock);
         block_process(semaphore_manager->process_manager, current_pid);
-        acquire(&semADT->lock);
+        return 0;
     }
-
     semADT->value--;
-
     release(&semADT->lock);
-
     return 0;
 }
 

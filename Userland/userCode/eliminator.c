@@ -1,9 +1,13 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <eliminator.h>
+#include <stddef.h>
 
-static uint32_t screen_width;
-static uint32_t screen_height;
+static uint32_t normalized_screen_width;
+static uint32_t normalized_screen_height;
+static uint32_t bufferWidth;
+static uint32_t bufferHeight;
+static uint32_t** buffer;
 
 static uint8_t players = 1;
 
@@ -130,32 +134,26 @@ void changeDirection(char key, int* p1Dir, int* p2Dir){
     }
 }
 
+void foo() {}
+
 void play() {
     int keep_playing = 1;
     while(keep_playing == 1){
         sys_clear_screen(0);
 
-        uint32_t normalized_screen_width = screen_width - screen_width % SQUARE_SIZE;
-        uint32_t normalized_screen_height = screen_height - screen_height % SQUARE_SIZE;
-
-        for(uint32_t x = SQUARE_SIZE; x < normalized_screen_width - SQUARE_SIZE; x += SQUARE_SIZE){
-            sys_draw_square(HEX_RED, x, SQUARE_SIZE, SQUARE_SIZE);
-            sys_draw_square(HEX_RED, x, normalized_screen_height - SQUARE_SIZE * 2, SQUARE_SIZE);
+        for(uint32_t x = 1; x < normalized_screen_width-1; x++){
+            sys_draw_square(HEX_RED, x*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
+            sys_draw_square(HEX_RED, x*SQUARE_SIZE, (normalized_screen_height-2) * SQUARE_SIZE, SQUARE_SIZE);
         }
 
-        for(uint32_t y = SQUARE_SIZE; y < normalized_screen_height - SQUARE_SIZE; y += SQUARE_SIZE){
-            sys_draw_square(HEX_RED, SQUARE_SIZE, y, SQUARE_SIZE);
-            sys_draw_square(HEX_RED, normalized_screen_width - SQUARE_SIZE * 2, y, SQUARE_SIZE);
+        for(uint32_t y = 1; y < normalized_screen_height-1; y++){
+            sys_draw_square(HEX_RED, SQUARE_SIZE, y*SQUARE_SIZE, SQUARE_SIZE);
+            sys_draw_square(HEX_RED, (normalized_screen_width-2) * SQUARE_SIZE, y*SQUARE_SIZE, SQUARE_SIZE);
         }
 
-        uint32_t bufferWidth = normalized_screen_width/SQUARE_SIZE - 4;
-        uint32_t bufferHeight = normalized_screen_height/SQUARE_SIZE - 4;
-        uint32_t buffer[bufferHeight][bufferWidth];
-        for(int i=0; i<bufferHeight; i++){
-            for(int j=0; j<bufferWidth; j++){
+        for(int i=0; i<bufferHeight; i++)
+            for(int j=0; j<bufferWidth; j++)
                 buffer[i][j] = 0;
-            }
-        }
 
         sys_beep(400, 300);
 
@@ -173,6 +171,7 @@ void play() {
             char key;
             int player1Dir = player1Data.direction;
             int player2Dir = player2Data.direction;
+            foo();
             while((key = sys_get_key_pressed()) != 0){
                 changeDirection(key, &player1Dir, &player2Dir);
             }
@@ -261,9 +260,32 @@ int endGame() {
 }
 
 void play_eliminator() {
+
+    uint32_t screen_width = sys_get_screen_width();
+    uint32_t screen_height = sys_get_screen_height();
+
     
-    screen_width = sys_get_screen_width();
-    screen_height = sys_get_screen_height();
+    normalized_screen_width = screen_width / SQUARE_SIZE;
+    normalized_screen_height = screen_height / SQUARE_SIZE;
+    
+    bufferWidth = normalized_screen_width - 4;
+    bufferHeight = normalized_screen_height - 4;
+    
+
+    buffer = sys_malloc(bufferHeight * sizeof(uint32_t*));
+    if(buffer == NULL) return;
+
+    for(int i=0; i<bufferHeight; i++){
+        buffer[i] = sys_malloc(bufferWidth * sizeof(uint32_t));
+        if(buffer[i] == NULL){
+            for(int j=0; j<i; j++) sys_free(buffer[j]);
+            sys_free(buffer);
+            return;
+        }
+        for(int j=0; j<bufferWidth; j++){
+            buffer[i][j] = 0;
+        }
+    }
     
     init_presentation();
     
@@ -278,4 +300,8 @@ void play_eliminator() {
         }
         key = sys_get_character_pressed();
     }
+
+    for(int i=0; i<bufferHeight; i++)
+        sys_free(buffer[i]);
+    sys_free(buffer);
 }

@@ -89,7 +89,7 @@ int has_children(processManagerADT process_manager, pid_t my_pid) {
 
 pid_t get_lowest_unused_pid(processManagerADT process_manager){
     pid_t pid;
-    for (pid = 0; process_manager->processes[pid] != NULL && pid <= process_manager->max_pid; pid++);
+    for (pid = 0; pid <= process_manager->max_pid && process_manager->processes[pid] != NULL ; pid++);
     if(pid == MAX_PROCESSES)
         return -1;
     return pid;

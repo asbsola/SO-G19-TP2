@@ -93,7 +93,7 @@ uint32_t get_fmt_num_args(const char* fmt) {
     return count;
 }
 
-//-V::printf
+//-V::V576
 void printf(const char* fmt, ...) {
     char printf_buff[PRINTF_PRINT_BUFF_MAX_SIZE] = {0};
 

@@ -32,6 +32,7 @@ strace_out
 report.tasks
 PVS-Studio.log
 PVS-Studio.config
+PVS-Studio.cfg
 
 
 .bashrc

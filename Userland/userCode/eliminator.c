@@ -204,7 +204,7 @@ void play() {
                 sys_draw_square(player2Data.color, (player2Data.x + 2) * SQUARE_SIZE, (player2Data.y + 2) * SQUARE_SIZE, SQUARE_SIZE);
             }
 
-            sys_delay(MAX_DELAY / speed);
+            sleep(MAX_DELAY / speed);
         }
         keep_playing = endGame();
     }

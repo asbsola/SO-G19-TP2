@@ -6,7 +6,7 @@
 #include <lib.h>
 
 static uint32_t TICKS_PER_SECOND;
-static unsigned long ticks = 0;
+volatile static unsigned long ticks = 0;
 
 static uint64_t UPDATE_SCREEN_RATE;
 static unsigned long ticks_at_last_update = 0;
@@ -35,15 +35,7 @@ void delay(uint64_t milis){
 	while(ticks - start < (TICKS_PER_SECOND * milis) / 1000);
 }
 
-void delay_ticks(uint64_t ticks){
-	uint64_t start = ticks_elapsed();
-	while(ticks - start < ticks);
-}
 
 int ticks_elapsed() {
 	return ticks;
-}
-
-int seconds_elapsed() {
-	return ticks / 18;
 }

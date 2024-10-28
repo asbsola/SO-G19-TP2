@@ -17,7 +17,7 @@ char sys_get_character_pressed();
 void sys_clear_text_buffer();
 void sys_get_cpu_vendor(char *buff);
 void sys_beep(uint64_t freq, uint64_t milis);
-void sys_delay(uint64_t milis);
+uint64_t sys_get_ticks();
 void sys_clear_screen(uint32_t clearColor);
 void sys_print_registers();
 void *sys_malloc(uint64_t size);
@@ -40,6 +40,6 @@ int64_t sys_sem_open(char* name, uint64_t value);
 int64_t sys_sem_close(char* name);
 int64_t sys_sem_up(char* name);
 int64_t sys_sem_down(char* name);
-uint64_t sys_get_ticks();
+
 
 #endif

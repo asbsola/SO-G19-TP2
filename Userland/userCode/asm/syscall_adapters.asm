@@ -13,7 +13,7 @@ global sys_get_character_pressed
 global sys_clear_text_buffer
 global sys_get_cpu_vendor
 global sys_beep
-global sys_delay
+global sys_get_ticks
 global sys_print_registers
 global sys_clear_screen
 global sys_malloc
@@ -36,7 +36,6 @@ global sys_sem_open
 global sys_sem_close
 global sys_sem_up
 global sys_sem_down
-global sys_get_ticks
 
 
 %macro syscall 1
@@ -91,7 +90,7 @@ sys_get_cpu_vendor:
 sys_beep:
     syscall 12
 
-sys_delay:
+sys_get_ticks:
     syscall 13
 
 sys_print_registers:
@@ -160,5 +159,3 @@ sys_sem_up:
 sys_sem_down:
     syscall 35
 
-sys_get_ticks:
-    syscall 36

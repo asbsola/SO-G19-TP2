@@ -42,7 +42,7 @@ uint64_t process_inc(char **argv, int argc) {
       puts_with_color("test_sync: ERROR opening semaphore\n", 0xFF0000);
       return -1;
     }
-    printf("test_sync: Semaphore opened\n");
+    
   }
 
   uint64_t i;

@@ -36,6 +36,7 @@ global sys_sem_open
 global sys_sem_close
 global sys_sem_up
 global sys_sem_down
+global sys_get_ticks
 
 
 %macro syscall 1
@@ -159,3 +160,5 @@ sys_sem_up:
 sys_sem_down:
     syscall 35
 
+sys_get_ticks:
+    syscall 36

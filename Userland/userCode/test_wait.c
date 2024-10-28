@@ -88,7 +88,7 @@ uint64_t test_wait(char **argv, int argc) {
         
  
 
-        bussy_wait(MILLIS);
+        sleep(MILLIS);
 
         if (!in_background)
             printf("waiting processes...\n");
@@ -136,7 +136,7 @@ uint64_t test_wait(char **argv, int argc) {
             printf("give them time to finnish...\n");
         }
 
-        bussy_wait(MILLIS);
+        sleep(MILLIS);
 
         if (!in_background)
             printf("waiting processes...\n");

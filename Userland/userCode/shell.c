@@ -407,7 +407,7 @@ uint64_t loop(char** argv, int argc) {
     int time = atoi(argv[1]);
     
     while(1) {
-        sys_delay(time * 1000);
+        sleep(time * 1000);
         if(!in_background) printf("My pid is %d\n", pid);
     }
 

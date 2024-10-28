@@ -38,7 +38,7 @@ uint64_t test_prio(char **argv, int argc) {
         }
     }
 
-    bussy_wait(MILLIS);
+    sleep(MILLIS);
 
     if (!in_background)
         puts_with_color("\nCHANGING PRIORITIES...\n", 0xc2daff);
@@ -49,7 +49,7 @@ uint64_t test_prio(char **argv, int argc) {
             return -1;
         }
 
-    bussy_wait(MILLIS);
+    sleep(MILLIS);
 
     if (!in_background)
         puts_with_color("\nBLOCKING...\n", 0xc2daff);
@@ -60,7 +60,7 @@ uint64_t test_prio(char **argv, int argc) {
             return -1;
         }
 
-    bussy_wait(MILLIS);
+    sleep(MILLIS);
 
     if (!in_background)
         puts_with_color("CHANGING PRIORITIES WHILE BLOCKED...\n", 0xc2daff);
@@ -71,7 +71,7 @@ uint64_t test_prio(char **argv, int argc) {
             return -1;
         }
 
-    bussy_wait(MILLIS);
+    sleep(MILLIS);
     
     if (!in_background)
         puts_with_color("UNBLOCKING...\n", 0xc2daff);
@@ -82,7 +82,7 @@ uint64_t test_prio(char **argv, int argc) {
             return -1;
         }
 
-    bussy_wait(MILLIS);
+    sleep(MILLIS);
 
     if (!in_background)
         puts_with_color("\nKILLING...\n", 0xc2daff);

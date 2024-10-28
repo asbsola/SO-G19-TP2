@@ -54,10 +54,6 @@ int64_t satoi(char *str) {
     return res * sign;
 }
 
-// Dummies
-void bussy_wait(uint64_t millis) {
-    sys_delay(millis);
-}
 
 uint64_t bussy_wait_proc(char** argv, int argc) {
     uint64_t millis = 0;
@@ -65,7 +61,7 @@ uint64_t bussy_wait_proc(char** argv, int argc) {
         return -1;
     }
 
-    bussy_wait(millis);
+    sleep(millis);
 
     return 0;
 }
@@ -84,7 +80,7 @@ uint64_t endless_counter(char** argv, int argc) {
 }
 
 uint64_t echo(char** argv, int argc) {
-    bussy_wait(atoi(argv[2]));
+    sleep(atoi(argv[2]));
 
     return atoi(argv[1]);
 }

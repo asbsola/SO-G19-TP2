@@ -69,7 +69,7 @@ void * initializeKernelBinary()
 int main()
 {	
     _cli();
-	initialize_pit(60);
+	initialize_pit(PIT_FREQUENCY);
 	load_idt();
 
     the_memory_manager = init_memory_manager(managed_memory, MEMORY_MANAGER_MEM_SIZE);

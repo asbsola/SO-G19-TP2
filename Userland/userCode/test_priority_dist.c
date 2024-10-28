@@ -58,7 +58,7 @@ uint64_t test_prio_dist(char **argv, int argc) {
     if (!in_background)
         puts_with_color("Waiting...\n", 0xc2daff);
     
-    bussy_wait(WAIT_MILLIS);
+    sleep(WAIT_MILLIS);
     
     for (int i = 0; i < max_processes; i++){
         if(sys_kill_process_by_pid(pids[i], 0) == -1){

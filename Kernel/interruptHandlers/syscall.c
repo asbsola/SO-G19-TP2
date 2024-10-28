@@ -217,6 +217,10 @@ uint64_t sys_sem_down(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, ui
     return down_sem_named(the_semaphore_manager, (char *)rdi);
 }
 
+uint64_t sys_get_ticks(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
+    return ticks_elapsed();
+}
+
 uint64_t (*syscalls[])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t) = {
     sys_read, sys_write, sys_put_text,
     sys_set_font_size, sys_draw_square, sys_get_screen_width,
@@ -225,7 +229,7 @@ uint64_t (*syscalls[])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_
     sys_print_registers, sys_clear_screen,
     sys_malloc, sys_free, sys_get_usable_memory_size, sys_get_free_memory_size, sys_get_total_memory_size, 
     sys_ps, sys_create_process, sys_exit_process_by_pid, sys_block_process_by_pid, sys_kill_process_by_pid, sys_unblock_process_by_pid,
-    sys_get_pid, sys_wait, sys_wait_pid, sys_nicent, sys_yield, sys_sem_open, sys_sem_close, sys_sem_up, sys_sem_down
+    sys_get_pid, sys_wait, sys_wait_pid, sys_nicent, sys_yield, sys_sem_open, sys_sem_close, sys_sem_up, sys_sem_down, sys_get_ticks
 };
 
 uint64_t syscall_handler(const registers64_t *registers)

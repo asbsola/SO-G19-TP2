@@ -171,3 +171,8 @@ void scanf(const char* fmt, void* ptr) {
 int isAlpha(char c){
     return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || ('0' <= c && c <= '9');
 }
+
+void sleep(uint64_t millis){
+    uint64_t start = sys_get_ticks();
+    while((sys_get_ticks() - start) * 1000 < (PIT_FREQUENCY * millis));
+}

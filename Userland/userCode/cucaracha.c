@@ -45,6 +45,6 @@ void play_la_cucaracha(){
         }
 
         sys_beep(notes[i].freq, notes[i].duration);
-        sys_delay(notes[i].delay);
+        sleep(notes[i].delay);
     }
 }

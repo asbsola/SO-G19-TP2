@@ -107,6 +107,12 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint64
 
     pid_t pid = get_lowest_unused_pid(process_manager);
 
+    if(pid == -1){
+        mem_free(process_manager->memory_manager, process_pcb);
+        mem_free(process_manager->memory_manager, stack);
+        return -1;
+    }
+
     char** argv_copy = copy_argv(process_manager, argv);
 
     process_pcb->pid = pid;

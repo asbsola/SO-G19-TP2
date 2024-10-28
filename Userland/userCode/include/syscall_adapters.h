@@ -40,6 +40,6 @@ int64_t sys_sem_open(char* name, uint64_t value);
 int64_t sys_sem_close(char* name);
 int64_t sys_sem_up(char* name);
 int64_t sys_sem_down(char* name);
-
+uint64_t sys_get_ticks();
 
 #endif

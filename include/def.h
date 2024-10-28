@@ -48,4 +48,6 @@ typedef struct
     processStatus status;
 } process_info_t;
 
+#define PIT_FREQUENCY 60
+
 #endif

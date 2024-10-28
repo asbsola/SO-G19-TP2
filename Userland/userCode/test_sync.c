@@ -101,7 +101,7 @@ uint64_t test_sync(char **argv, uint64_t argc) {
 
   sys_sem_close(SEM_ID);
 
-  if(!in_background) printf("Final value: %d\n", global);
+  printf("Final value: %d\n", global);
 
   return 0;
 }

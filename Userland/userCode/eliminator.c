@@ -134,8 +134,6 @@ void changeDirection(char key, int* p1Dir, int* p2Dir){
     }
 }
 
-void foo() {}
-
 void play() {
     int keep_playing = 1;
     while(keep_playing == 1){
@@ -171,7 +169,6 @@ void play() {
             char key;
             int player1Dir = player1Data.direction;
             int player2Dir = player2Data.direction;
-            foo();
             while((key = sys_get_key_pressed()) != 0){
                 changeDirection(key, &player1Dir, &player2Dir);
             }

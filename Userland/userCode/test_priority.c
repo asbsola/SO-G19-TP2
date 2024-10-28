@@ -22,7 +22,7 @@ uint64_t test_prio(char **argv, int argc) {
     }
     max_processes = (max_processes > TOTAL_PROCESSES) ? TOTAL_PROCESSES : max_processes; 
 
-    uint8_t in_background = (argc > 2 && argv[argc - 1][0] == '&');
+    uint8_t in_background = (argc >= 3 && argv[argc - 1][0] == '&');
 
     char *argvAux[] = {"endless_loop", NULL};
     uint64_t i;

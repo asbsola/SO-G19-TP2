@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #define SEM_ID "sem"
-#define TOTAL_PAIR_PROCESSES 10
 
 int64_t global; // shared memory
 
@@ -58,36 +57,51 @@ uint64_t process_inc(char **argv, int argc) {
 }
 
 uint64_t test_sync(char **argv, uint64_t argc) {
-  uint64_t pids[2 * TOTAL_PAIR_PROCESSES];
+  uint64_t pids[MAX_PROCESSES];
 
-  if (argc != 3) {
-    puts_with_color("test_processes: ERROR must provide max_iters and use_syncro (0 is no syncro - 1 is syncro).\n", 0xFF0000);
+  if (argc < 4) {
+    puts_with_color("test_sync: ERROR must provide max_iters, max_pair_processes and use_syncro (0 is no syncro - 1 is syncro).\n", 0xFF0000);
     return -1;
   }
 
-  printf("Starting test_sync\n");
-  char *argvDec[] = {"process_inc", argv[1], "-1", argv[2], NULL};
-  char *argvInc[] = {"process_inc", argv[1], "1", argv[2], NULL};
+  int process_count = satoi(argv[2]);
+
+  if(process_count < 0 || process_count > (MAX_PROCESSES / 2)) {
+    puts_with_color("test_sync: ERROR max_pair_processes must be greater than 0 and lower than 125\n", 0xFF0000);
+    return -1;
+  }
+
+  uint8_t in_background = (argc > 4 && argv[4][0] == '&');
+
+  if(!in_background) printf("Starting test_sync\n");
+
+  char *argvDec[] = {"process_inc", argv[1], "-1", argv[3], NULL};
+  char *argvInc[] = {"process_inc", argv[1], "1", argv[3], NULL};
 
   global = 0;
 
   uint64_t i;
-  for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
+  for (i = 0; i < process_count; i++) {
     pids[i] = sys_create_process(process_inc, argvDec);
-    pids[i + TOTAL_PAIR_PROCESSES] = sys_create_process(process_inc, argvInc);
+    pids[i + process_count] = sys_create_process(process_inc, argvInc);
+    if(pids[i] == -1 || pids[i + process_count] == -1) {
+      puts_with_color("test_sync: ERROR creating process\n", 0xFF0000);
+      sys_sem_close(SEM_ID);
+      return -1;
+    }
   }
 
   int64_t status1;
   int64_t status2;
 
-  for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
+  for (i = 0; i < process_count; i++) {
     sys_wait_pid(pids[i] , &status1);
-    sys_wait_pid(pids[i + TOTAL_PAIR_PROCESSES], &status2);
+    sys_wait_pid(pids[i + process_count], &status2);
   }
 
   sys_sem_close(SEM_ID);
 
-  printf("Final value: %d\n", global);
+  if(!in_background) printf("Final value: %d\n", global);
 
   return 0;
 }

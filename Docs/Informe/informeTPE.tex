@@ -164,6 +164,14 @@ l\_list = l * l\_len = l\_len * \frac{1}{4 h\_len + 2 m\_len + l\_len}
 
 Dichas probabilidades las usamos al momento de hacer el context switch para decidir de que lista de prioridades vamos a correr el siguiente proceso.
 
+\section{Semaphore Manager}
+
+Este módulo es el encargado de gestionar los semáforos mediante las siguientes funciones: \texttt{open\_sem}, \texttt{close\_sem}, \texttt{up\_sem} y \texttt{down\_sem}. Al utilizar estas funciones, al momento de hacer un \texttt{open} se obtiene un ID del semáforo, y luego se pueden ejecutar el resto de las funciones utilizando ese ID. Además, se implementaron semáforos con nombres, permitiendo compartirlos entre procesos. Para ello, se utilizan las funciones \texttt{open\_sem\_named}, \texttt{close\_sem\_named}, \texttt{up\_sem\_named} y \texttt{down\_sem\_named}.
+
+Dado que no tenemos la posibilidad de mapear los semáforos en la memoria de un proceso, se decidió que, si un proceso realiza un \texttt{open} de un semáforo que ya existe, no se realice ninguna acción adicional. Por esta limitación, si un proceso conoce el nombre de un semáforo, puede hacer un \texttt{up} o \texttt{down} sobre él sin necesidad de haberlo abierto previamente.
+
+Relacionado con esta última limitación, se decidió que si un proceso ejecuta un \texttt{sem\_close} o \texttt{sem\_close\_named}, el semáforo se elimine del vector de semáforos, de modo que ningún otro proceso pueda accederlo posteriormente. 
+
 \section {Idle}
 El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede terminar, bloquear, ni cambiar su prioridad. Su función es, si los tuviera, liberar a sus hijo que estén en estado \texttt{EXITED} y luego ejecutar yield para ceder la cpu a otro proceso. El mismo al comenzar es el encargado de crear el proceso \texttt{shell}.
 

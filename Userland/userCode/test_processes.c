@@ -1,7 +1,5 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <std.h>
 #include <syscall_adapters.h>
 #include <test_utils.h>
@@ -52,9 +50,8 @@ uint64_t test_processes(char **argv, int argc) {
         return -1;
     }
 
-    uint8_t in_background = (argc > 3 && argv[argc - 1][0] == '&');
+    uint8_t in_background = (argv[argc - 1][0] == '&');
 
-    max_processes = (max_processes > TOTAL_PROCESSES) ? TOTAL_PROCESSES : max_processes; 
 
     while (iter++ < max_iters) {
         if (!in_background) {

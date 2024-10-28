@@ -1,7 +1,5 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <shell.h>
 #include <def.h>
 
@@ -202,6 +200,10 @@ uint64_t calculator(char** argv, int argc)
         response = num1 * num2;
         break;
     case '/':
+        if(num2 == 0) {
+            printf("Division by zero is not allowed.\n");
+            return -1;
+        }
         response = num1 / num2;
         break;
     default:
@@ -349,7 +351,7 @@ uint64_t kill(char** argv, int argc) {
 
     uint64_t kill_recursive = 0;
 
-    if(argc >= 2 && argv[2][0] == 'r') {
+    if(argv[2][0] == 'r') {
         kill_recursive = 1;
     }
 

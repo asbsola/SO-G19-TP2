@@ -1,7 +1,5 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <std.h>
 
 uint32_t strcmp(const char* s1, const char* s2) {
@@ -95,6 +93,7 @@ uint32_t get_fmt_num_args(const char* fmt) {
     return count;
 }
 
+//-V::printf
 void printf(const char* fmt, ...) {
     char printf_buff[PRINTF_PRINT_BUFF_MAX_SIZE] = {0};
 
@@ -154,7 +153,7 @@ uint32_t atoi(const char* s) {
 
     return out;
 }
-
+//-V::scanf
 void scanf(const char* fmt, void* ptr) {
     char scan_buff[SCANF_BUFF_MAX_SIZE] = {0};
 

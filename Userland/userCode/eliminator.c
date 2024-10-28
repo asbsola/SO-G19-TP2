@@ -1,7 +1,5 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <eliminator.h>
 
 static uint32_t screen_width;
@@ -15,7 +13,7 @@ static PlayerData player2Data = {"PLAYER 1", 8, 0, 0, 0, HEX_GREEN, 0, 1, 1};
 static uint8_t speed = 1;
 
 void init_presentation() {
-    sys_clear_text_buffer(0);
+    sys_clear_text_buffer();
     sys_set_font_size(3);
     sys_put_text("ELIMINATOR", 10, HEX_RED, 100, 100);
     sys_put_text("by los egrep", 12, HEX_RED, 100, 170);
@@ -25,7 +23,7 @@ void init_presentation() {
 }
 
 void init_menu() {
-    sys_clear_text_buffer(0);
+    sys_clear_text_buffer();
 
     print_setting("PLAYERS: ", 10, players, HEX_RED, 100, 100);
     print_setting("SPEED: ", 8, speed, HEX_RED, 100, 150);
@@ -37,7 +35,7 @@ void init_menu() {
 
 void change_settings_and_play() {
 
-    sys_clear_text_buffer(0);
+    sys_clear_text_buffer();
 
     player1Data.score = 0;
     player2Data.score = 0;
@@ -187,11 +185,11 @@ void play() {
             player2Data.x += (player2Data.direction == 1) - (player2Data.direction == 3);
             player2Data.y += (player2Data.direction == 2) - (player2Data.direction == 0);
 
-            if(player1Data.x < 0 || player1Data.x > bufferWidth - 1 || player1Data.y < 0 || player1Data.y > bufferHeight - 1 || buffer[player1Data.y][player1Data.x] == 1) {
+            if(player1Data.x > bufferWidth - 1 || player1Data.y > bufferHeight - 1 || buffer[player1Data.y][player1Data.x] == 1) {
                 player1Data.alive = 0;
             }
 
-            if(player2Data.x < 0 || player2Data.x > bufferWidth - 1 || player2Data.y < 0 || player2Data.y > bufferHeight - 1 || buffer[player2Data.y][player2Data.x] == 1) {
+            if(player2Data.x > bufferWidth - 1 || player2Data.y > bufferHeight - 1 || buffer[player2Data.y][player2Data.x] == 1) {
                 player2Data.alive = 0;
             }
 

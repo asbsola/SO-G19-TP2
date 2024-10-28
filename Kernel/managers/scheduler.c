@@ -1,7 +1,5 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <lib.h>
 #include <registers.h>
 #include <managers/scheduler.h>
@@ -99,11 +97,7 @@ void handle_status(schedulerADT scheduler, processControlBlockADT process){
         process->status = READY;
         break;
     case BLOCKED:
-        list_remove(scheduler->process_list[process->priority], process);
-        break;
     case EXITED:
-        list_remove(scheduler->process_list[process->priority], process);
-        break;
     case KILLED:
         list_remove(scheduler->process_list[process->priority], process);
     default:

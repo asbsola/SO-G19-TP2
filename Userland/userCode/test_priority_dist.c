@@ -1,7 +1,5 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdint.h>
 #include <def.h>
 #include <syscall_adapters.h>
@@ -25,7 +23,7 @@ uint64_t test_prio_dist(char **argv, int argc) {
     }
     max_processes = (max_processes > TOTAL_PROCESSES) ? TOTAL_PROCESSES : max_processes; 
 
-    uint8_t in_background = (argc > 1 && argv[argc - 1][0] == '&');
+    uint8_t in_background = (argv[argc - 1][0] == '&');
 
     char *argvAux1[] = {"endless_counter", "0", NULL};
     char *argvAux2[] = {"endless_counter", "1", NULL};

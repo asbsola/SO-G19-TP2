@@ -1,7 +1,5 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "def.h"
 #include <idle.h>
 #include <utils/string.h>
@@ -92,6 +90,8 @@ int has_children(processManagerADT process_manager, pid_t my_pid) {
 pid_t get_lowest_unused_pid(processManagerADT process_manager){
     pid_t pid;
     for (pid = 0; process_manager->processes[pid] != NULL && pid <= process_manager->max_pid; pid++);
+    if(pid == MAX_PROCESSES)
+        return -1;
     return pid;
 }
 

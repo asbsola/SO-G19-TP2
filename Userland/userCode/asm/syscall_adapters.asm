@@ -32,6 +32,10 @@ global sys_wait
 global sys_wait_pid
 global sys_nicent
 global sys_yield
+global sys_sem_open_named
+global sys_sem_close_named
+global sys_sem_up_named
+global sys_sem_down_named
 global sys_sem_open
 global sys_sem_close
 global sys_sem_up
@@ -147,15 +151,26 @@ sys_nicent:
 sys_yield:
     syscall 31
 
-sys_sem_open:
+sys_sem_open_named:
     syscall 32
 
-sys_sem_close:
+sys_sem_close_named:
     syscall 33
 
-sys_sem_up:
+sys_sem_up_named:
     syscall 34
 
-sys_sem_down:
+sys_sem_down_named:
     syscall 35
 
+sys_sem_open:
+    syscall 36
+
+sys_sem_close:
+    syscall 37
+
+sys_sem_up:
+    syscall 38
+
+sys_sem_down:
+    syscall 39

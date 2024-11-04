@@ -199,22 +199,37 @@ uint64_t sys_yield(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint6
     return 0;
 }
 
-uint64_t sys_sem_open(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
+uint64_t sys_sem_open_named(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
     return open_sem_named(the_semaphore_manager, rsi, (char *)rdi);
 }
 
-uint64_t sys_sem_close(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
+uint64_t sys_sem_close_named(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
     return close_sem_named(the_semaphore_manager, (char *)rdi);
 }
 
-uint64_t sys_sem_up(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
+uint64_t sys_sem_up_named(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
     return up_sem_named(the_semaphore_manager, (char *)rdi);
 }
 
-uint64_t sys_sem_down(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
+uint64_t sys_sem_down_named(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
     return down_sem_named(the_semaphore_manager, (char *)rdi);
 }
 
+uint64_t sys_sem_open(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
+    return open_sem(the_semaphore_manager, rdi);
+}
+
+uint64_t sys_sem_close(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
+    return close_sem(the_semaphore_manager, (sem_t)rdi);
+}
+
+uint64_t sys_sem_up(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
+    return up_sem(the_semaphore_manager, (sem_t)rdi);
+}
+
+uint64_t sys_sem_down(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
+    return down_sem(the_semaphore_manager, (sem_t)rdi);
+}
 
 uint64_t (*syscalls[])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t) = {
     sys_read, sys_write, sys_put_text,
@@ -224,7 +239,9 @@ uint64_t (*syscalls[])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_
     sys_print_registers, sys_clear_screen,
     sys_malloc, sys_free, sys_get_usable_memory_size, sys_get_free_memory_size, sys_get_total_memory_size, 
     sys_ps, sys_create_process, sys_exit_process_by_pid, sys_block_process_by_pid, sys_kill_process_by_pid, sys_unblock_process_by_pid,
-    sys_get_pid, sys_wait, sys_wait_pid, sys_nicent, sys_yield, sys_sem_open, sys_sem_close, sys_sem_up, sys_sem_down
+    sys_get_pid, sys_wait, sys_wait_pid, sys_nicent, sys_yield, 
+    sys_sem_open_named, sys_sem_close_named, sys_sem_up_named, sys_sem_down_named,
+    sys_sem_open, sys_sem_close, sys_sem_up, sys_sem_down
 };
 
 uint64_t syscall_handler(const registers64_t *registers)

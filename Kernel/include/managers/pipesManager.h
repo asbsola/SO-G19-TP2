@@ -18,7 +18,7 @@ int write_pipe(pipesManagerADT pipes_manager, fd_t fd, char * buffer, int size);
 int read_pipe(pipesManagerADT pipes_manager, fd_t fd, char * buffer, int size);
 
 fd_t open_pipe_named(pipesManagerADT pipes_manager, char* name);
-
+int close_pipe_named(pipesManagerADT pipes_manager, char* name);
 
 
 

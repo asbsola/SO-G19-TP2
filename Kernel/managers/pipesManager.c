@@ -107,7 +107,7 @@ int write_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buffer, int size) {
             
         }
     }
-    
+
     down_sem(pipes_manager->semaphore_manager, pipe->mutex);
     while(pipe->blocked_readers > 0) {
         pipe->blocked_readers--;
@@ -177,4 +177,12 @@ fd_t open_pipe_named(pipesManagerADT pipes_manager, char* name){
     str_cpy(pipes_manager->pipes[i]->name, name);
 
     return i;
+}
+
+int close_pipe_named(pipesManagerADT pipes_manager, char* name) {
+    fd_t i = get_pipe_named(pipes_manager, name);
+
+    if(i == -1) return -1;
+
+    return close_pipe(pipes_manager, i);
 }

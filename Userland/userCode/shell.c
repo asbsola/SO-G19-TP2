@@ -29,7 +29,9 @@ ModuleDescriptor modules[] = {
     {"cleanup", "removes all exited processes", BUILT_IN, cleanup},
     {"block", "blocks a procces by a PID", BUILT_IN, block},
     {"unblock", "unblocks a procces by a PID", BUILT_IN, unblock},
-    {"loop", "prints its PID every n seconds", PROCESS, loop}};
+    {"loop", "prints its PID every n seconds", PROCESS, loop},
+    {"phylo", "the dining philosophers problem", PROCESS, phylo},
+};
 
 static int current_font_size = 1;
 

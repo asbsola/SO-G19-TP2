@@ -35,4 +35,7 @@ uint64_t nicent(processManagerADT process_manager, pid_t pid, processPriority pr
 
 uint64_t kill_signal(processManagerADT process_manager, int recursive);
 
+fd_t get_stdin(processManagerADT process_manager, pid_t pid);
+fd_t get_stdout(processManagerADT process_manager, pid_t pid);
+
 #endif

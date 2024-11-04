@@ -86,7 +86,7 @@ int next_index(int index) {
     return (index + 1) % BUFFER_SIZE;
 }
 
-int write_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buffer, int size) {
+int write_pipe(pipesManagerADT pipes_manager, fd_t fd, const char* buffer, int size) {
     if (fd < 0 || fd >= MAX_PIPES || pipes_manager->pipes[fd] == NULL) return -1;
     pipe * pipe = pipes_manager->pipes[fd];
 
@@ -115,7 +115,7 @@ int write_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buffer, int size) {
     }
     up_sem(pipes_manager->semaphore_manager, pipe->mutex);
 
-    return 0;   
+    return i;   
 }
 
 int read_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buffer, int size) {
@@ -144,7 +144,7 @@ int read_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buffer, int size) {
     up_sem(pipes_manager->semaphore_manager, pipe->mutex);
 
     
-    return 0;
+    return i;
 }
 
 fd_t get_pipe_named(pipesManagerADT pipes_manager, char* name) {

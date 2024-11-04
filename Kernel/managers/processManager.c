@@ -124,7 +124,7 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint64
     process_pcb->blocking_sem = NULL;
     process_pcb->argv = argv_copy;
     process_pcb->stdin = stdin;
-    process_pcb->stdin = stdout;
+    process_pcb->stdout = stdout;
 
     struct startFrame *start_frame = (startFrame *)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame));
     start_frame->process_manager = process_manager;
@@ -420,4 +420,12 @@ uint64_t nicent(processManagerADT process_manager, pid_t pid, processPriority pr
     }
     change_process_priority(process_manager->scheduler, process_manager->processes[pid], process_manager->processes[pid]->priority, priority);
     return 0;
+}
+
+fd_t get_stdin(processManagerADT process_manager, pid_t pid){
+    return process_manager->processes[pid]->stdin;
+}
+
+fd_t get_stdout(processManagerADT process_manager, pid_t pid){
+    return process_manager->processes[pid]->stdout;
 }

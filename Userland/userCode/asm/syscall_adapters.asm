@@ -38,6 +38,8 @@ global sys_sem_open
 global sys_sem_close
 global sys_sem_up
 global sys_sem_down
+global sys_get_stdin
+global sys_get_stdout
 
 
 %macro syscall 1
@@ -166,3 +168,9 @@ sys_sem_up:
 
 sys_sem_down:
     syscall 37
+
+sys_get_stdin:
+    syscall 38
+
+sys_get_stdout:
+    syscall 39

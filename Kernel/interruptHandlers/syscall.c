@@ -18,10 +18,11 @@ extern void yield();
 
 uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
 {
+    if(rdi == KEYBOARD_INPUT_FD){ // MOMENTARY!!!
     char c = 0;
     int i = 0;
-    char *out_buffer = (char *)rdi;
-    while (c != '\n' && i < rsi)
+    char *out_buffer = (char *)rsi;
+    while (c != '\n' && i < rdx)
     {
         if (keys_pending())
         {
@@ -40,14 +41,21 @@ uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64
                 write_to_video_text_buffer(&c, 1, HEX_WHITE);
             }
         }
-    }
+        }
     return i;
+    }
+    
+    return read_pipe(the_pipes_manager, rdi, (char *)rsi, rdx);
 }
 
 uint64_t sys_write(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
 {
-    write_to_video_text_buffer((char *)rsi, rdx, rdi);
+    if(rdi == SCREEN_OUTPUT_FD){ // MOMENTARY!!!
+    write_to_video_text_buffer((const char *)rsi, rdx, 0x00ffffff);
     return rdx;
+    }
+
+    return write_pipe(the_pipes_manager, rdi, (const char *)rsi, rdx);
 }
 
 uint64_t sys_set_font_size(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
@@ -223,6 +231,14 @@ uint64_t sys_sem_down(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, ui
     return down_sem(the_semaphore_manager, (sem_t)rdi);
 }
 
+uint64_t sys_get_stdin(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
+    return get_stdin(the_process_manager, get_current_pid(the_scheduler));
+}
+
+uint64_t sys_get_stdout(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
+    return get_stdout(the_process_manager, get_current_pid(the_scheduler));
+}
+
 uint64_t (*syscalls[])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t) = {
     sys_read, sys_write, sys_put_text,
     sys_set_font_size, sys_draw_square, sys_get_screen_width,
@@ -232,7 +248,8 @@ uint64_t (*syscalls[])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_
     sys_malloc, sys_free, sys_get_usable_memory_size, sys_get_free_memory_size, sys_get_total_memory_size, 
     sys_ps, sys_create_process, sys_exit_process_by_pid, sys_block_process_by_pid, sys_kill_process_by_pid, sys_unblock_process_by_pid,
     sys_get_pid, sys_wait, sys_wait_pid, sys_nicent, sys_yield, 
-    sys_sem_open_named, sys_sem_close_named, sys_sem_open, sys_sem_close, sys_sem_up, sys_sem_down
+    sys_sem_open_named, sys_sem_close_named, sys_sem_open, sys_sem_close, sys_sem_up, sys_sem_down,
+    sys_get_stdin, sys_get_stdout
 };
 
 uint64_t syscall_handler(const registers64_t *registers)

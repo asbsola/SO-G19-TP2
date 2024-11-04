@@ -33,7 +33,7 @@ uint64_t test_prio_dist(char **argv, int argc) {
     if (!in_background)
         puts_with_color("Creating and blocking processes...\n", 0xc2daff);
     for (int i = 0; i < max_processes; i++){
-        pids[i] = sys_create_process(endless_counter, argvs[i%3]);
+        pids[i] = sys_create_process(endless_counter, argvs[i%3], KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
         if (pids[i] == -1) {
             puts_with_color("test_priority_dist: ERROR creating process\n", 0xFF0000);
             return -1;

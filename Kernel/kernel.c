@@ -5,6 +5,7 @@
 #include <lib.h>
 #include <moduleLoader.h>
 #include <drivers/videoDriver.h>
+#include <drivers/keyboardDriver.h>
 #include <drivers/pitDriver.h>
 #include <interruptHandlers/interrupts.h>
 #include <def.h>
@@ -79,6 +80,8 @@ int main()
 	the_process_manager = init_process_manager(the_memory_manager, the_scheduler);
 	the_semaphore_manager = init_semaphore_manager(the_memory_manager, the_process_manager, the_scheduler);
 	the_pipes_manager = init_pipes_manager(the_memory_manager, the_semaphore_manager);
+	fd_t stdin = open_pipe(the_pipes_manager);
+	fd_t stdout = open_pipe(the_pipes_manager);
 	
     _sti();
 

@@ -20,6 +20,8 @@
 #define NOT_WAITING 0
 #define WAITING 1
 
+#define KEYBOARD_INPUT_FD 0
+#define SCREEN_OUTPUT_FD 1
 
 typedef int64_t pid_t;
 typedef int64_t sem_t;

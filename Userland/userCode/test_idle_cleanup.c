@@ -23,7 +23,7 @@ uint64_t test_idle_cleanup(char** argv, int argc) {
         puts_with_color("Creating processes...\n", 0xFFFFFF);
 
     for (uint64_t i = 0; i < children_count; i++) {
-        sys_create_process(bussy_wait_proc, argvAux);
+        sys_create_process(bussy_wait_proc, argvAux, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
     }
 
     if (!in_background)

@@ -60,7 +60,7 @@ processManagerADT init_process_manager(memoryManagerADT memory_manager, schedule
     process_manager->max_pid = 0;
 
     char* argv[] = {"idle", NULL};
-    create_process(process_manager, -1, idle, argv);
+    create_process(process_manager, -1, idle, argv, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
 
     return process_manager;
 }
@@ -95,7 +95,7 @@ pid_t get_lowest_unused_pid(processManagerADT process_manager){
     return pid;
 }
 
-pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint64_t (*process_start)(char**, int), char** argv) {
+pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint64_t (*process_start)(char**, int), char** argv, fd_t stdin, fd_t stdout) {
     if (process_manager->num_processes >= MAX_PROCESSES)
         return -1;
 
@@ -123,6 +123,8 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint64
     process_pcb->parent_is_waiting = NOT_WAITING;
     process_pcb->blocking_sem = NULL;
     process_pcb->argv = argv_copy;
+    process_pcb->stdin = stdin;
+    process_pcb->stdin = stdout;
 
     struct startFrame *start_frame = (startFrame *)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame));
     start_frame->process_manager = process_manager;

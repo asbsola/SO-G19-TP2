@@ -61,7 +61,7 @@ void run_shell()
             if (strcmp(argv[0], modules[i].module_name) == 0) {
                 if (modules[i].module_type == PROCESS) {
                     executed_command = 1;
-                    pid_t pid = sys_create_process(modules[i].module, argv);
+                    pid_t pid = sys_create_process(modules[i].module, argv, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
                     int64_t ret;
                     if (!in_background) sys_wait_pid(pid, &ret);
                 }

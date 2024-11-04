@@ -99,7 +99,7 @@ uint64_t phylo(char **argv, int argc) {
         itoa(i, buff, 20);
 
         char* argv[] = {"thinking_man", buff, 0};
-        if ((philosophers[i].pid = sys_create_process(thinking_man, argv)) == -1) {
+        if ((philosophers[i].pid = sys_create_process(thinking_man, argv, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD)) == -1) {
             puts_with_color("phylo: ERROR creating process\n", 0xFF0000);
             for (int j = 0; j < MAX_NUMBER_OF_PHILOSOPHERS; j++) {
                 sys_sem_close(chopsticks[j]);
@@ -110,7 +110,7 @@ uint64_t phylo(char **argv, int argc) {
     }
 
     char* args[] = {0};
-    pid_t view_pid = sys_create_process(view, args);
+    pid_t view_pid = sys_create_process(view, args, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
 
     for (int i = 0; i < NUMBER_OF_PHILOSOPHERS; i++) {
         int64_t ret;

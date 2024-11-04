@@ -44,13 +44,13 @@ void keyboard_handler(processManagerADT process_manager, const registers64_t * r
     if(cntrl_down && map_to_ascii[scan_code + caps_enabled * caps_offset] == 'c'){
         cntrl_down = 0;
         char* argv[] = {"killer", NULL};
-        create_process(process_manager, IDLE_PROCESS_PID, killer, argv);
+        create_process(process_manager, IDLE_PROCESS_PID, killer, argv, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
         return;
     }
     if(cntrl_down && map_to_ascii[scan_code + caps_enabled * caps_offset] == 'C'){
         cntrl_down = 0;
         char* argv[] = {"killer", "r", NULL};
-        create_process(process_manager, IDLE_PROCESS_PID, killer, argv);
+        create_process(process_manager, IDLE_PROCESS_PID, killer, argv, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
         return;
     }
     if(scan_code == ESCAPE_CODE_PRESSED){

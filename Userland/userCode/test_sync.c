@@ -84,8 +84,8 @@ uint64_t test_sync(char **argv, uint64_t argc) {
 
   uint64_t i;
   for (i = 0; i < process_count; i++) {
-    pids[i] = sys_create_process(process_inc, argvDec);
-    pids[i + process_count] = sys_create_process(process_inc, argvInc);
+    pids[i] = sys_create_process(process_inc, argvDec, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
+    pids[i + process_count] = sys_create_process(process_inc, argvInc, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
     if(pids[i] == -1 || pids[i + process_count] == -1) {
       puts_with_color("test_sync: ERROR creating process\n", 0xFF0000);
       sys_sem_close_named(SEM_NAME);

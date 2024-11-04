@@ -31,7 +31,7 @@ uint64_t test_prio(char **argv, int argc) {
         puts_with_color("\nCREATING PROCESSES...\n", 0xc2daff);
     
     for (i = 0; i < max_processes; i++){
-        pids[i] = sys_create_process(endless_loop, argvAux);
+        pids[i] = sys_create_process(endless_loop, argvAux, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
         if (pids[i] == -1) {
             puts_with_color("test_priority: ERROR creating process\n", 0xFF0000);
             return -1;

@@ -69,7 +69,7 @@ uint64_t test_wait(char **argv, int argc) {
             itoa(rq, rq_str, 10);
             itoa(MILLIS*action*2, millis_param, 10);
             char *argvAux[] = {"echo", rq_str, millis_param, NULL};
-            p_rqs[rq].pid = sys_create_process(echo, argvAux);
+            p_rqs[rq].pid = sys_create_process(echo, argvAux, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
 
             if (p_rqs[rq].pid == -1) {
                 puts_with_color("test_wait: ERROR creating process\n", 0xFF0000);
@@ -119,7 +119,7 @@ uint64_t test_wait(char **argv, int argc) {
             itoa(rq, rq_str, 10);
             itoa(MILLIS*2, millis_param, 10);
             char *argvAux[] = {"echo", rq_str, millis_param, NULL};
-            p_rqs[rq].pid = sys_create_process(echo, argvAux);
+            p_rqs[rq].pid = sys_create_process(echo, argvAux, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
 
             if (p_rqs[rq].pid == -1) {
                 puts_with_color("test_wait: ERROR creating process\n", 0xFF0000);

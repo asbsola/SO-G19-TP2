@@ -159,7 +159,7 @@ uint64_t sys_ps(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t
 }
 
 uint64_t sys_create_process(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-    return create_process(the_process_manager, get_current_pid(the_scheduler), (uint64_t (*)(char**, int))rdi, (char**)rsi);
+    return create_process(the_process_manager, get_current_pid(the_scheduler), (uint64_t (*)(char**, int))rdi, (char**)rsi, rdx, r10);
 }
 
 uint64_t sys_exit_process_by_pid(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {

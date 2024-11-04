@@ -151,7 +151,7 @@ fd_t get_pipe_named(pipesManagerADT pipes_manager, char* name) {
     fd_t i;
 
     for(i = 0; i <= pipes_manager->last_fd; i++) {
-        if(pipes_manager->pipes[i] != NULL && strcmp(pipes_manager->pipes[i]->name, name) == 0) {
+        if(pipes_manager->pipes[i] != NULL && str_cmp(pipes_manager->pipes[i]->name, name) == 0) {
             return i;
         }
     }
@@ -169,7 +169,7 @@ fd_t open_pipe_named(pipesManagerADT pipes_manager, char* name){
 
     if(i == -1) return -1;
 
-    pipes_manager->pipes[i]->name = mem_alloc(pipes_manager->memory_manager, strlen(name) + 1);
+    pipes_manager->pipes[i]->name = mem_alloc(pipes_manager->memory_manager, str_len(name) + 1);
     if(pipes_manager->pipes[i]->name == NULL) {
         close_pipe(pipes_manager, i);
         return -1;

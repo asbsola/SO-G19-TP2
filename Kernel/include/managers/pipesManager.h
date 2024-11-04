@@ -4,9 +4,8 @@
 #include <managers/processManager.h>
 #include <managers/memoryManager.h>
 #include <managers/semaphoreManager.h>
+#include <utils/string.h>
 #include <def.h>
-
-
 
 typedef struct pipesManagerCDT *pipesManagerADT;
 

@@ -10,6 +10,7 @@ typedef struct buffer{
     sem_t read_mutex;
     uint64_t blocked_readers;
     uint64_t blocked_writers;
+    char * name;
 } buffer;
 
 typedef struct pipesManagerCDT {
@@ -71,6 +72,9 @@ int close_pipe(pipesManagerADT pipes_manager, fd_t fd) {
     close_sem(pipes_manager->semaphore_manager, pipes_manager->buffers[fd]->mutex);
     close_sem(pipes_manager->semaphore_manager, pipes_manager->buffers[fd]->write_mutex);
     close_sem(pipes_manager->semaphore_manager, pipes_manager->buffers[fd]->read_mutex);
+
+    if(pipes_manager->buffers[fd]->name != NULL)
+        mem_free(pipes_manager->memory_manager, pipes_manager->buffers[fd]->name);
 
     mem_free(pipes_manager->memory_manager, pipes_manager->buffers[fd]);
     pipes_manager->buffers[fd] = NULL;
@@ -137,4 +141,36 @@ int read_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buff, int size) {
 
     up_sem(pipes_manager->semaphore_manager, buffer->mutex);
     return 0;
+}
+
+fd_t get_pipe_named(pipesManagerADT pipes_manager, char* name) {
+    fd_t i;
+
+    for(i = 0; i <= pipes_manager->last_fd; i++) {
+        if(pipes_manager->buffers[i] != NULL && strcmp(pipes_manager->buffers[i]->name, name) == 0) {
+            return i;
+        }
+    }
+
+    return i;
+}
+
+fd_t open_pipe_named(pipesManagerADT pipes_manager, char* name){
+    fd_t i = get_pipe_named(pipes_manager, name);
+    
+    if(i != -1)
+        return i;
+    
+    i = open_pipe(pipes_manager);
+
+    if(i == -1) return -1;
+
+    pipes_manager->buffers[i]->name = mem_alloc(pipes_manager->memory_manager, strlen(name) + 1);
+    if(pipes_manager->buffers[i]->name == NULL) {
+        close_pipe(pipes_manager, i);
+        return -1;
+    }
+    str_cpy(pipes_manager->buffers[i]->name, name);
+
+    return i;
 }

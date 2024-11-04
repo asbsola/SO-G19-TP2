@@ -139,9 +139,10 @@ int write_pipe(pipesManagerADT pipes_manager, fd_t fd, const char* buffer, int s
 int read_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buffer, int size) {
     if (fd < 0 || fd >= MAX_PIPES || pipes_manager->pipes[fd] == NULL) return -1;
     pipe * pipe = pipes_manager->pipes[fd];
+    char flag = 1;
 
     int i = 0;
-    while(i < size) {
+    while(i < size && flag) {
         down_sem(pipes_manager->semaphore_manager, pipe->mutex);
         if(pipe->writing_index == pipe->reading_index) {
             pipe->blocked_readers++;
@@ -150,6 +151,9 @@ int read_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buffer, int size) {
         } else {
             buffer[i] = pipe->buffer[pipe->reading_index];
             pipe->reading_index = next_index(pipe->reading_index);
+
+            if(buffer[i] == EOF) flag = 0;
+            
             up_sem(pipes_manager->semaphore_manager, pipe->mutex);
             i++;
         }

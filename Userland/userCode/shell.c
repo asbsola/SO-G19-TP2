@@ -415,12 +415,46 @@ uint64_t loop(char** argv, int argc) {
 
 
 uint64_t cat(char** argv, int argc) {
-    char buffer[1024];
+    char buffer[10];
     
     fd_t stdin = sys_get_stdin();
     fd_t stdout = sys_get_stdout();
     uint64_t readed = 0;
-    while((readed = sys_read(stdin, buffer, 1024)) != -1) { //seria distinto de eof.
+    while((readed = sys_read(stdin, buffer, 10)) != EOF) { //seria distinto de eof.
+        sys_write(stdout, buffer, readed);
+    }
+
+    return 0;
+}
+
+uint64_t wc(char** argv, int argc) {
+    char buffer[10];
+    
+    fd_t stdin = sys_get_stdin();
+    fd_t stdout = sys_get_stdout();
+
+    uint64_t readed = 0;
+    uint64_t lines;
+
+    while((readed = sys_read(stdin, buffer, 10)) != EOF) { //seria distinto de eof.
+        lines = 0;
+        for(int i = 0; i < readed; i++) {
+            if(buffer[i] == '\n') lines++;
+        }
+        
+        printf("Lines: %d\n", lines);
+    }
+
+    return 0;
+}
+
+uint64_t filter(char** argv, int argc) {
+    char buffer[10];
+    
+    fd_t stdin = sys_get_stdin();
+    fd_t stdout = sys_get_stdout();
+    uint64_t readed = 0;
+    while((readed = sys_read(stdin, buffer, 10)) != EOF) { //seria distinto de eof.
         sys_write(stdout, buffer, readed);
     }
 

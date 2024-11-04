@@ -37,7 +37,7 @@ uint64_t process_inc(char **argv, int argc) {
   }
 
   if (use_sem) {
-    if (sys_sem_open(SEM_ID, 1) == -1) {
+    if (sys_sem_open_named(SEM_ID, 1) == -1) {
       puts_with_color("test_sync: ERROR opening semaphore\n", 0xFF0000);
       return -1;
     }
@@ -47,10 +47,10 @@ uint64_t process_inc(char **argv, int argc) {
   uint64_t i;
   for (i = 0; i < n; i++) {
     if (use_sem)
-      sys_sem_down(SEM_ID);
+      sys_sem_down_named(SEM_ID);
     slowInc(&global, inc);
     if (use_sem)
-      sys_sem_up(SEM_ID);
+      sys_sem_up_named(SEM_ID);
   }
 
   return 0;
@@ -86,7 +86,7 @@ uint64_t test_sync(char **argv, uint64_t argc) {
     pids[i + process_count] = sys_create_process(process_inc, argvInc);
     if(pids[i] == -1 || pids[i + process_count] == -1) {
       puts_with_color("test_sync: ERROR creating process\n", 0xFF0000);
-      sys_sem_close(SEM_ID);
+      sys_sem_close_named(SEM_ID);
       return -1;
     }
   }
@@ -99,7 +99,7 @@ uint64_t test_sync(char **argv, uint64_t argc) {
     sys_wait_pid(pids[i + process_count], &status2);
   }
 
-  sys_sem_close(SEM_ID);
+  sys_sem_close_named(SEM_ID);
 
   printf("Final value: %d\n", global);
 

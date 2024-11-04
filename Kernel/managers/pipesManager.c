@@ -1,5 +1,5 @@
 #include <managers/pipesManager.h>
-
+#define MAX(a, b) ((a)<(b)?(b):(a))
 
 typedef struct pipe{
     char buffer[BUFFER_SIZE];
@@ -29,7 +29,7 @@ pipesManagerADT init_pipes_manager(memoryManagerADT memory_manager, semaphoreMan
     for (fd_t i = 0; i < MAX_PIPES; i++)
         pipes_manager->pipes[i] = NULL;
 
-    pipes_manager->last_fd = 0;
+    pipes_manager->last_fd = -1;
     pipes_manager->semaphore_manager = semaphore_manager;
     pipes_manager->memory_manager = memory_manager;
 
@@ -63,6 +63,8 @@ fd_t open_pipe(pipesManagerADT pipes_manager) {
     pipes_manager->pipes[fd]->write_sem = open_sem(pipes_manager->semaphore_manager, 0);
     pipes_manager->pipes[fd]->read_sem = open_sem(pipes_manager->semaphore_manager, 0);
 
+    pipes_manager->last_fd = MAX(pipes_manager->last_fd, fd);
+
     return fd;
 }
 
@@ -78,6 +80,12 @@ int close_pipe(pipesManagerADT pipes_manager, fd_t fd) {
 
     mem_free(pipes_manager->memory_manager, pipes_manager->pipes[fd]);
     pipes_manager->pipes[fd] = NULL;
+
+    if(pipes_manager->last_fd == fd){
+        fd_t i;
+        for(i=fd-1; i>=0 && pipes_manager->pipes[i] == NULL; i--);
+        pipes_manager->last_fd = i;
+    }
     
     return 0;
 }
@@ -156,7 +164,7 @@ fd_t get_pipe_named(pipesManagerADT pipes_manager, char* name) {
         }
     }
 
-    return i;
+    return -1;
 }
 
 fd_t open_pipe_named(pipesManagerADT pipes_manager, char* name){

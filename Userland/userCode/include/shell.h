@@ -38,6 +38,7 @@ uint64_t test_prio(char** argv, int argc);
 uint64_t test_prio_dist(char** argv, int argc);
 uint64_t test_idle_cleanup(char** argv, int argc);
 uint64_t test_sync(char** argv, int argc);
+uint64_t test_pipes(char** argv, int argc);
 uint64_t mem(char** argv, int argc);
 uint64_t ps(char** argv, int argc);
 uint64_t nicent(char** argv, int argc);

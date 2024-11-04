@@ -58,7 +58,7 @@ uint64_t process_inc(char **argv, int argc) {
   return 0;
 }
 
-uint64_t test_sync(char **argv, uint64_t argc) {
+uint64_t test_sync(char **argv, int argc) {
   uint64_t pids[MAX_PROCESSES];
 
   if (argc < 4) {

@@ -9,7 +9,8 @@
 #define MAX_PROCESSES 256
 #define MAX_SEMAPHORES 256
 #define MEMORY_MANAGER_MEM_SIZE (1<<22) // 4MB
-
+#define MAX_PIPES 256
+#define BUFFER_SIZE 256
 //------------------------------------------------------------
 
 #define NOT_IN_FOREGROUND 0
@@ -19,8 +20,11 @@
 #define NOT_WAITING 0
 #define WAITING 1
 
+
 typedef int64_t pid_t;
 typedef int64_t sem_t;
+typedef int64_t fd_t;
+
 typedef enum
 {
     RUNNING,

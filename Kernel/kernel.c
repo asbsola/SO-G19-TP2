@@ -15,6 +15,7 @@
 #include <managers/processManager.h>
 #include <managers/scheduler.h>
 #include <managers/semaphoreManager.h>
+#include <managers/pipesManager.h>
 
 
 static char managed_memory[MEMORY_MANAGER_MEM_SIZE];
@@ -23,6 +24,7 @@ memoryManagerADT the_memory_manager = NULL;
 processManagerADT the_process_manager = NULL;
 schedulerADT the_scheduler = NULL;
 semaphoreManagerADT the_semaphore_manager = NULL;
+pipesManagerADT the_pipes_manager = NULL;
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -71,12 +73,14 @@ int main()
     _cli();
 	initialize_pit(PIT_FREQUENCY);
 	load_idt();
-
+	
     the_memory_manager = init_memory_manager(managed_memory, MEMORY_MANAGER_MEM_SIZE);
 	the_scheduler = init_scheduler(the_memory_manager);
 	the_process_manager = init_process_manager(the_memory_manager, the_scheduler);
 	the_semaphore_manager = init_semaphore_manager(the_memory_manager, the_process_manager, the_scheduler);
+	the_pipes_manager = init_pipes_manager(the_memory_manager, the_semaphore_manager);
 
+	
     _sti();
 
     write_to_video_text_buffer("Back in kernel...\n", 18, HEX_GRAY);

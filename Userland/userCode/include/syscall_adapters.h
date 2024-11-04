@@ -38,9 +38,6 @@ uint64_t sys_nicent(pid_t pid, processPriority priority);
 void sys_yield();
 int64_t sys_sem_open_named(char* name, uint64_t value);
 int64_t sys_sem_close_named(char* name);
-int64_t sys_sem_up_named(char* name);
-int64_t sys_sem_down_named(char* name);
-
 sem_t sys_sem_open(uint64_t value);
 int64_t sys_sem_close(sem_t sem);
 int64_t sys_sem_up(sem_t sem);

@@ -16,7 +16,5 @@ int down_sem(semaphoreManagerADT semaphore_manager, sem_t sem);
 
 sem_t open_sem_named(semaphoreManagerADT semaphore_manager, uint64_t value, char* name);
 int close_sem_named(semaphoreManagerADT semaphore_manager, char* name);
-int up_sem_named(semaphoreManagerADT semaphore_manager, char* name);
-int down_sem_named(semaphoreManagerADT semaphore_manager, char* name);
 
 #endif

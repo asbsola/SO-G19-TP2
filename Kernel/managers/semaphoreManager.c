@@ -155,11 +155,6 @@ int up_sem(semaphoreManagerADT semaphore_manager, sem_t sem){
     return 0;
 }
 
-int up_sem_named(semaphoreManagerADT semaphore_manager, char* name){
-    sem_t sem = get_sem_named(semaphore_manager, name);
-    return up_sem(semaphore_manager, sem);
-}
-
 int down_sem(semaphoreManagerADT semaphore_manager, sem_t sem){
     if(invalid_sem(semaphore_manager, sem)) return -1;
     semaphoreADT semADT = semaphore_manager->semaphores[sem];
@@ -179,9 +174,4 @@ int down_sem(semaphoreManagerADT semaphore_manager, sem_t sem){
     semADT->value--;
     release(&semADT->lock);
     return 0;
-}
-
-int down_sem_named(semaphoreManagerADT semaphore_manager, char* name){
-    sem_t sem = get_sem_named(semaphore_manager, name);
-    return down_sem(semaphore_manager, sem);
 }

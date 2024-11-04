@@ -16,11 +16,14 @@ typedef struct {
 } philosopher;
 
 philosopher philosophers[MAX_NUMBER_OF_PHILOSOPHERS];
+sem_t view_sem;
+sem_t philosopher_mutex;
+sem_t chopsticks_mutex;
 sem_t chopsticks[MAX_NUMBER_OF_PHILOSOPHERS];
 
 uint64_t view(char **argv, int argc) {
     while (1) {
-        sys_sem_down_named(VIEW_SEMAPHORE);
+        sys_sem_down(view_sem);
         for (int i = 0; i < NUMBER_OF_PHILOSOPHERS; i++) {
             if (philosophers[i].state == EATING) puts("E ");
             else puts(". ");
@@ -32,29 +35,29 @@ uint64_t view(char **argv, int argc) {
 }
 
 void eat(uint64_t id) {
-    sys_sem_down_named(PHILOSOPHERS_MUTEX);
+    sys_sem_down(philosopher_mutex);
     philosophers[id].state = EATING;
-    sys_sem_up_named(VIEW_SEMAPHORE);
-    sys_sem_up_named(PHILOSOPHERS_MUTEX);
+    sys_sem_up(view_sem);
+    sys_sem_up(philosopher_mutex);
     sys_yield();
 }
 
 void think(uint64_t id) {
-    sys_sem_down_named(PHILOSOPHERS_MUTEX);
+    sys_sem_down(philosopher_mutex);
     philosophers[id].state = THINKING;
-    sys_sem_up_named(VIEW_SEMAPHORE);
-    sys_sem_up_named(PHILOSOPHERS_MUTEX);
+    sys_sem_up(view_sem);
+    sys_sem_up(philosopher_mutex);
     sys_yield();
 }
 
 uint64_t thinking_man(char **argv, int argc) {
-    sys_sem_open_named(PHILOSOPHERS_MUTEX, 1);
+    sem_t philosopher_mutex = sys_sem_open_named(PHILOSOPHERS_MUTEX, 1);
 
     uint64_t id = atoi(argv[1]);
     uint64_t iters = 0;
 
     while (iters < MAX_ITERS) {
-        sys_sem_down_named(CHOPSTICKS_MUTEX);
+        sys_sem_down(chopsticks_mutex);
         if (id % 2 == 0) {
             sys_sem_down(chopsticks[id]);
             sys_sem_down(chopsticks[(id + 1) % NUMBER_OF_PHILOSOPHERS]);
@@ -62,14 +65,14 @@ uint64_t thinking_man(char **argv, int argc) {
             sys_sem_down(chopsticks[(id + 1) % NUMBER_OF_PHILOSOPHERS]);
             sys_sem_down(chopsticks[id]);
         }
-        sys_sem_up_named(CHOPSTICKS_MUTEX);
+        sys_sem_up(chopsticks_mutex);
 
         eat(id);
 
-        sys_sem_down_named(CHOPSTICKS_MUTEX);
+        sys_sem_down(chopsticks_mutex);
         sys_sem_up(chopsticks[id]);
         sys_sem_up(chopsticks[(id + 1) % NUMBER_OF_PHILOSOPHERS]);
-        sys_sem_up_named(CHOPSTICKS_MUTEX);
+        sys_sem_up(chopsticks_mutex);
 
         think(id);
     }
@@ -78,12 +81,12 @@ uint64_t thinking_man(char **argv, int argc) {
 }
 
 uint64_t phylo(char **argv, int argc) {
-    if (sys_sem_open_named(VIEW_SEMAPHORE, 0) == -1) {
+    if ((view_sem = sys_sem_open_named(VIEW_SEMAPHORE, 0)) == -1) {
         puts_with_color("phylo: ERROR opening semaphore\n", 0xFF0000);
         return -1;
     }
 
-    if (sys_sem_open_named(CHOPSTICKS_MUTEX, 1) == -1) {
+    if ((chopsticks_mutex = sys_sem_open_named(CHOPSTICKS_MUTEX, 1)) == -1) {
         puts_with_color("phylo: ERROR opening semaphore\n", 0xFF0000);
         sys_sem_close_named(VIEW_SEMAPHORE);
         return -1;

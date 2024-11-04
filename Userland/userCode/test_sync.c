@@ -6,7 +6,7 @@
 #include <std.h>
 #include <stddef.h>
 
-#define SEM_ID "sem"
+#define SEM_NAME "sem"
 
 int64_t global; // shared memory
 
@@ -21,6 +21,7 @@ uint64_t process_inc(char **argv, int argc) {
   uint64_t n;
   int64_t inc;
   int64_t use_sem;
+  sem_t sem_id;
 
   if (argc != 4)
     return -1;
@@ -37,7 +38,8 @@ uint64_t process_inc(char **argv, int argc) {
   }
 
   if (use_sem) {
-    if (sys_sem_open_named(SEM_ID, 1) == -1) {
+    sem_id = sys_sem_open_named(SEM_NAME, 1);
+    if (sem_id == -1) {
       puts_with_color("test_sync: ERROR opening semaphore\n", 0xFF0000);
       return -1;
     }
@@ -47,10 +49,10 @@ uint64_t process_inc(char **argv, int argc) {
   uint64_t i;
   for (i = 0; i < n; i++) {
     if (use_sem)
-      sys_sem_down_named(SEM_ID);
+      sys_sem_down(sem_id);
     slowInc(&global, inc);
     if (use_sem)
-      sys_sem_up_named(SEM_ID);
+      sys_sem_up(sem_id);
   }
 
   return 0;
@@ -86,7 +88,7 @@ uint64_t test_sync(char **argv, uint64_t argc) {
     pids[i + process_count] = sys_create_process(process_inc, argvInc);
     if(pids[i] == -1 || pids[i + process_count] == -1) {
       puts_with_color("test_sync: ERROR creating process\n", 0xFF0000);
-      sys_sem_close_named(SEM_ID);
+      sys_sem_close_named(SEM_NAME);
       return -1;
     }
   }
@@ -99,7 +101,7 @@ uint64_t test_sync(char **argv, uint64_t argc) {
     sys_wait_pid(pids[i + process_count], &status2);
   }
 
-  sys_sem_close_named(SEM_ID);
+  sys_sem_close_named(SEM_NAME);
 
   printf("Final value: %d\n", global);
 

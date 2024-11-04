@@ -74,17 +74,11 @@ int main()
 	initialize_pit(PIT_FREQUENCY);
 	load_idt();
 
-	set_font_size(1);
-    clear_video_text_buffer();
-
-    write_to_video_text_buffer("PUTO EL QUE LEEEE 19\n", 9, 0x006fb5fb);
-
     the_memory_manager = init_memory_manager(managed_memory, MEMORY_MANAGER_MEM_SIZE);
 	the_scheduler = init_scheduler(the_memory_manager);
 	the_process_manager = init_process_manager(the_memory_manager, the_scheduler);
 	the_semaphore_manager = init_semaphore_manager(the_memory_manager, the_process_manager, the_scheduler);
 	the_pipes_manager = init_pipes_manager(the_memory_manager, the_semaphore_manager);
-
 	
     _sti();
 

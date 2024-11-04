@@ -32,6 +32,7 @@ ModuleDescriptor modules[] = {
     {"unblock", "unblocks a procces by a PID", BUILT_IN, unblock},
     {"loop", "prints its PID every n seconds", PROCESS, loop},
     {"phylo", "the dining philosophers problem", PROCESS, phylo},
+    {"cat", "print on the standard output", PROCESS, cat}
 };
 
 static int current_font_size = 1;
@@ -407,6 +408,20 @@ uint64_t loop(char** argv, int argc) {
     while(1) {
         sleep(time * 1000);
         printf("My pid is %d\n", pid);
+    }
+
+    return 0;
+}
+
+
+uint64_t cat(char** argv, int argc) {
+    char buffer[1024];
+    
+    fd_t stdin = sys_get_stdin();
+    fd_t stdout = sys_get_stdout();
+
+    while(sys_read(stdin, buffer, 1024) != -1) { //seria distinto de eof.
+        sys_write(stdout, buffer, 1024);
     }
 
     return 0;

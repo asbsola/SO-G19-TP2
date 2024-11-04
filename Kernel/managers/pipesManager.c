@@ -11,6 +11,7 @@ typedef struct pipe{
     uint64_t blocked_readers;
     uint64_t blocked_writers;
     char * name;
+    uint64_t processes;
 } pipe;
 
 typedef struct pipesManagerCDT {
@@ -51,13 +52,13 @@ fd_t open_pipe(pipesManagerADT pipes_manager) {
     pipes_manager->pipes[fd] = mem_alloc(pipes_manager->memory_manager, sizeof(pipe));
     if (pipes_manager->pipes[fd] == NULL) return -1;
 
-    for(int i = 0; i < BUFFER_SIZE; i++)
-        pipes_manager->pipes[fd]->buffer[i] = 0;
-
     pipes_manager->pipes[fd]->writing_index = 0;
     pipes_manager->pipes[fd]->reading_index = 0;
     pipes_manager->pipes[fd]->blocked_readers = 0;
     pipes_manager->pipes[fd]->blocked_writers = 0;
+    pipes_manager->pipes[fd]->processes = 0;
+    pipes_manager->pipes[fd]->name = NULL;
+    
 
     pipes_manager->pipes[fd]->mutex = open_sem(pipes_manager->semaphore_manager, 1);
     pipes_manager->pipes[fd]->write_sem = open_sem(pipes_manager->semaphore_manager, 0);
@@ -68,6 +69,15 @@ fd_t open_pipe(pipesManagerADT pipes_manager) {
 
 int close_pipe(pipesManagerADT pipes_manager, fd_t fd) {
     if (fd < 0 || fd >= MAX_PIPES || pipes_manager->pipes[fd] == NULL) return -1;
+
+    down_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->mutex);
+
+    pipes_manager->pipes[fd]->processes--;
+    if(pipes_manager->pipes[fd]->processes > 0) {
+        up_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->mutex);
+        return 0;
+    }
+
 
     close_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->mutex);
     close_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->write_sem);
@@ -162,9 +172,13 @@ fd_t get_pipe_named(pipesManagerADT pipes_manager, char* name) {
 fd_t open_pipe_named(pipesManagerADT pipes_manager, char* name){
     fd_t i = get_pipe_named(pipes_manager, name);
     
-    if(i != -1)
+    if(i != -1) {
+        down_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[i]->mutex);
+        pipes_manager->pipes[i]->processes++;
+        up_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[i]->mutex);
         return i;
-    
+    }
+
     i = open_pipe(pipes_manager);
 
     if(i == -1) return -1;

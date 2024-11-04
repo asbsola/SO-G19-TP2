@@ -419,9 +419,9 @@ uint64_t cat(char** argv, int argc) {
     
     fd_t stdin = sys_get_stdin();
     fd_t stdout = sys_get_stdout();
-
-    while(sys_read(stdin, buffer, 1024) != -1) { //seria distinto de eof.
-        sys_write(stdout, buffer, 1024);
+    uint64_t readed = 0;
+    while((readed = sys_read(stdin, buffer, 1024)) != -1) { //seria distinto de eof.
+        sys_write(stdout, buffer, readed);
     }
 
     return 0;

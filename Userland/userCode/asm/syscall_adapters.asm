@@ -40,6 +40,10 @@ global sys_sem_up
 global sys_sem_down
 global sys_get_stdin
 global sys_get_stdout
+global sys_pipe_open_named
+global sys_pipe_close_named
+global sys_pipe_open
+global sys_pipe_close
 
 
 %macro syscall 1
@@ -174,3 +178,15 @@ sys_get_stdin:
 
 sys_get_stdout:
     syscall 39
+
+sys_pipe_open_named:
+    syscall 40
+
+sys_pipe_close_named:
+    syscall 41
+
+sys_pipe_open:
+    syscall 42
+
+sys_pipe_close:
+    syscall 43

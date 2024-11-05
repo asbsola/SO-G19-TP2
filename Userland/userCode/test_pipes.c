@@ -78,7 +78,7 @@ uint64_t test_pipes(char **argv, int argc) {
         r_pids[i] = sys_create_process(reader, readerArgv, pipe, sys_get_stdout());
         if(w_pid == -1 || r_pids[i] == -1){
             puts_with_color("test_pipe: ERROR creating process\n", 0xFF0000);
-            sys_pipe_close_named(PIPE_NAME);
+            sys_pipe_close(pipe);
             return -1;
         }
     }
@@ -89,7 +89,7 @@ uint64_t test_pipes(char **argv, int argc) {
         res += ret;
     }
 
-    sys_pipe_close_named(PIPE_NAME);
+    sys_pipe_close(pipe);
 
     if(sent > res){
         puts_with_color("Missing sent values\n", 0x00ff0000);

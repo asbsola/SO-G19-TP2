@@ -204,11 +204,3 @@ fd_t open_pipe_named(pipesManagerADT pipes_manager, char* name){
 
     return i;
 }
-
-int close_pipe_named(pipesManagerADT pipes_manager, char* name) {
-    fd_t i = get_pipe_named(pipes_manager, name);
-
-    if(i == -1) return -1;
-
-    return close_pipe(pipes_manager, i);
-}

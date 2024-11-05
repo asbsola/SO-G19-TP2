@@ -45,7 +45,6 @@ int64_t sys_sem_down(sem_t sem);
 fd_t sys_get_stdin();
 fd_t sys_get_stdout();
 fd_t sys_pipe_open_named(const char* name);
-fd_t sys_pipe_close_named(const char* name);
 fd_t sys_pipe_open();
 fd_t sys_pipe_close(fd_t pipe);
 #endif

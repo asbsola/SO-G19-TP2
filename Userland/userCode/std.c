@@ -172,6 +172,10 @@ int isAlpha(char c){
     return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || ('0' <= c && c <= '9');
 }
 
+int isVowel(char c){
+    return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
+}
+
 void sleep(uint64_t millis){
     uint64_t start = sys_get_ticks();
     while((sys_get_ticks() - start) * 1000 < (PIT_FREQUENCY * millis));

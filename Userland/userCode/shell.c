@@ -32,7 +32,9 @@ ModuleDescriptor modules[] = {
     {"unblock", "unblocks a procces by a PID", BUILT_IN, unblock},
     {"loop", "prints its PID every n seconds", PROCESS, loop},
     {"phylo", "the dining philosophers problem", PROCESS, phylo},
-    {"cat", "print on the standard output", PROCESS, cat}
+    {"cat", "print on the standard output", PROCESS, cat},
+    {"wc", "counts the number of lines of input", PROCESS, wc},
+    {"filter", "Filters the input vowels", PROCESS, filter}
 };
 
 static int current_font_size = 1;
@@ -431,7 +433,6 @@ uint64_t wc(char** argv, int argc) {
     char buffer[10];
     
     fd_t stdin = sys_get_stdin();
-    fd_t stdout = sys_get_stdout();
 
     uint64_t readed = 0;
     uint64_t lines;
@@ -450,12 +451,20 @@ uint64_t wc(char** argv, int argc) {
 
 uint64_t filter(char** argv, int argc) {
     char buffer[10];
-    
+    char filtered_buffer[10];
+
     fd_t stdin = sys_get_stdin();
     fd_t stdout = sys_get_stdout();
     uint64_t readed = 0;
     while((readed = sys_read(stdin, buffer, 10)) != EOF) { //seria distinto de eof.
-        sys_write(stdout, buffer, readed);
+        int i, j;
+        while(i < readed) {
+            if(isVowel(buffer[i])) 
+                filtered_buffer[j++] = buffer[i++];
+            else
+                i++;  
+        }
+        sys_write(stdout, filtered_buffer, i);
     }
 
     return 0;

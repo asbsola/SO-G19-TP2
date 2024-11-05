@@ -30,6 +30,8 @@ void scanf(const char* fmt, void* ptr);
 
 int isAlpha(char c);
 
+int isVowel(char c);
+
 void sleep(uint64_t milis);
 
 #endif

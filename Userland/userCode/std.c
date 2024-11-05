@@ -51,8 +51,28 @@ void puts(const char* s) {
     sys_write(sys_get_stdout(), s, strlen(s));
 }
 
+char* num_to_color_hex_string(uint32_t hexColor, char* buff) {
+    const char hex_digits[] = "0123456789abcdef";
+
+    for (int i = 0; i < HEX_COLOR_STRING_LEN; i++) {
+        buff[HEX_COLOR_STRING_LEN - i - 1] = hex_digits[hexColor % 16]; 
+        hexColor /= 16;
+    }
+
+    buff[HEX_COLOR_STRING_LEN] = '\0';
+    return buff;
+}
+
 void puts_with_color(const char* s, uint32_t hexColor) {
-    sys_write(sys_get_stdout(), s, strlen(s));
+    uint32_t len = strlen(s);
+
+    char puts_buffer[len + HEX_COLOR_STRING_LEN + 2];
+    puts_buffer[0] = '\e';
+    num_to_color_hex_string(hexColor, &puts_buffer[1]);
+
+    strcpy(&puts_buffer[HEX_COLOR_STRING_LEN + 1], s);
+
+    sys_write(sys_get_stdout(), puts_buffer, len + HEX_COLOR_STRING_LEN + 1);
 }
 
 char itoa_buff[ITOA_BUFF_MAX_SIZE] = {0};

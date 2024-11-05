@@ -15,3 +15,24 @@ uint32_t GetUniform(uint32_t max) {
     uint32_t u = GetUint();
     return (u + 1.0) * 2.328306435454494e-10 * max;
 }
+
+uint8_t hexCharToInt(char c) {
+    if (c >= '0' && c <= '9') {
+        return c - '0';
+    } else if (c >= 'A' && c <= 'F') {
+        return c - 'A' + 10;
+    } else if (c >= 'a' && c <= 'f') {
+        return c - 'a' + 10;
+    }
+    return 0;
+}
+
+uint32_t hex_color_string_to_number(const char* hex_color) {
+    uint32_t out = 0;
+
+    for (int i = 0; i < HEX_COLOR_LEN && hex_color[i] != '\0'; i++) {
+        out = (out << 4) | hexCharToInt(hex_color[i]);
+    }
+
+    return out;
+}

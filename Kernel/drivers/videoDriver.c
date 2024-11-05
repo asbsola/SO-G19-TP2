@@ -1,6 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdint.h>
+#include <utils/utils.h>
 #include <drivers/videoDriver.h>
 #include <lib.h>
 #include <interruptHandlers/interrupts.h>
@@ -172,6 +173,10 @@ void clear_video_text_buffer() {
 void write_to_video_text_buffer(const char* data, uint32_t data_len, uint32_t hexColor) {
     for (uint32_t i = 0; i < data_len; i++) {
         switch (data[i]) {
+            case '\e':
+                hexColor = hex_color_string_to_number(&data[i + 1]);
+                i += (data_len - HEX_COLOR_LEN > 0) ? HEX_COLOR_LEN : (data_len - HEX_COLOR_LEN);
+                break;
             case '\n':
                 screenTextInfo.indexY += 1;
 

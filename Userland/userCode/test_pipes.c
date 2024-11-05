@@ -32,8 +32,8 @@ uint64_t test_pipes(char **argv, int argc) {
     int max_pair_processes;
     int msg_len;
     char buff[MAX_LEN] = {0};
-    char len_w[3] = {0};
-    char len_r[3] = {0};
+    char len_w[4] = {0};
+    char len_r[4] = {0};
     char* writerArgv[] = {"writer", buff, len_w, NULL};
     char* readerArgv[] = {"reader", len_r, NULL};
     int sent = 0;
@@ -44,7 +44,7 @@ uint64_t test_pipes(char **argv, int argc) {
         return -1;
     }
 
-    msg_len = atoi(argv[2]);
+    msg_len = atoi(argv[1]);
     if (msg_len <= 0) {
         puts_with_color("test_pipes: ERROR msg_len must be greater than 0\n", 0xFF0000);
         return -1;

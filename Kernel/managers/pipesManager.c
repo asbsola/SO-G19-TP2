@@ -56,7 +56,7 @@ fd_t open_pipe(pipesManagerADT pipes_manager) {
     pipes_manager->pipes[fd]->reading_index = 0;
     pipes_manager->pipes[fd]->blocked_readers = 0;
     pipes_manager->pipes[fd]->blocked_writers = 0;
-    pipes_manager->pipes[fd]->processes = 0;
+    pipes_manager->pipes[fd]->processes = 1;
     pipes_manager->pipes[fd]->name = NULL;
     
 

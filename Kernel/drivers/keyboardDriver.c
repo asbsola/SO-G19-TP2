@@ -1,9 +1,11 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <managers/kernel_managers.h>
 #include <drivers/keyboardDriver.h>
 #include <lib.h>
 #include <killer.h>
+#include <def.h>
 
+sem_t keys_available_sem;
 uint8_t key_buffer[MAX_SIZE_KEY_BUFFER];
 static int first_key_index = 0;
 static int buffer_size = 0;
@@ -25,7 +27,14 @@ static char map_to_ascii[256] = {
     '-', '4', '5', '6', '+', '1', '2', '3', '0', '.'
 };
 
-void keyboard_handler(processManagerADT process_manager, const registers64_t * registers){
+int init_keyboard_driver(semaphoreManagerADT semaphore_manager) {
+    keys_available_sem = open_sem(semaphore_manager, 0);
+    if (keys_available_sem == -1) return -1;
+
+    return 0;
+}
+
+void keyboard_handler(processManagerADT process_manager, semaphoreManagerADT semaphore_manager, const registers64_t * registers){
     uint8_t scan_code = get_scan_code();
     if(scan_code == CAPS_LOCK_CODE_PRESSED ||
      scan_code == LEFT_SHIFT_CODE_PRESSED || scan_code == RIGHT_SHIFT_CODE_PRESSED ||
@@ -58,21 +67,19 @@ void keyboard_handler(processManagerADT process_manager, const registers64_t * r
         return;
     }
     if(scan_code > 0x80 || buffer_size >= MAX_SIZE_KEY_BUFFER) return;
+
     key_buffer[(first_key_index + buffer_size++) % MAX_SIZE_KEY_BUFFER] = scan_code;
+    up_sem(semaphore_manager, keys_available_sem);
 }
 
-int keys_pending(){
-    return buffer_size > 0;
-}
-
-uint8_t get_key_pending(){
-    if(!keys_pending()) return 0;
+uint8_t get_key_pending(semaphoreManagerADT semaphore_manager){
+    down_sem(semaphore_manager, keys_available_sem);
     uint8_t key = key_buffer[first_key_index];
     first_key_index = (first_key_index + 1) % MAX_SIZE_KEY_BUFFER;
     buffer_size--;
     return key;
 }
 
-char get_pressed_character(){
-    return map_to_ascii[get_key_pending() + caps_enabled * caps_offset];
+char get_pressed_character(semaphoreManagerADT semaphore_manager){
+    return map_to_ascii[get_key_pending(semaphore_manager) + caps_enabled * caps_offset];
 }

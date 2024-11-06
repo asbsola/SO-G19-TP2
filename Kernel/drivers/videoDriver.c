@@ -216,7 +216,6 @@ void write_to_video_text_buffer(const char* data, uint32_t data_len, uint32_t he
 }
 
 void update_screen_text_buffer() {
-    _cli();
     clear_screen(0);
 
     uint32_t fontWidth = get_font_width();
@@ -229,5 +228,4 @@ void update_screen_text_buffer() {
     for (uint32_t y = screenTextInfo.indexY; y + 1 > lower_y_limit; y--)
         for (uint32_t x = 0; x < upper_x_limit; x++)
             draw_char(screenTextInfo.buffer[y][x].c, screenTextInfo.buffer[y][x].hexColor, x * fontWidth, (y - lower_y_limit) * fontHeight);
-    _sti();
 }

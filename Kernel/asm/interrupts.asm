@@ -80,7 +80,6 @@ SECTION .text
 %macro intSoftHandlerMaster 0
 	pushState
 	mov rdi, rsp
-	sti
 	call softIntDispatcher
 	popStateWithoutRax ; Preserving interrupts' return value
 	iretq

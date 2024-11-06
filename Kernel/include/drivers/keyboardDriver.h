@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <managers/processManager.h>
+#include <managers/semaphoreManager.h>
 #include <registers.h>
 
 #define CAPS_LOCK_CODE_PRESSED 0x3A
@@ -16,10 +17,10 @@
 
 #define MAX_SIZE_KEY_BUFFER 100
 
-void keyboard_handler(processManagerADT process_manager, const registers64_t * registers);
-int keys_pending();
-uint8_t get_key_pending();
+int init_keyboard_driver(semaphoreManagerADT semaphore_manager);
+void keyboard_handler(processManagerADT process_manager, semaphoreManagerADT semaphore_manager, const registers64_t * registers);
+uint8_t get_key_pending(semaphoreManagerADT semaphore_manager);
 uint8_t get_scan_code();
-char get_pressed_character();
+char get_pressed_character(semaphoreManagerADT semaphore_manager);
 
 #endif

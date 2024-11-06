@@ -1,6 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+#include <managers/pipesManager.h>
 #include <stdint.h>
 #include <interruptHandlers/syscall.h>
 #include <interruptHandlers/interrupts.h>
@@ -19,14 +20,12 @@ extern void yield();
 uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
 {
     if(rdi == KEYBOARD_INPUT_FD){ // MOMENTARY!!!
-    char c = 0;
-    int i = 0;
-    char *out_buffer = (char *)rsi;
-    while (c != '\n' && i < rdx)
-    {
-        if (keys_pending())
+        char c = 0;
+        int i = 0;
+        char *out_buffer = (char *)rsi;
+        while (c != '\n' && i < rdx)
         {
-            c = get_pressed_character();
+            c = get_pressed_character(the_semaphore_manager);
             if (c == '\b')
             {
                 char *backs = "\b\b\b\b";
@@ -41,8 +40,8 @@ uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64
                 write_to_video_text_buffer(&c, 1, HEX_WHITE);
             }
         }
-        }
-    return i;
+
+        return i;
     }
     
     return read_pipe(the_pipes_manager, rdi, (char *)rsi, rdx);
@@ -51,8 +50,8 @@ uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64
 uint64_t sys_write(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
 {
     if(rdi == SCREEN_OUTPUT_FD){ // MOMENTARY!!!
-    write_to_video_text_buffer((const char *)rsi, rdx, 0x00ffffff);
-    return rdx;
+        write_to_video_text_buffer((const char *)rsi, rdx, 0x00ffffff);
+        return rdx;
     }
 
     return write_pipe(the_pipes_manager, rdi, (const char *)rsi, rdx);
@@ -93,12 +92,12 @@ uint64_t sys_get_time(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, ui
 
 uint64_t sys_get_key_pressed(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
 {
-    return get_key_pending();
+    return get_key_pending(the_semaphore_manager);
 }
 
 uint64_t sys_get_character_pressed(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
 {
-    return get_pressed_character();
+    return get_pressed_character(the_semaphore_manager);
 }
 
 uint64_t sys_clear_text_buffer(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)

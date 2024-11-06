@@ -82,6 +82,8 @@ int main()
 	the_pipes_manager = init_pipes_manager(the_memory_manager, the_semaphore_manager);
 	fd_t stdin = open_pipe(the_pipes_manager);
 	fd_t stdout = open_pipe(the_pipes_manager);
+
+    init_keyboard_driver(the_semaphore_manager);
 	
     _sti();
 

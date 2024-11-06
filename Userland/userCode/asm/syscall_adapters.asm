@@ -43,7 +43,7 @@ global sys_get_stdout
 global sys_pipe_open_named
 global sys_pipe_open
 global sys_pipe_close
-
+global sys_pipe_send_eof 
 
 %macro syscall 1
     push rbp
@@ -186,3 +186,6 @@ sys_pipe_open:
 
 sys_pipe_close:
     syscall 42
+
+sys_pipe_send_eof:
+    syscall 43

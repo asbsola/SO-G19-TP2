@@ -112,6 +112,12 @@ uint64_t test_pipes(char **argv, int argc) {
     for(int i=0; i<max_pair_processes; i++){
         int64_t ret;
         sys_wait_pid(w_pids[i], &ret);
+    }
+
+    sys_pipe_send_eof(pipe);
+
+    for(int i=0; i<max_pair_processes; i++){
+        int64_t ret;
         sys_wait_pid(r_pids[i], &ret);
         res += ret;
     }

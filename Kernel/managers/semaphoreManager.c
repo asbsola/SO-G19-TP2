@@ -175,7 +175,9 @@ int down_sem(semaphoreManagerADT semaphore_manager, sem_t sem){
         block_process(semaphore_manager->process_manager, current_pid);
         return 0;
     }
+
     semADT->value--;
+
     release(&semADT->lock);
     return 0;
 }

@@ -72,8 +72,12 @@ void keyboard_handler(processManagerADT process_manager, semaphoreManagerADT sem
     up_sem(semaphore_manager, keys_available_sem);
 }
 
+int keys_pending(){
+    return buffer_size > 0;
+}
+
 uint8_t get_key_pending(semaphoreManagerADT semaphore_manager){
-    down_sem(semaphore_manager, keys_available_sem);
+    if (!keys_pending()) return 0;
     uint8_t key = key_buffer[first_key_index];
     first_key_index = (first_key_index + 1) % MAX_SIZE_KEY_BUFFER;
     buffer_size--;
@@ -81,5 +85,6 @@ uint8_t get_key_pending(semaphoreManagerADT semaphore_manager){
 }
 
 char get_pressed_character(semaphoreManagerADT semaphore_manager){
+    down_sem(semaphore_manager, keys_available_sem);
     return map_to_ascii[get_key_pending(semaphore_manager) + caps_enabled * caps_offset];
 }

@@ -101,7 +101,7 @@ int write_pipe(pipesManagerADT pipes_manager, fd_t fd, const char* buffer, int s
     pipe * pipe = pipes_manager->pipes[fd];
     int i = 0;
 
-    while(i < size){
+    while(i < size && !pipe->eof) {
         down_sem(pipes_manager->semaphore_manager, pipe->write_bytes_sem);
         pipe->buffer[pipe->writing_index] = buffer[i++];
         pipe->writing_index = next_index(pipe->writing_index);

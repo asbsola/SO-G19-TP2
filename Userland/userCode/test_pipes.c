@@ -64,7 +64,7 @@ uint64_t test_pipes(char **argv, int argc) {
         return -1;
     }
 
-    fd_t pipe = sys_pipe_open(PIPE_NAME);
+    fd_t pipe = sys_pipe_open_named(PIPE_NAME);
 
     for(int i=0; i<max_pair_processes; i++){
         for(int j=0; j<msg_len; j++){

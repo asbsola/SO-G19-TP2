@@ -20,8 +20,8 @@ uint64_t writer(char **argv, int argc) {
 
 uint64_t reader(char **argv, int argc) {
     char buff[MAX_LEN];
-    int len = atoi((argv[1]));
-    sys_read(sys_get_stdin(), buff, len);
+    int len = sys_read(sys_get_stdin(), buff, MAX_LEN);
+    if(len == EOF) return 0;
     int res = 0;
     for(int i=0; i<len; i++) res += buff[i];
     return res;
@@ -49,6 +49,7 @@ uint64_t mega_test_pipes(char **argv, int argc) {
 }
 
 uint64_t test_pipes(char **argv, int argc) {
+    pid_t w_pids[TOTAL_PAIR_PROCESSES];
     pid_t r_pids[TOTAL_PAIR_PROCESSES];
     int max_pair_processes;
     int msg_len;
@@ -86,6 +87,10 @@ uint64_t test_pipes(char **argv, int argc) {
     }
 
     fd_t pipe = sys_pipe_open_named(PIPE_NAME);
+    if(pipe == -1){
+        puts_with_color("test_pipes: ERROR could not create pipe\n", 0xFF0000);
+        return -1;
+    }
 
     for(int i=0; i<max_pair_processes; i++){
         for(int j=0; j<msg_len; j++){
@@ -95,9 +100,9 @@ uint64_t test_pipes(char **argv, int argc) {
         }
         itoa(msg_len, writerArgv[2], 3);
         itoa(msg_len, readerArgv[1], 3);
-        pid_t w_pid = sys_create_process(writer, writerArgv, sys_get_stdin(), pipe);
+        w_pids[i] = sys_create_process(writer, writerArgv, sys_get_stdin(), pipe);
         r_pids[i] = sys_create_process(reader, readerArgv, pipe, sys_get_stdout());
-        if(w_pid == -1 || r_pids[i] == -1){
+        if(w_pids[i] == -1 || r_pids[i] == -1){
             puts_with_color("test_pipe: ERROR creating process\n", 0xFF0000);
             sys_pipe_close(pipe);
             return -1;
@@ -106,6 +111,7 @@ uint64_t test_pipes(char **argv, int argc) {
 
     for(int i=0; i<max_pair_processes; i++){
         int64_t ret;
+        sys_wait_pid(w_pids[i], &ret);
         sys_wait_pid(r_pids[i], &ret);
         res += ret;
     }

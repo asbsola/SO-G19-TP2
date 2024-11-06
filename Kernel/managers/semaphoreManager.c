@@ -66,7 +66,11 @@ sem_t open_sem(semaphoreManagerADT semaphore_manager, uint64_t value){
     semaphore->name = NULL;
     semaphore->lock = 1;
     semaphore->waiting_processes = list_init(semaphore_manager->memory_manager);
-
+    if(semaphore->waiting_processes == NULL) {
+        mem_free(semaphore_manager->memory_manager, semaphore);
+        release(&semaphore_manager->sem_lock);
+        return -1;
+    }
     semaphore_manager->last_sem = MAX(semaphore_manager->last_sem, sem);
     semaphore_manager->num_semaphores++;
     semaphore_manager->semaphores[sem] = semaphore;

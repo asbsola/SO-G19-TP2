@@ -5,13 +5,11 @@ typedef struct pipe{
     char buffer[BUFFER_SIZE];
     uint64_t reading_index;
     uint64_t writing_index;
-    sem_t mutex;
     sem_t read_bytes_sem;
     sem_t write_bytes_sem;
     sem_t write_mutex;
     sem_t read_mutex;
     char * name;
-    uint64_t processes;
 } pipe;
 
 typedef struct pipesManagerCDT {
@@ -54,15 +52,27 @@ fd_t open_pipe(pipesManagerADT pipes_manager) {
 
     pipes_manager->pipes[fd]->writing_index = 0;
     pipes_manager->pipes[fd]->reading_index = 0;
-    pipes_manager->pipes[fd]->processes = 1;
     pipes_manager->pipes[fd]->name = NULL;
     
+    sem_t read_sem = open_sem(pipes_manager->semaphore_manager, 0);
+    sem_t write_sem = open_sem(pipes_manager->semaphore_manager, BUFFER_SIZE - 1);
+    sem_t read_mutex = open_sem(pipes_manager->semaphore_manager, 1);
+    sem_t write_mutex = open_sem(pipes_manager->semaphore_manager, 1);
+    if(read_sem == -1 || write_sem == -1 || read_mutex == -1 || write_mutex == -1){
+        close_sem(pipes_manager->semaphore_manager, read_sem);
+        close_sem(pipes_manager->semaphore_manager, write_sem);
+        close_sem(pipes_manager->semaphore_manager, read_mutex);
+        close_sem(pipes_manager->semaphore_manager, write_mutex);
+        mem_free(pipes_manager->memory_manager, pipes_manager->pipes[fd]);
+        pipes_manager->pipes[fd] = NULL;
+        return -1;
+    }
+    pipes_manager->pipes[fd]->read_bytes_sem = read_sem;
+    pipes_manager->pipes[fd]->write_bytes_sem = write_sem;
+    pipes_manager->pipes[fd]->read_mutex = read_mutex;
+    pipes_manager->pipes[fd]->write_mutex = write_mutex;
 
-    pipes_manager->pipes[fd]->mutex = open_sem(pipes_manager->semaphore_manager, 1);
-    pipes_manager->pipes[fd]->read_bytes_sem = open_sem(pipes_manager->semaphore_manager, 0);
-    pipes_manager->pipes[fd]->write_bytes_sem = open_sem(pipes_manager->semaphore_manager, BUFFER_SIZE - 1);
-    pipes_manager->pipes[fd]->read_mutex = open_sem(pipes_manager->semaphore_manager, 1);
-    pipes_manager->pipes[fd]->write_mutex = open_sem(pipes_manager->semaphore_manager, 1);
+    if(pipes_manager->pipes[fd]->read_bytes_sem == -1 || pipes_manager->pipes[fd]->write_bytes_sem == -1)
 
     pipes_manager->last_fd = MAX(pipes_manager->last_fd, fd);
 
@@ -72,15 +82,6 @@ fd_t open_pipe(pipesManagerADT pipes_manager) {
 int close_pipe(pipesManagerADT pipes_manager, fd_t fd) {
     if (fd < 0 || fd >= MAX_PIPES || pipes_manager->pipes[fd] == NULL) return -1;
 
-    down_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->mutex);
-
-    pipes_manager->pipes[fd]->processes--;
-    if(pipes_manager->pipes[fd]->processes > 0) {
-        up_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->mutex);
-        return 0;
-    }
-
-    close_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->mutex);
     close_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->read_bytes_sem);
     close_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->write_bytes_sem);
     close_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->read_mutex);
@@ -121,7 +122,7 @@ int write_pipe(pipesManagerADT pipes_manager, fd_t fd, const char* buffer, int s
 }
 
 int read_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buffer, int size) {
-    if (fd < 0 || fd >= MAX_PIPES || pipes_manager->pipes[fd] == NULL) return -1;
+    if (fd < 0 || fd >= MAX_PIPES || pipes_manager->pipes[fd] == NULL) return EOF;
     pipe * pipe = pipes_manager->pipes[fd];
     int i = 0;
     down_sem(pipes_manager->semaphore_manager, pipe->read_mutex);
@@ -150,12 +151,7 @@ fd_t get_pipe_named(pipesManagerADT pipes_manager, char* name) {
 fd_t open_pipe_named(pipesManagerADT pipes_manager, char* name){
     fd_t i = get_pipe_named(pipes_manager, name);
     
-    if(i != -1) {
-        down_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[i]->mutex);
-        pipes_manager->pipes[i]->processes++;
-        up_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[i]->mutex);
-        return i;
-    }
+    if(i != -1) return i;
 
     i = open_pipe(pipes_manager);
 

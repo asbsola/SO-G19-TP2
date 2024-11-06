@@ -27,6 +27,27 @@ uint64_t reader(char **argv, int argc) {
     return res;
 }
 
+uint64_t test_pipes(char **argv, int argc);
+uint64_t mega_test_pipes(char **argv, int argc) {
+    for(int i=250; i>0; i--){
+        for(int j=125; j>0; j--){
+            printf("testing params: %d %d\n", i, j);
+            char inp1[4];
+            char inp2[4];
+            itoa(i, inp1, 4);
+            itoa(j, inp2, 4);
+            char* auxArgv[] = {"test_pipes", inp1, inp2, NULL};
+            pid_t pid = sys_create_process(test_pipes, auxArgv, sys_get_stdin(), sys_get_stdout());
+            int64_t ret;
+            if(sys_wait_pid(pid, &ret) == -1 || ret == -1){
+                puts_with_color("ERROR\n", 0x00ff0000);
+                return -1;
+            }
+        }
+    }
+    return 0;
+}
+
 uint64_t test_pipes(char **argv, int argc) {
     pid_t r_pids[TOTAL_PAIR_PROCESSES];
     int max_pair_processes;

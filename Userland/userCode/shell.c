@@ -23,6 +23,7 @@ ModuleDescriptor modules[] = {
     {"test_idle_cleanup", "tests idle cleanup of orphans", PROCESS, test_idle_cleanup},
     {"test_sync", "tests syncro", PROCESS, test_sync},
     {"test_pipes", "tests pipes", PROCESS, test_pipes},
+    {"mega_test_pipes", "mega tests pipes", PROCESS, mega_test_pipes},
     {"mem", "displays memory status", BUILT_IN, mem},
     {"ps", "displays information about processes", BUILT_IN, ps},
     {"nicent", "changes process priority by PID", BUILT_IN, nicent},

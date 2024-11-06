@@ -6,10 +6,10 @@ typedef struct pipe{
     uint64_t reading_index;
     uint64_t writing_index;
     sem_t mutex;
-    sem_t write_sem;
-    sem_t read_sem;
-    uint64_t blocked_readers;
-    uint64_t blocked_writers;
+    sem_t read_bytes_sem;
+    sem_t write_bytes_sem;
+    sem_t write_mutex;
+    sem_t read_mutex;
     char * name;
     uint64_t processes;
 } pipe;
@@ -54,15 +54,15 @@ fd_t open_pipe(pipesManagerADT pipes_manager) {
 
     pipes_manager->pipes[fd]->writing_index = 0;
     pipes_manager->pipes[fd]->reading_index = 0;
-    pipes_manager->pipes[fd]->blocked_readers = 0;
-    pipes_manager->pipes[fd]->blocked_writers = 0;
     pipes_manager->pipes[fd]->processes = 1;
     pipes_manager->pipes[fd]->name = NULL;
     
 
     pipes_manager->pipes[fd]->mutex = open_sem(pipes_manager->semaphore_manager, 1);
-    pipes_manager->pipes[fd]->write_sem = open_sem(pipes_manager->semaphore_manager, 0);
-    pipes_manager->pipes[fd]->read_sem = open_sem(pipes_manager->semaphore_manager, 0);
+    pipes_manager->pipes[fd]->read_bytes_sem = open_sem(pipes_manager->semaphore_manager, 0);
+    pipes_manager->pipes[fd]->write_bytes_sem = open_sem(pipes_manager->semaphore_manager, BUFFER_SIZE - 1);
+    pipes_manager->pipes[fd]->read_mutex = open_sem(pipes_manager->semaphore_manager, 1);
+    pipes_manager->pipes[fd]->write_mutex = open_sem(pipes_manager->semaphore_manager, 1);
 
     pipes_manager->last_fd = MAX(pipes_manager->last_fd, fd);
 
@@ -80,10 +80,11 @@ int close_pipe(pipesManagerADT pipes_manager, fd_t fd) {
         return 0;
     }
 
-
     close_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->mutex);
-    close_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->write_sem);
-    close_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->read_sem);
+    close_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->read_bytes_sem);
+    close_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->write_bytes_sem);
+    close_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->read_mutex);
+    close_sem(pipes_manager->semaphore_manager, pipes_manager->pipes[fd]->write_mutex);
 
     if(pipes_manager->pipes[fd]->name != NULL)
         mem_free(pipes_manager->memory_manager, pipes_manager->pipes[fd]->name);
@@ -107,65 +108,30 @@ int next_index(int index) {
 int write_pipe(pipesManagerADT pipes_manager, fd_t fd, const char* buffer, int size) {
     if (fd < 0 || fd >= MAX_PIPES || pipes_manager->pipes[fd] == NULL) return -1;
     pipe * pipe = pipes_manager->pipes[fd];
-
-    
-
     int i = 0;
-    while(i < size) {
-        down_sem(pipes_manager->semaphore_manager, pipe->mutex);
-        if(pipe->reading_index == next_index(pipe->writing_index)) {
-            pipe->blocked_writers++;
-            up_sem(pipes_manager->semaphore_manager, pipe->mutex);
-            down_sem(pipes_manager->semaphore_manager, pipe->write_sem);
-        } else {
-            pipe->buffer[pipe->writing_index] = buffer[i];
-            pipe->writing_index = next_index(pipe->writing_index);
-            up_sem(pipes_manager->semaphore_manager, pipe->mutex);
-            i++;
-            
-        }
+    down_sem(pipes_manager->semaphore_manager, pipe->write_mutex);
+    while(i < size){
+        down_sem(pipes_manager->semaphore_manager, pipe->write_bytes_sem);
+        pipe->buffer[pipe->writing_index] = buffer[i++];
+        pipe->writing_index = next_index(pipe->writing_index);
+        up_sem(pipes_manager->semaphore_manager, pipe->read_bytes_sem);
     }
-
-    down_sem(pipes_manager->semaphore_manager, pipe->mutex);
-    while(pipe->blocked_readers > 0) {
-        pipe->blocked_readers--;
-        up_sem(pipes_manager->semaphore_manager, pipe->read_sem);
-    }
-    up_sem(pipes_manager->semaphore_manager, pipe->mutex);
-
-    return i;   
+    up_sem(pipes_manager->semaphore_manager, pipe->write_mutex);
+    return i;
 }
 
 int read_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buffer, int size) {
     if (fd < 0 || fd >= MAX_PIPES || pipes_manager->pipes[fd] == NULL) return -1;
     pipe * pipe = pipes_manager->pipes[fd];
-    char flag = 1;
-
     int i = 0;
-    while(i < size && flag) {
-        down_sem(pipes_manager->semaphore_manager, pipe->mutex);
-        if(pipe->writing_index == pipe->reading_index) {
-            pipe->blocked_readers++;
-            up_sem(pipes_manager->semaphore_manager, pipe->mutex);
-            down_sem(pipes_manager->semaphore_manager, pipe->read_sem);
-        } else {
-            buffer[i] = pipe->buffer[pipe->reading_index];
-            pipe->reading_index = next_index(pipe->reading_index);
-
-            if(buffer[i] == EOF) flag = 0;
-            
-            up_sem(pipes_manager->semaphore_manager, pipe->mutex);
-            i++;
-        }
+    down_sem(pipes_manager->semaphore_manager, pipe->read_mutex);
+    while(i < size){
+        down_sem(pipes_manager->semaphore_manager, pipe->read_bytes_sem);
+        buffer[i++] = pipe->buffer[pipe->reading_index];
+        pipe->reading_index = next_index(pipe->reading_index);
+        up_sem(pipes_manager->semaphore_manager, pipe->write_bytes_sem);
     }
-    down_sem(pipes_manager->semaphore_manager, pipe->mutex);
-    while(pipe->blocked_writers > 0) {
-        pipe->blocked_writers--;
-        up_sem(pipes_manager->semaphore_manager, pipe->write_sem);
-    }
-    up_sem(pipes_manager->semaphore_manager, pipe->mutex);
-
-    
+    up_sem(pipes_manager->semaphore_manager, pipe->read_mutex);
     return i;
 }
 

@@ -64,13 +64,16 @@ int denominator(schedulerADT scheduler){
 }
 
 int get_probability_low(schedulerADT scheduler){
+    if(denominator(scheduler) == 0) return 0;
     return list_size(scheduler->process_list[LOW])*10000/denominator(scheduler);
 }
 
 int get_probability_medium(schedulerADT scheduler){
+    if(denominator(scheduler) == 0) return 0;
     return list_size(scheduler->process_list[MEDIUM])*20000/denominator(scheduler);
 }
 int get_probability_high(schedulerADT scheduler){
+    if(denominator(scheduler) == 0) return 0;
     return list_size(scheduler->process_list[HIGH])*40000/denominator(scheduler);
 }
 

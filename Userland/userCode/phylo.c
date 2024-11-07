@@ -146,6 +146,16 @@ int remove_philosopher() {
 uint64_t phylo(char **argv, int argc) {
     number_of_philosophers = 0;
 
+    int in_background = argv[argc - 1][0] == '&';
+
+    if (in_background) {
+        puts_with_color("phylo: ERROR don't run me in background (no exit condition)\n", 0xFF0000);
+        return -1;
+    }
+
+    puts_with_color("phylo instructions: 'a' to add - 'r' to remove - 'q' to quit\n\npress any key to start...\n", 0xc2daff);
+    while (sys_get_key_pressed() == 0);
+
     if ((view_pipe = sys_pipe_open_named(VIEW_PIPE, NON_EOF_CONSUMER)) == -1) {
         puts_with_color("phylo: ERROR opening pipe\n", 0xFF0000);
         return -1;

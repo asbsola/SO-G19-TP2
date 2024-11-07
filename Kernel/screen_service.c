@@ -1,7 +1,6 @@
 
 #include <screen_service.h>
 #include <managers/kernel_managers.h>
-#include <drivers/videoDriver.h>
 
 extern void yield();
 uint64_t screen_service(char** argv, int argc){
@@ -10,9 +9,16 @@ uint64_t screen_service(char** argv, int argc){
 
     write_to_video_text_buffer("GRUPO 19\n", 9, 0x006fb5fb);
     while(1) {
-        char buff[BUFFER_SIZE];
-        int len = read_pipe(the_pipes_manager, get_stdin(the_process_manager, get_current_pid(the_scheduler)), buff, BUFFER_SIZE);
-        write_to_video_text_buffer(buff, len, 0x00ffffff);
+        char buff[LINE_MAX_LEN];
+        int len = 0;
+        while(len < LINE_MAX_LEN && (len == 0 || buff[len-1] != '\0')){
+            int inc = read_pipe(the_pipes_manager, get_stdin(the_process_manager, get_current_pid(the_scheduler)), buff + len, 1);
+            if(inc == EOF || inc == 0) break;
+            len += inc;
+        }
+        _cli();
+        write_to_video_text_buffer(buff, len-1, 0x00ffffff);
+        _sti();
         yield();
     }
 }

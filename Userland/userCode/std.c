@@ -48,7 +48,7 @@ void putchar(char c) {
 }
 
 void puts(const char* s) {
-    sys_write(sys_get_stdout(), s, strlen(s));
+    sys_write(sys_get_stdout(), s, strlen(s) + 1);
 }
 
 char* num_to_color_hex_string(uint32_t hexColor, char* buff) {
@@ -72,7 +72,7 @@ void puts_with_color(const char* s, uint32_t hexColor) {
 
     strcpy(&puts_buffer[HEX_COLOR_STRING_LEN + 1], s);
 
-    sys_write(sys_get_stdout(), puts_buffer, len + HEX_COLOR_STRING_LEN + 1);
+    sys_write(sys_get_stdout(), puts_buffer, len + HEX_COLOR_STRING_LEN + 2);
 }
 
 char itoa_buff[ITOA_BUFF_MAX_SIZE] = {0};

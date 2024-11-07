@@ -32,12 +32,12 @@ uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64
                 if (--i < 0)
                     i = 0;
                 else
-                    write_to_video_text_buffer(backs, out_buffer[i] == '\t' ? 4 : 1, HEX_WHITE);
+                    write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, backs, out_buffer[i] == '\t' ? 4 : 1);
             }
             else
             {
                 out_buffer[i++] = c;
-                write_to_video_text_buffer(&c, 1, HEX_WHITE);
+                write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, &c, 1);
             }
         }
 

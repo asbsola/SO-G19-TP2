@@ -31,8 +31,11 @@ pipesManagerADT init_pipes_manager(memoryManagerADT memory_manager, semaphoreMan
     pipes_manager->semaphore_manager = semaphore_manager;
     pipes_manager->memory_manager = memory_manager;
 
-	fd_t stdin = open_pipe(pipes_manager);
-	fd_t stdout = open_pipe(pipes_manager);
+    //stdout
+	open_pipe(pipes_manager);
+
+    //stdin
+	open_pipe(pipes_manager);
 
     return pipes_manager;
 }

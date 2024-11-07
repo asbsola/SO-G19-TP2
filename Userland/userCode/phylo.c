@@ -125,18 +125,18 @@ int add_philosopher() {
 int remove_philosopher() {
     sys_sem_down(add_remove_mutex);
 
-    if (number_of_philosophers % 2 == 0) {
-        sys_sem_down(chopsticks[number_of_philosophers]);
+    if ((number_of_philosophers - 1) % 2 == 0) {
+        sys_sem_down(chopsticks[number_of_philosophers - 1]);
         sys_sem_down(chopsticks[0]);
     } else {
         sys_sem_down(chopsticks[0]);
-        sys_sem_down(chopsticks[number_of_philosophers]);
+        sys_sem_down(chopsticks[number_of_philosophers - 1]);
     }
 
-    sys_kill_process_by_pid(philosophers[number_of_philosophers].pid, 0);
+    sys_kill_process_by_pid(philosophers[number_of_philosophers - 1].pid, 0);
     number_of_philosophers--;
 
-    sys_sem_up(chopsticks[number_of_philosophers + 1]);
+    sys_sem_up(chopsticks[number_of_philosophers]);
     sys_sem_up(chopsticks[0]);
     sys_sem_up(add_remove_mutex);
 
@@ -146,7 +146,7 @@ int remove_philosopher() {
 uint64_t phylo(char **argv, int argc) {
     number_of_philosophers = 0;
 
-    if ((view_pipe = sys_pipe_open_named(VIEW_PIPE)) == -1) {
+    if ((view_pipe = sys_pipe_open_named(VIEW_PIPE, NON_EOF_CONSUMER)) == -1) {
         puts_with_color("phylo: ERROR opening pipe\n", 0xFF0000);
         return -1;
     }

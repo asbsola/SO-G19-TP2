@@ -8,6 +8,7 @@ typedef struct pipe{
     sem_t read_bytes_sem;
     sem_t write_bytes_sem;
     char * name;
+    int mode;
     uint8_t eof;
 } pipe;
 
@@ -32,10 +33,10 @@ pipesManagerADT init_pipes_manager(memoryManagerADT memory_manager, semaphoreMan
     pipes_manager->memory_manager = memory_manager;
 
     //stdout
-	open_pipe(pipes_manager);
+	open_pipe(pipes_manager, EOF_CONSUMER);
 
     //stdin
-	open_pipe(pipes_manager);
+	open_pipe(pipes_manager, EOF_CONSUMER);
 
     return pipes_manager;
 }
@@ -48,7 +49,7 @@ fd_t get_lowest_unused_fd(pipesManagerADT pipes_manager) {
     return -1;
 }
 
-fd_t open_pipe(pipesManagerADT pipes_manager) {
+fd_t open_pipe(pipesManagerADT pipes_manager, int mode) {
     fd_t fd = get_lowest_unused_fd(pipes_manager);
     if (fd == -1) return -1;
 
@@ -58,6 +59,7 @@ fd_t open_pipe(pipesManagerADT pipes_manager) {
     pipes_manager->pipes[fd]->eof = 0;
     pipes_manager->pipes[fd]->writing_index = 0;
     pipes_manager->pipes[fd]->reading_index = 0;
+    pipes_manager->pipes[fd]->mode = mode;
     pipes_manager->pipes[fd]->name = NULL;
     
     sem_t read_sem = open_sem(pipes_manager->semaphore_manager, 0);
@@ -125,7 +127,8 @@ int read_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buffer, int size) {
         down_sem(pipes_manager->semaphore_manager, pipe->read_bytes_sem);
 
         if (pipe->eof && pipe->reading_index == pipe->writing_index) {
-            up_sem(pipes_manager->semaphore_manager, pipe->read_bytes_sem);
+            if(pipe->mode == EOF_CONSUMER) pipe->eof = 0;
+            else up_sem(pipes_manager->semaphore_manager, pipe->read_bytes_sem);
             return i;
         }
 
@@ -133,6 +136,8 @@ int read_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buffer, int size) {
         pipe->reading_index = next_index(pipe->reading_index);
         up_sem(pipes_manager->semaphore_manager, pipe->write_bytes_sem);
     }
+
+    if(size != 0 && i == 0) return EOF;
     return i;
 }
 
@@ -159,12 +164,12 @@ fd_t get_pipe_named(pipesManagerADT pipes_manager, char* name) {
     return -1;
 }
 
-fd_t open_pipe_named(pipesManagerADT pipes_manager, char* name){
+fd_t open_pipe_named(pipesManagerADT pipes_manager, char* name, int mode){
     fd_t i = get_pipe_named(pipes_manager, name);
     
     if(i != -1) return i;
 
-    i = open_pipe(pipes_manager);
+    i = open_pipe(pipes_manager, mode);
 
     if(i == -1) return -1;
 

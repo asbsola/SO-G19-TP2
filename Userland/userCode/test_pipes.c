@@ -86,7 +86,7 @@ uint64_t test_pipes(char **argv, int argc) {
         return -1;
     }
 
-    fd_t pipe = sys_pipe_open_named(PIPE_NAME);
+    fd_t pipe = sys_pipe_open_named(PIPE_NAME, NON_EOF_CONSUMER);
     if(pipe == -1){
         puts_with_color("test_pipes: ERROR could not create pipe\n", 0xFF0000);
         return -1;

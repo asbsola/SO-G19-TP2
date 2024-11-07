@@ -18,6 +18,7 @@ typedef struct processControlBlockCDT
     semaphoreADT blocking_sem;
     fd_t stdin;
     fd_t stdout;
+    int input_mode;
 } processControlBlockCDT;
 
 typedef struct processControlBlockCDT *processControlBlockADT;

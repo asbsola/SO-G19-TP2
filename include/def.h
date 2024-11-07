@@ -23,7 +23,13 @@
 #define KEYBOARD_INPUT_FD 0
 #define SCREEN_OUTPUT_FD 1
 
+#define NON_EOF_CONSUMER 0
+#define EOF_CONSUMER 1
+
 #define EOF -1
+
+#define NON_CANNONICAL 0
+#define CANNONICAL 1
 
 typedef int64_t pid_t;
 typedef int64_t sem_t;

@@ -19,35 +19,10 @@ extern void yield();
 
 uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
 {
-    if(rdi == KEYBOARD_INPUT_FD){ // MOMENTARY!!!
-        char c = 0;
-        int i = 0;
-        char *out_buffer = (char *)rsi;
-        while (c != '\n' && i < rdx)
-        {
-            c = get_pressed_character(the_semaphore_manager);
-            if (c == '\b')
-            {
-                char *backs = "\b\b\b\b";
-                char *back = "\b";
-                if (--i < 0)
-                    i = 0;
-                else
-                    if(out_buffer[i] == '\t') write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, backs, 5);
-                    else write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, back, 2);
-            }
-            else
-            {
-                out_buffer[i++] = c;
-                char character[2] = { c, '\0'};
-                write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, character, 2);
-            }
-        }
-
-        return i;
-    }
-    
-    return read_pipe(the_pipes_manager, rdi, (char *)rsi, rdx);
+    if(rdi == KEYBOARD_INPUT_FD) set_input_mode(CANNONICAL);
+    int len = read_pipe(the_pipes_manager, rdi, (char *)rsi, rdx);
+    if(rdi == KEYBOARD_INPUT_FD) set_input_mode(NON_CANNONICAL);
+    return len;
 }
 
 uint64_t sys_write(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
@@ -90,12 +65,12 @@ uint64_t sys_get_time(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, ui
 
 uint64_t sys_get_key_pressed(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
 {
-    return get_key_pending(the_semaphore_manager);
+    return get_key_pending();
 }
 
 uint64_t sys_get_character_pressed(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
 {
-    return get_pressed_character(the_semaphore_manager);
+    return get_character_pending();
 }
 
 uint64_t sys_clear_text_buffer(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
@@ -237,11 +212,11 @@ uint64_t sys_get_stdout(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, 
 }
 
 uint64_t sys_pipe_open_named(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
-    return open_pipe_named(the_pipes_manager, (char *)rdi);
+    return open_pipe_named(the_pipes_manager, (char *)rdi, rsi);
 }
 
 uint64_t sys_pipe_open(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){
-    return open_pipe(the_pipes_manager);
+    return open_pipe(the_pipes_manager, rdi);
 }
 
 uint64_t sys_pipe_close(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9){

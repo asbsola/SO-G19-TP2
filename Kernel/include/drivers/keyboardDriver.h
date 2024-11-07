@@ -6,6 +6,8 @@
 #include <managers/semaphoreManager.h>
 #include <registers.h>
 
+#define MAX_LEN_BUFFER 256
+#define CAPS_OFFSET 84
 #define CAPS_LOCK_CODE_PRESSED 0x3A
 #define LEFT_SHIFT_CODE_PRESSED 0x36
 #define RIGHT_SHIFT_CODE_PRESSED 0x2A
@@ -15,12 +17,9 @@
 #define CNTRL_CODE_RELEASED 0x9D
 #define ESCAPE_CODE_PRESSED 0x01
 
-#define MAX_SIZE_KEY_BUFFER 100
-
-int init_keyboard_driver(semaphoreManagerADT semaphore_manager);
 void keyboard_handler(processManagerADT process_manager, semaphoreManagerADT semaphore_manager, const registers64_t * registers);
-uint8_t get_key_pending(semaphoreManagerADT semaphore_manager);
+uint8_t get_key_pending();
+char get_character_pending();
 uint8_t get_scan_code();
-char get_pressed_character(semaphoreManagerADT semaphore_manager);
 
 #endif

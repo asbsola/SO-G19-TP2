@@ -29,15 +29,18 @@ uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64
             if (c == '\b')
             {
                 char *backs = "\b\b\b\b";
+                char *back = "\b";
                 if (--i < 0)
                     i = 0;
                 else
-                    write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, backs, out_buffer[i] == '\t' ? 4 : 1);
+                    if(out_buffer[i] == '\t') write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, backs, 5);
+                    else write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, back, 2);
             }
             else
             {
                 out_buffer[i++] = c;
-                write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, &c, 1);
+                char character[2] = { c, '\0'};
+                write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, character, 2);
             }
         }
 
@@ -49,11 +52,6 @@ uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64
 
 uint64_t sys_write(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
 {
-    if(rdi == SCREEN_OUTPUT_FD){ // MOMENTARY!!!
-        write_to_video_text_buffer((const char *)rsi, rdx, 0x00ffffff);
-        return rdx;
-    }
-
     return write_pipe(the_pipes_manager, rdi, (const char *)rsi, rdx);
 }
 

@@ -21,5 +21,6 @@ void keyboard_handler(processManagerADT process_manager, semaphoreManagerADT sem
 uint8_t get_key_pending();
 char get_character_pending();
 uint8_t get_scan_code();
+void set_input_mode(int mode);
 
 #endif

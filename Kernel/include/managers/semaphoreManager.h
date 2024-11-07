@@ -8,7 +8,7 @@
 
 typedef struct semaphoreManagerCDT *semaphoreManagerADT;
 
-semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager, processManagerADT process_manager, schedulerADT scheduler);
+semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager, schedulerADT scheduler, processManagerADT process_manager);
 sem_t open_sem(semaphoreManagerADT semaphore_manager, uint64_t value);
 int close_sem(semaphoreManagerADT semaphore_manager, sem_t sem);
 int up_sem(semaphoreManagerADT semaphore_manager, sem_t sem);

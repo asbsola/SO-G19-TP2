@@ -21,7 +21,7 @@ struct semaphoreManagerCDT {
 void acquire(uint8_t* lock);
 void release(uint8_t* lock);
 
-semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager, processManagerADT process_manager, schedulerADT scheduler){
+semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager, schedulerADT scheduler, processManagerADT process_manager){
     semaphoreManagerADT semaphore_manager = mem_alloc(memory_manager, sizeof(struct semaphoreManagerCDT));
 
     semaphore_manager->last_sem = -1;

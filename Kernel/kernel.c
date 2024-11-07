@@ -22,8 +22,8 @@
 static char managed_memory[MEMORY_MANAGER_MEM_SIZE];
 
 memoryManagerADT the_memory_manager = NULL;
-processManagerADT the_process_manager = NULL;
 schedulerADT the_scheduler = NULL;
+processManagerADT the_process_manager = NULL;
 semaphoreManagerADT the_semaphore_manager = NULL;
 pipesManagerADT the_pipes_manager = NULL;
 
@@ -76,20 +76,41 @@ int main()
 	load_idt();
 
     the_memory_manager = init_memory_manager(managed_memory, MEMORY_MANAGER_MEM_SIZE);
+	if(the_memory_manager == NULL) {
+    	write_to_video_text_buffer("Not enough memory\n", 18, HEX_RED);
+		delay(2000);
+		return -1;
+	}
 	the_scheduler = init_scheduler(the_memory_manager);
+	if(the_scheduler == NULL) {
+    	write_to_video_text_buffer("Not enough memory\n", 18, HEX_RED);
+		delay(2000);
+		return -1;
+	}
 	the_process_manager = init_process_manager(the_memory_manager, the_scheduler);
-	the_semaphore_manager = init_semaphore_manager(the_memory_manager, the_process_manager, the_scheduler);
+	if(the_process_manager == NULL) {
+    	write_to_video_text_buffer("Not enough memory\n", 18, HEX_RED);
+		delay(2000);
+		return -1;
+	}
+	the_semaphore_manager = init_semaphore_manager(the_memory_manager, the_scheduler, the_process_manager);
+	if(the_semaphore_manager == NULL) {
+    	write_to_video_text_buffer("Not enough memory\n", 18, HEX_RED);
+		delay(2000);
+		return -1;
+	}
 	the_pipes_manager = init_pipes_manager(the_memory_manager, the_semaphore_manager);
-	fd_t stdin = open_pipe(the_pipes_manager);
-	fd_t stdout = open_pipe(the_pipes_manager);
+	if(the_pipes_manager == NULL) {
+    	write_to_video_text_buffer("Not enough memory\n", 18, HEX_RED);
+		delay(2000);
+		return -1;
+	}
 
     init_keyboard_driver(the_semaphore_manager);
 	
     _sti();
 
     write_to_video_text_buffer("Back in kernel...\n", 18, HEX_GRAY);
-
 	delay(2000);
-
 	return 0;
 }

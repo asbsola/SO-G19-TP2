@@ -3,10 +3,10 @@
 #include <idle.h>
 #include <drivers/videoDriver.h>
 #include <interruptHandlers/interrupts.h>
-#include <managers/kernel_managers.h>
-#include <screen_service.h>
+#include <managers/processManager.h>
 #include <shell_caller.h>
 
+extern processManagerADT the_process_manager;
 extern void yield();
 
 void remove_orphans(processManagerADT process_manager){
@@ -19,10 +19,10 @@ void remove_orphans(processManagerADT process_manager){
 }
 
 uint64_t idle(char** argv, int argc){
+    set_font_size(1);
+    clear_video_text_buffer();
 
-    char* screen_service_args[] = {"screen_service", NULL};
-    pid_t screen_pid = create_process(the_process_manager, 0, screen_service, screen_service_args, SCREEN_OUTPUT_FD, -1);
-    nicent(the_process_manager, screen_pid, HIGH);
+    write_to_video_text_buffer("GRUPO 19\n", 9, 0x006fb5fb);
 
     char* shell_args[] = {"shell", NULL};
     create_process(the_process_manager, 0, (uint64_t (*)(char**, int))(SHELL_CODE_ADDRESS), shell_args, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);

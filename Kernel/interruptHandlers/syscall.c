@@ -49,6 +49,11 @@ uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64
 
 uint64_t sys_write(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9)
 {
+    if(rdi == SCREEN_OUTPUT_FD){ // MOMENTARY!!!
+        write_to_video_text_buffer((const char *)rsi, rdx, 0x00ffffff);
+        return rdx;
+    }
+
     return write_pipe(the_pipes_manager, rdi, (const char *)rsi, rdx);
 }
 

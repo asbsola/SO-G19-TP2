@@ -48,7 +48,6 @@ void run_shell()
     char shell_input[MAX_SHELL_INPUT];
     shell_input[0] = 0;
     sys_nicent(sys_get_pid(), HIGH);
-    
     while (strcmp(shell_input, "exit") != 0)
     {
         sys_set_font_size(current_font_size);

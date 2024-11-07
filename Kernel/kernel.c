@@ -105,8 +105,6 @@ int main()
 		delay(2000);
 		return -1;
 	}
-
-    init_keyboard_driver(the_semaphore_manager);
 	
     _sti();
 

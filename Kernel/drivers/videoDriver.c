@@ -170,11 +170,11 @@ void clear_video_text_buffer() {
     clear_screen(0);
 }
 
-void write_to_video_text_buffer(const char* data, uint32_t data_len, uint32_t hexColor) {
+void write_to_video_text_buffer(const char* data, uint32_t data_len, uint32_t defaultColor) {
     for (uint32_t i = 0; i < data_len; i++) {
         switch (data[i]) {
             case '\e':
-                hexColor = hex_color_string_to_number(&data[i + 1]);
+                defaultColor = hex_color_string_to_number(&data[i + 1]);
                 i += (data_len - HEX_COLOR_LEN > 0) ? HEX_COLOR_LEN : (data_len - HEX_COLOR_LEN);
                 break;
             case '\n':
@@ -186,7 +186,7 @@ void write_to_video_text_buffer(const char* data, uint32_t data_len, uint32_t he
                 screenTextInfo.indexX = 0;
                 break;
             case '\t':
-                write_to_video_text_buffer("    ", 4, hexColor);
+                write_to_video_text_buffer("    ", 4, defaultColor);
                 break;
             case '\r':
                 screenTextInfo.indexX = 0;
@@ -203,7 +203,7 @@ void write_to_video_text_buffer(const char* data, uint32_t data_len, uint32_t he
                 break;
             default:
                 screenTextInfo.buffer[screenTextInfo.indexY][screenTextInfo.indexX].c = data[i];
-                screenTextInfo.buffer[screenTextInfo.indexY][screenTextInfo.indexX].hexColor = hexColor;
+                screenTextInfo.buffer[screenTextInfo.indexY][screenTextInfo.indexX].hexColor = defaultColor;
 
                 screenTextInfo.indexX += 1;
                 screenTextInfo.indexY += screenTextInfo.indexX / get_chars_per_buff_line();

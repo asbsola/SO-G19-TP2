@@ -7,10 +7,10 @@
 ModuleDescriptor modules[] = {
     {"help", "displays available modules", BUILT_IN, help},
     {"clear", "clears the screens text buffer", BUILT_IN, cls},
-    {"sysinfo", "displays system information", BUILT_IN, info},
+    {"sysinfo", "displays system information", PROCESS, info},
     {"fontsize", "change font size", BUILT_IN, font_size},
-    {"time", "display current time", BUILT_IN, time},
-    {"regs", "displays captured registers (ESC key to capture)", BUILT_IN, regs},
+    {"time", "display current time", PROCESS, time},
+    {"regs", "displays captured registers (ESC key to capture)", PROCESS, regs},
     {"beep", "beeps", BUILT_IN, beep},
     {"song", "plays a short tune while displaying graphics", PROCESS, song},
     {"calculator", "positive integer calculator", PROCESS, calculator},
@@ -25,8 +25,8 @@ ModuleDescriptor modules[] = {
     {"test_sync", "tests syncro", PROCESS, test_sync},
     {"test_pipes", "tests pipes", PROCESS, test_pipes},
     {"mega_test_pipes", "mega tests pipes", PROCESS, mega_test_pipes},
-    {"mem", "displays memory status", BUILT_IN, mem},
-    {"ps", "displays information about processes", BUILT_IN, ps},
+    {"mem", "displays memory status", PROCESS, mem},
+    {"ps", "displays information about processes", PROCESS, ps},
     {"nicent", "changes process priority by PID", BUILT_IN, nicent},
     {"kill", "terminates a process by its PID. If the flag 'r' is provided, it also terminates all its descendants", BUILT_IN, kill},
     {"cleanup", "removes all exited processes", BUILT_IN, cleanup},
@@ -62,6 +62,12 @@ void run_shell()
 
         int ans = get_commands(shell_input, commands, &num_cmds);
         if(ans == -1) continue;
+
+        if (num_cmds == 1) {
+            run_cmd(commands[0], sys_get_stdin(), sys_get_stdout());
+            free_args(commands[0].argv);
+            continue;
+        }
 
         for (int i = 0; i < num_cmds - 1; i++){
             pipes[i] = sys_pipe_open(NON_CANNONICAL);
@@ -459,6 +465,7 @@ uint64_t cat(char** argv, int argc) {
     while (i > 0){
         i = 0;
         char c = 0;
+        int out;
         while (c != '\n' && sys_read(stdin, &c, 1) != EOF && i < max_len-1) buffer[i++] = c;
         buffer[i] = 0;
         sys_write(stdout, buffer, i+1);
@@ -492,7 +499,7 @@ uint64_t filter(char** argv, int argc) {
     int i = 0;
     char c = 0;
     while (c != '\n' && sys_read(stdin, &c, 1) != EOF && i < max_len-1) {
-        if (isVowel(c))
+        if (!isVowel(c))
             filtered_buffer[i++] = c;
     }
     filtered_buffer[i] = 0;

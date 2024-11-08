@@ -10,8 +10,6 @@
 #define MAX_NUMBER_OF_PHILOSOPHERS 25
 #define INITIAL_NUMBER_OF_PHILOSOPHERS 5
 #define VIEW_PIPE "view_philosophers_pipe"
-#define VIEW_SEMAPHORE "view_philosophers"
-#define PHILOSOPHERS_MUTEX "philosophers"
 #define ADD_REMOVE_MUTEX "add_remove_mutex"
 
 typedef enum {EATING, THINKING} philosopherState;
@@ -22,7 +20,6 @@ typedef struct {
 
 philosopher philosophers[MAX_NUMBER_OF_PHILOSOPHERS];
 fd_t view_pipe;
-sem_t philosopher_mutex;
 sem_t add_remove_mutex;
 sem_t chopsticks[MAX_NUMBER_OF_PHILOSOPHERS];
 uint32_t number_of_philosophers = INITIAL_NUMBER_OF_PHILOSOPHERS;
@@ -52,19 +49,15 @@ void write_philosophers_state_to_pipe() {
 }
 
 void eat(uint64_t id) {
-    sys_sem_down(philosopher_mutex);
     philosophers[id].state = EATING;
     write_philosophers_state_to_pipe();
-    sys_sem_up(philosopher_mutex);
 
     sys_yield();
 }
 
 void think(uint64_t id) {
-    sys_sem_down(philosopher_mutex);
     philosophers[id].state = THINKING;
     write_philosophers_state_to_pipe();
-    sys_sem_up(philosopher_mutex);
 
     sys_yield();
 }
@@ -98,7 +91,6 @@ uint64_t thinking_man(char **argv, int argc) {
 
 int add_philosopher() {
     sys_sem_down(add_remove_mutex);
-
     sys_sem_down(chopsticks[0]);
 
     number_of_philosophers++;
@@ -116,7 +108,6 @@ int add_philosopher() {
     }
 
     sys_sem_up(chopsticks[0]);
-
     sys_sem_up(add_remove_mutex);
 
     return 0;
@@ -166,18 +157,13 @@ uint64_t phylo(char **argv, int argc) {
         return -1;
     }
 
-    if ((philosopher_mutex = sys_sem_open_named(PHILOSOPHERS_MUTEX, 1)) == -1) {
-        puts_with_color("phylo: ERROR opening semaphore\n", 0xFF0000);
-        return -1;
-    }
-
     for (int i = 0; i < MAX_NUMBER_OF_PHILOSOPHERS; i++) {
         if ((chopsticks[i] = sys_sem_open(1)) == -1) {
             puts_with_color("phylo: ERROR opening semaphore\n", 0xFF0000);
             for (int j = 0; j < i; j++) {
                 sys_sem_close(chopsticks[j]);
             }
-            sys_sem_close_named(VIEW_SEMAPHORE);
+            sys_sem_close(add_remove_mutex);
             return -1;
         }
     }
@@ -188,7 +174,7 @@ uint64_t phylo(char **argv, int argc) {
             for (int j = 0; j < MAX_NUMBER_OF_PHILOSOPHERS; j++) {
                 sys_sem_close(chopsticks[j]);
             }
-            sys_sem_close_named(VIEW_SEMAPHORE);
+            sys_sem_close(add_remove_mutex);
             return -1;
         }
     }
@@ -212,8 +198,6 @@ uint64_t phylo(char **argv, int argc) {
 
     sys_pipe_close(view_pipe);
 
-    sys_sem_close_named(VIEW_SEMAPHORE);
-    sys_sem_close_named(PHILOSOPHERS_MUTEX);
     sys_sem_close_named(ADD_REMOVE_MUTEX);
     return 0;
 }

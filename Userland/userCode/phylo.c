@@ -7,7 +7,7 @@
 #define A_CODE_PRESSED 0x1E
 #define R_CODE_PRESSED 0x13
 
-#define MAX_NUMBER_OF_PHILOSOPHERS 25
+#define MAX_NUMBER_OF_PHILOSOPHERS 15 
 #define INITIAL_NUMBER_OF_PHILOSOPHERS 5
 #define VIEW_PIPE "view_philosophers_pipe"
 #define ADD_REMOVE_MUTEX "add_remove_mutex"
@@ -52,12 +52,18 @@ void eat(uint64_t id) {
     philosophers[id].state = EATING;
     write_philosophers_state_to_pipe();
 
+    uint64_t eat_time = GetUniform(600);
+    sleep(eat_time);
+
     sys_yield();
 }
 
 void think(uint64_t id) {
     philosophers[id].state = THINKING;
     write_philosophers_state_to_pipe();
+
+    uint64_t think_time = GetUniform(1200);
+    sleep(think_time);
 
     sys_yield();
 }
@@ -84,6 +90,7 @@ uint64_t thinking_man(char **argv, int argc) {
         sys_sem_up(chopsticks[second_chopstick_index]);
 
         think(id);
+        sleep(100);
     }
 
     return 0;
@@ -146,6 +153,8 @@ uint64_t phylo(char **argv, int argc) {
 
     puts_with_color("phylo instructions: 'a' to add - 'r' to remove - 'q' to quit\n\npress any key to start...\n", 0xc2daff);
     while (sys_get_key_pressed() == 0);
+
+    sys_set_font_size(2);
 
     if ((view_pipe = sys_pipe_open_named(VIEW_PIPE, NON_EOF_CONSUMER)) == -1) {
         puts_with_color("phylo: ERROR opening pipe\n", 0xFF0000);

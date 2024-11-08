@@ -9,8 +9,7 @@
 
 #define MAX_NUMBER_OF_PHILOSOPHERS 25
 #define INITIAL_NUMBER_OF_PHILOSOPHERS 5
-#define VIEW_SEMAPHORE "view_philosophers"
-#define PHILOSOPHERS_MUTEX "philosophers"
+#define VIEW_PIPE "view_philosophers_pipe"
 #define ADD_REMOVE_MUTEX "add_remove_mutex"
 
 typedef enum {EATING, THINKING} philosopherState;
@@ -20,48 +19,45 @@ typedef struct {
 } philosopher;
 
 philosopher philosophers[MAX_NUMBER_OF_PHILOSOPHERS];
-sem_t view_sem;
-sem_t philosopher_mutex;
+fd_t view_pipe;
 sem_t add_remove_mutex;
 sem_t chopsticks[MAX_NUMBER_OF_PHILOSOPHERS];
 uint32_t number_of_philosophers = INITIAL_NUMBER_OF_PHILOSOPHERS;
 
 uint64_t view(char **argv, int argc) {
-    while (1) {
-        sys_sem_down(view_sem);
-
-        sys_sem_down(philosopher_mutex);
-
-        char buffer[number_of_philosophers * 2 + 2];
-        for (int i = 0; i < number_of_philosophers; i++) {
-            if (philosophers[i].state == EATING) buffer[2 * i] = 'E';
-            else buffer[2 * i] = '.';
-
-            buffer[2 * i + 1] = ' ';
-        }
-        buffer[number_of_philosophers * 2] = '\n';
-        buffer[number_of_philosophers * 2 + 1] = '\0';
+    char buffer[MAX_NUMBER_OF_PHILOSOPHERS * 2 + 2];
+    while (sys_read(view_pipe, buffer, MAX_NUMBER_OF_PHILOSOPHERS * 2 + 1) != EOF) {
+        buffer[MAX_NUMBER_OF_PHILOSOPHERS * 2 + 1] = '\0';
         puts(buffer);
-        sys_sem_up(philosopher_mutex);
     }
 
     return 0;
 }
 
+void write_philosophers_state_to_pipe() {
+    char buffer[number_of_philosophers * 2 + 2];
+    for (int i = 0; i < number_of_philosophers; i++) {
+        if (philosophers[i].state == EATING) buffer[2 * i] = 'E';
+        else buffer[2 * i] = '.';
+
+        buffer[2 * i + 1] = ' ';
+    }
+
+    buffer[number_of_philosophers * 2] = '\n';
+
+    sys_write(sys_get_stdout(), buffer, number_of_philosophers * 2 + 1);
+}
+
 void eat(uint64_t id) {
-    sys_sem_down(philosopher_mutex);
     philosophers[id].state = EATING;
-    sys_sem_up(philosopher_mutex);
-    sys_sem_up(view_sem);
+    write_philosophers_state_to_pipe();
 
     sys_yield();
 }
 
 void think(uint64_t id) {
-    sys_sem_down(philosopher_mutex);
     philosophers[id].state = THINKING;
-    sys_sem_up(philosopher_mutex);
-    sys_sem_up(view_sem);
+    write_philosophers_state_to_pipe();
 
     sys_yield();
 }
@@ -95,7 +91,6 @@ uint64_t thinking_man(char **argv, int argc) {
 
 int add_philosopher() {
     sys_sem_down(add_remove_mutex);
-
     sys_sem_down(chopsticks[0]);
 
     number_of_philosophers++;
@@ -106,15 +101,13 @@ int add_philosopher() {
     itoa(number_of_philosophers - 1, buff, 20);
     char* argv[] = {"thinking_man", buff, 0};
 
-    if ((philosophers[number_of_philosophers - 1].pid = sys_create_process(thinking_man, argv, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD)) == -1) {
+    if ((philosophers[number_of_philosophers - 1].pid = sys_create_process(thinking_man, argv, KEYBOARD_INPUT_FD, view_pipe)) == -1) {
         sys_sem_up(chopsticks[0]);
         sys_sem_up(add_remove_mutex);
         return -1;
     }
 
-
     sys_sem_up(chopsticks[0]);
-
     sys_sem_up(add_remove_mutex);
 
     return 0;
@@ -123,18 +116,18 @@ int add_philosopher() {
 int remove_philosopher() {
     sys_sem_down(add_remove_mutex);
 
-    if (number_of_philosophers % 2 == 0) {
-        sys_sem_down(chopsticks[number_of_philosophers]);
+    if ((number_of_philosophers - 1) % 2 == 0) {
+        sys_sem_down(chopsticks[number_of_philosophers - 1]);
         sys_sem_down(chopsticks[0]);
     } else {
         sys_sem_down(chopsticks[0]);
-        sys_sem_down(chopsticks[number_of_philosophers]);
+        sys_sem_down(chopsticks[number_of_philosophers - 1]);
     }
 
-    sys_kill_process_by_pid(philosophers[number_of_philosophers].pid, 0);
+    sys_kill_process_by_pid(philosophers[number_of_philosophers - 1].pid, 0);
     number_of_philosophers--;
 
-    sys_sem_up(chopsticks[number_of_philosophers + 1]);
+    sys_sem_up(chopsticks[number_of_philosophers]);
     sys_sem_up(chopsticks[0]);
     sys_sem_up(add_remove_mutex);
 
@@ -142,23 +135,24 @@ int remove_philosopher() {
 }
 
 uint64_t phylo(char **argv, int argc) {
-    sys_sem_close_named(VIEW_SEMAPHORE);
-    sys_sem_close_named(ADD_REMOVE_MUTEX);
-    sys_sem_close_named(PHILOSOPHERS_MUTEX);
-
     number_of_philosophers = 0;
 
-    if ((view_sem = sys_sem_open_named(VIEW_SEMAPHORE, 0)) == -1) {
-        puts_with_color("phylo: ERROR opening semaphore\n", 0xFF0000);
+    int in_background = argv[argc - 1][0] == '&';
+
+    if (in_background) {
+        puts_with_color("phylo: ERROR don't run me in background (no exit condition)\n", 0xFF0000);
+        return -1;
+    }
+
+    puts_with_color("phylo instructions: 'a' to add - 'r' to remove - 'q' to quit\n\npress any key to start...\n", 0xc2daff);
+    while (sys_get_key_pressed() == 0);
+
+    if ((view_pipe = sys_pipe_open_named(VIEW_PIPE, NON_EOF_CONSUMER)) == -1) {
+        puts_with_color("phylo: ERROR opening pipe\n", 0xFF0000);
         return -1;
     }
 
     if ((add_remove_mutex = sys_sem_open_named(ADD_REMOVE_MUTEX, 1)) == -1) {
-        puts_with_color("phylo: ERROR opening semaphore\n", 0xFF0000);
-        return -1;
-    }
-
-    if ((philosopher_mutex = sys_sem_open_named(PHILOSOPHERS_MUTEX, 1)) == -1) {
         puts_with_color("phylo: ERROR opening semaphore\n", 0xFF0000);
         return -1;
     }
@@ -169,7 +163,7 @@ uint64_t phylo(char **argv, int argc) {
             for (int j = 0; j < i; j++) {
                 sys_sem_close(chopsticks[j]);
             }
-            sys_sem_close_named(VIEW_SEMAPHORE);
+            sys_sem_close(add_remove_mutex);
             return -1;
         }
     }
@@ -180,13 +174,13 @@ uint64_t phylo(char **argv, int argc) {
             for (int j = 0; j < MAX_NUMBER_OF_PHILOSOPHERS; j++) {
                 sys_sem_close(chopsticks[j]);
             }
-            sys_sem_close_named(VIEW_SEMAPHORE);
+            sys_sem_close(add_remove_mutex);
             return -1;
         }
     }
 
     char* args[] = {0};
-    pid_t view_pid = sys_create_process(view, args, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
+    sys_create_process(view, args, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
 
     char key;
     while ((key = sys_get_key_pressed()) != Q_CODE_PRESSED) {
@@ -201,10 +195,13 @@ uint64_t phylo(char **argv, int argc) {
     for (int i = 0; i < number_of_philosophers; i++) {
         sys_kill_process_by_pid(philosophers[i].pid, 0);
     }
-    
-    sys_kill_process_by_pid(view_pid, 0);
 
-    sys_sem_close_named(VIEW_SEMAPHORE);
-    sys_sem_close_named(PHILOSOPHERS_MUTEX);
+    for (int j = 0; j < MAX_NUMBER_OF_PHILOSOPHERS; j++) {
+        sys_sem_close(chopsticks[j]);
+    }
+
+    sys_pipe_close(view_pipe);
+
+    sys_sem_close_named(ADD_REMOVE_MUTEX);
     return 0;
 }

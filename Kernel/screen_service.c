@@ -7,7 +7,6 @@ uint64_t screen_service(char** argv, int argc){
     set_font_size(1);
     clear_video_text_buffer();
 
-    write_to_video_text_buffer("GRUPO 19\n", 9, 0x006fb5fb);
     while(1) {
         char buff[LINE_MAX_LEN];
         int len = 0;

@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <shell.h>
 #include <def.h>
+#include <lib.h>
 
 ModuleDescriptor modules[] = {
     {"help", "displays available modules", BUILT_IN, help},
@@ -43,19 +44,14 @@ static int current_font_size = 1;
 
 char* get_last_arg(char** args);
 
-
-
-
 void run_shell()
 {
-
     char shell_input[MAX_SHELL_INPUT];
     shell_input[0] = 0;
     Command commands[MAX_COMMANDS];
     fd_t pipes[MAX_COMMANDS - 1];
     int num_cmds = 0;
     sys_nicent(sys_get_pid(), HIGH);
-    
 
     while (strcmp(shell_input, "exit") != 0)
     {
@@ -105,22 +101,24 @@ void free_commands_argv(Command* commands, int num_cmds) {
 
 int get_commands(char* shell_input, Command* commands, int* num_cmds){
     char ** cmds = split(shell_input, num_cmds, '|');
-    for(int i = 0; i < *num_cmds; i++){
+    for (int i = 0; i < *num_cmds; i++){
         trim(cmds[i]);
     }
-    for(int i = 0; i < *num_cmds; i++){
+    for (int i = 0; i < *num_cmds; i++){
         commands[i].argv = split(cmds[i], &commands[i].argc, ' ');
-        for(int j = 0; j < commands[i].argc; j++){
+
+        for (int j = 0; j < commands[i].argc; j++){
             trim(commands[i].argv[j]);
         }
+
         int module_index = get_module_index(commands[i].argv[0]);
-        if(module_index == -1){
+        if (module_index == -1){
             printf("Unknown command: %s\n", commands[i].argv[0]);
             free_args(cmds);
             free_commands_argv(commands, i + 1);
             return -1;
         }
-        if(modules[module_index].module_type == BUILT_IN && *num_cmds > 1){
+        if (modules[module_index].module_type == BUILT_IN && *num_cmds > 1){
             printf("Built-in command %s cannot be piped\n", commands[i].argv[0]);
             free_args(cmds);
             free_commands_argv(commands, i + 1);
@@ -154,7 +152,6 @@ uint64_t run_cmd(Command cmd, fd_t stdin, fd_t stdout)
 
 uint64_t help(char** argv, int argc)
 {
-
     puts_with_color("arguments are separated by ' ' (spaces).\nadd & at the last argument of a command to run in background (only for processes).\n\n", 0xc2daff);
 
     puts("available modules:\n");
@@ -168,7 +165,6 @@ uint64_t help(char** argv, int argc)
     }
 
     putchar('\n');
-   
 
     return 0;
 }
@@ -198,11 +194,13 @@ uint64_t font_size(char** argv, int argc)
     int n = 0;
     printf("Choose font size (1-5) or 0 to exit: ");
     scanf("%d", &n);
+
     while (n < 0 || n >= 6)
     {
         printf("Choose a valid font size (1-5) or 0 to exit: ");
         scanf("%d", &n);
     }
+
     if (n != 0)
     {
         current_font_size = n;
@@ -392,14 +390,14 @@ uint64_t kill(char** argv, int argc) {
 
     uint64_t kill_recursive = 0;
 
-    if(argv[2][0] == 'r') {
+    if (argv[2][0] == 'r') {
         kill_recursive = 1;
     }
 
     int pid = atoi(argv[1]);
 
 
-    if(sys_kill_process_by_pid(pid, kill_recursive) == -1){
+    if (sys_kill_process_by_pid(pid, kill_recursive) == -1){
         puts_with_color("kill: ERROR could not kill process\n", 0xFF0000);
         return -1;
     }
@@ -458,10 +456,10 @@ uint64_t cat(char** argv, int argc) {
     fd_t stdin = sys_get_stdin();
     fd_t stdout = sys_get_stdout();
     int i = 1;
-    while(i > 0){
+    while (i > 0){
         i = 0;
         char c = 0;
-        while(c != '\n' && sys_read(stdin, &c, 1) != EOF && i < max_len-1) buffer[i++] = c;
+        while (c != '\n' && sys_read(stdin, &c, 1) != EOF && i < max_len-1) buffer[i++] = c;
         buffer[i] = 0;
         sys_write(stdout, buffer, i+1);
     }
@@ -476,8 +474,8 @@ uint64_t wc(char** argv, int argc) {
     uint64_t readed = 0;
     uint64_t lines = 0;
 
-    while((readed = sys_read(stdin, buffer, 10)) != EOF) {
-        for(int i = 0; i < readed; i++) {
+    while ((readed = sys_read(stdin, buffer, 10)) != EOF) {
+        for (int i = 0; i < readed; i++) {
             if(buffer[i] == '\n') lines++;
         }
     }
@@ -493,8 +491,8 @@ uint64_t filter(char** argv, int argc) {
     fd_t stdout = sys_get_stdout();
     int i = 0;
     char c = 0;
-    while(c != '\n' && sys_read(stdin, &c, 1) != EOF && i < max_len-1) {
-        if(isVowel(c))
+    while (c != '\n' && sys_read(stdin, &c, 1) != EOF && i < max_len-1) {
+        if (isVowel(c))
             filtered_buffer[i++] = c;
     }
     filtered_buffer[i] = 0;
@@ -503,10 +501,10 @@ uint64_t filter(char** argv, int argc) {
 }
 
 uint64_t echo(char** argv, int argc) {
-    if(argc < 2) {
+    if (argc < 2) {
         sys_write(sys_get_stdout(),"\n", 1);
         
-    }else{
+    } else{
         sys_write(sys_get_stdout(),argv[1], strlen(argv[1]));
     }
 

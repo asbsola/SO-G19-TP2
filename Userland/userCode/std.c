@@ -199,7 +199,8 @@ int isAlpha(char c){
 }
 
 int isVowel(char c){
-    return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
+    if(c >= 'a') c -= 'a'-'A';
+    return c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U';
 }
 
 void sleep(uint64_t millis){

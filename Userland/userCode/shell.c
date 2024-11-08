@@ -498,7 +498,7 @@ uint64_t filter(char** argv, int argc) {
     fd_t stdout = sys_get_stdout();
     int i = 0;
     char c = 0;
-    while (c != '\n' && sys_read(stdin, &c, 1) != EOF && i < max_len-1) {
+    while (sys_read(stdin, &c, 1) != EOF && i < max_len-1) {
         if (!isVowel(c))
             filtered_buffer[i++] = c;
     }

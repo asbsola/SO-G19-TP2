@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <syscall_adapters.h>
 #include <stdarg.h>
+#include <stddef.h>
 
 
 uint32_t strlen(const char* s);
@@ -35,5 +36,9 @@ int isAlpha(char c);
 int isVowel(char c);
 
 void sleep(uint64_t milis);
+
+
+char** split(const char* input, int* len, char delimiter);
+void trim(char* str);
 
 #endif

@@ -9,7 +9,7 @@
 #include <stddef.h>
 
 #define MAX_SHELL_INPUT 1024
-
+#define MAX_COMMANDS 10
 typedef enum {BUILT_IN, PROCESS} command_type;
 
 typedef struct
@@ -19,6 +19,13 @@ typedef struct
     command_type module_type;
     uint64_t (*module)(char**, int);
 } ModuleDescriptor;
+
+typedef struct
+{
+    ModuleDescriptor module;
+    char ** argv;
+    int argc;
+} Command;
 
 uint64_t help(char** argv, int argc);
 uint64_t cls(char** argv, int argc);
@@ -52,9 +59,13 @@ uint64_t phylo(char** argv, int argc);
 uint64_t cat(char** argv, int argc);
 uint64_t wc(char** argv, int argc);
 uint64_t filter(char** argv, int argc);
+uint64_t echo(char** argv, int argc);
 
 void run_shell();
-char** get_args(const char* input, int* argc);
+uint64_t run_cmd(Command cmd, fd_t stdin, fd_t stdout);
 void free_args(char** args);
+int get_commands(char* shell_input, Command* commands, int* num_cmds);
+int get_module_index(char* module_name);
+
 
 #endif

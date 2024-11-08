@@ -79,7 +79,7 @@ uint64_t endless_counter(char** argv, int argc) {
     }
 }
 
-uint64_t echo(char** argv, int argc) {
+uint64_t echo_test(char** argv, int argc) {
     sleep(atoi(argv[2]));
 
     return atoi(argv[1]);

@@ -206,3 +206,60 @@ void sleep(uint64_t millis){
     uint64_t start = sys_get_ticks();
     while((sys_get_ticks() - start) * 1000 < (PIT_FREQUENCY * millis));
 }
+
+
+
+char** split(const char* input, int* len, char delimiter) {
+    uint64_t num_args = 1;
+    for (uint64_t i = 0; input[i] != '\0'; i++)
+        num_args += (input[i] == delimiter);
+
+    char** ans = sys_malloc((num_args + 1) * sizeof(char*));
+
+    if(ans == NULL) return NULL;
+
+    uint64_t ans_start = 0;
+    uint64_t ans_count = 0;
+
+    for (uint64_t i = 0; ; i++) {
+        if (input[i] == delimiter || input[i] == '\0') {
+            uint64_t arg_len = i - ans_start;
+            char* arg = sys_malloc((arg_len + 1) * sizeof(char));
+            if(arg == NULL){
+                for(uint64_t j = 0; j < ans_count; j++){
+                    sys_free(ans[j]);
+                }
+                sys_free(ans);
+                return NULL;
+            };
+
+            for (uint64_t j = 0; j < arg_len; j++)
+                arg[j] = input[ans_start + j];
+
+            arg[arg_len] = '\0';
+
+            ans[ans_count++] = arg;
+
+            if (input[i] == '\0')
+                break;
+            ans_start = i + 1;
+        }
+    }
+    *len = ans_count;
+    ans[ans_count] = NULL;
+    return ans;
+}
+
+void trim(char* str) {
+    int start = 0;
+    int end = strlen(str) - 1;
+
+    while (str[start] == ' ') start++;
+    while (str[end] == ' ' && end >= start) end--;
+
+    int i;
+    for (i = 0; start <= end; start++, i++) {
+        str[i] = str[start];
+    }
+    str[i] = '\0';
+}

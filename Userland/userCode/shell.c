@@ -35,55 +35,122 @@ ModuleDescriptor modules[] = {
     {"phylo", "the dining philosophers problem", PROCESS, phylo},
     {"cat", "print on the standard output", PROCESS, cat},
     {"wc", "counts the number of lines of input", PROCESS, wc},
-    {"filter", "Filters the input vowels", PROCESS, filter}
+    {"filter", "Filters the input vowels", PROCESS, filter},
+    {"echo", "display a line of text", PROCESS, echo},
 };
 
 static int current_font_size = 1;
 
 char* get_last_arg(char** args);
 
+
+
+
 void run_shell()
 {
 
     char shell_input[MAX_SHELL_INPUT];
     shell_input[0] = 0;
+    Command commands[MAX_COMMANDS];
+    fd_t pipes[MAX_COMMANDS - 1];
+    int num_cmds = 0;
     sys_nicent(sys_get_pid(), HIGH);
+    sys_set_font_size(current_font_size);
+    
 
     while (strcmp(shell_input, "exit") != 0)
     {
-        sys_set_font_size(current_font_size);
+        
         puts_with_color("shell> ", 0x006fb5fb);
         scanf("%s", shell_input);
 
-        int argc = 0;
-        char** argv = get_args(shell_input, &argc);
-        char* last_arg = get_last_arg(argv);
-        uint8_t executed_command = 0;
+        int ans = get_commands(shell_input, commands, &num_cmds);
+        if(ans == -1) continue;
 
-        uint8_t in_background = (last_arg != NULL && last_arg[0] == '&');
-
-        for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++) {
-            if (strcmp(argv[0], modules[i].module_name) == 0) {
-                if (modules[i].module_type == PROCESS) {
-                    executed_command = 1;
-                    pid_t pid = sys_create_process(modules[i].module, argv, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
-                    int64_t ret;
-                    if (!in_background) sys_wait_pid(pid, &ret);
-                }
-                else if (modules[i].module_type == BUILT_IN) {
-                    executed_command = 1;
-                    modules[i].module(argv, argc);
-                }
-
-                break;
-            }
+        if(num_cmds == 1) {
+            run_cmd(commands[0], sys_get_stdin(), sys_get_stdout());
+            free_args(commands[0].argv);
+            continue;
         }
 
-        if (!executed_command) 
-            printf("Unknown command: %s\n", argv[0]);
+        for(int i = 0; i < num_cmds; i++){
+            pipes[i] = sys_pipe_open(NON_CANNONICAL);
+            if(i == 0){
+                run_cmd(commands[i], sys_get_stdin(), pipes[i]);
+            }else if(i == num_cmds - 1){
+                run_cmd(commands[i], pipes[i-1], sys_get_stdout());
+            }else{
+                run_cmd(commands[i], pipes[i-1], pipes[i]);
+            }
+            sys_pipe_send_eof(pipes[i]);
 
-        free_args(argv);
+        }
+        
+        for(int i = 0; i < num_cmds - 1; i++){
+            sys_pipe_close(pipes[i]);
+        }
+
+        for(int i = 0; i < num_cmds; i++){
+            free_args(commands[i].argv);
+        }
+
     }
+}
+
+int get_module_index(char* module_name){
+    for (uint32_t i = 0; i < sizeof(modules) / sizeof(modules[0]); i++) {
+        if (strcmp(module_name, modules[i].module_name) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int get_commands(char* shell_input, Command* commands, int* num_cmds){
+    char ** cmds = split(shell_input, num_cmds, '|');
+    for(int i = 0; i < *num_cmds; i++){
+        trim(cmds[i]);
+    }
+    for(int i = 0; i < *num_cmds; i++){
+        commands[i].argv = split(cmds[i], &commands[i].argc, ' ');
+        for(int j = 0; j < commands[i].argc; j++){
+            trim(commands[i].argv[j]);
+        }
+        int module_index = get_module_index(commands[i].argv[0]);
+        if(module_index == -1){
+            printf("Unknown command: %s\n", commands[i].argv[0]);
+            free_args(cmds);
+            return -1;
+        }
+        if(modules[module_index].module_type == BUILT_IN && *num_cmds > 1){
+            printf("Built-in command %s cannot be piped\n", commands[i].argv[0]);
+            free_args(cmds);
+            return -1;
+        }
+        commands[i].module = modules[module_index];
+    }
+
+    free_args(cmds);
+    return 0;
+}
+
+
+uint64_t run_cmd(Command cmd, fd_t stdin, fd_t stdout)
+{
+    char* last_arg = get_last_arg(cmd.argv);
+    int64_t ret = 0;
+    uint8_t in_background = (last_arg != NULL && last_arg[0] == '&');
+
+    if (cmd.module.module_type == PROCESS) {
+        pid_t pid = sys_create_process(cmd.module.module, cmd.argv, stdin, stdout);
+                
+        if (!in_background) sys_wait_pid(pid, &ret);
+    }
+    else if (cmd.module.module_type == BUILT_IN) {
+        cmd.module.module(cmd.argv, cmd.argc);
+    }
+
+    return ret;
 }
 
 uint64_t help(char** argv, int argc)
@@ -277,38 +344,6 @@ uint64_t ps(char** argv, int argc) {
     return 0;
 }
 
-char** get_args(const char* input, int* argc) {
-    uint64_t num_args = 1;
-    for (uint64_t i = 0; input[i] != '\0'; i++)
-        num_args += (input[i] == ' ');
-
-    char** args = sys_malloc((num_args + 1) * sizeof(char*));
-
-    uint64_t arg_start = 0;
-    uint64_t arg_count = 0;
-
-    for (uint64_t i = 0; ; i++) {
-        if (input[i] == ' ' || input[i] == '\0') {
-            uint64_t arg_len = i - arg_start;
-            char* arg = sys_malloc((arg_len + 1) * sizeof(char));
-
-            for (uint64_t j = 0; j < arg_len; j++)
-                arg[j] = input[arg_start + j];
-
-            arg[arg_len] = '\0';
-
-            args[arg_count++] = arg;
-
-            if (input[i] == '\0')
-                break;
-            arg_start = i + 1;
-        }
-    }
-    *argc = arg_count;
-    args[arg_count] = NULL;
-    return args;
-}
-
 char* get_last_arg(char** args) {
     for (uint64_t i = 0; args[i] != NULL; i++)
         if (args[i + 1] == NULL) return args[i];
@@ -468,3 +503,13 @@ uint64_t filter(char** argv, int argc) {
     return 0;
 }
 
+uint64_t echo(char** argv, int argc) {
+    if(argc < 2) {
+        sys_write(sys_get_stdout(),"\n", 1);
+        
+    }else{
+        sys_write(sys_get_stdout(),argv[1], strlen(argv[1]));
+    }
+
+    return 0;
+}

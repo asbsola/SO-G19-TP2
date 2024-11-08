@@ -98,6 +98,11 @@ int get_module_index(char* module_name){
     return -1;
 }
 
+void free_commands_argv(Command* commands, int num_cmds) {
+    for (int i = 0; i < num_cmds; i++)
+        free_args(commands[i].argv);
+}
+
 int get_commands(char* shell_input, Command* commands, int* num_cmds){
     char ** cmds = split(shell_input, num_cmds, '|');
     for(int i = 0; i < *num_cmds; i++){
@@ -112,11 +117,13 @@ int get_commands(char* shell_input, Command* commands, int* num_cmds){
         if(module_index == -1){
             printf("Unknown command: %s\n", commands[i].argv[0]);
             free_args(cmds);
+            free_commands_argv(commands, i + 1);
             return -1;
         }
         if(modules[module_index].module_type == BUILT_IN && *num_cmds > 1){
             printf("Built-in command %s cannot be piped\n", commands[i].argv[0]);
             free_args(cmds);
+            free_commands_argv(commands, i + 1);
             return -1;
         }
         commands[i].module = modules[module_index];

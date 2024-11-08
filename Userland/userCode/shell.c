@@ -55,45 +55,37 @@ void run_shell()
     fd_t pipes[MAX_COMMANDS - 1];
     int num_cmds = 0;
     sys_nicent(sys_get_pid(), HIGH);
-    sys_set_font_size(current_font_size);
     
 
     while (strcmp(shell_input, "exit") != 0)
     {
-        
+        sys_set_font_size(current_font_size);
+
         puts_with_color("shell> ", 0x006fb5fb);
         scanf("%s", shell_input);
 
         int ans = get_commands(shell_input, commands, &num_cmds);
         if(ans == -1) continue;
 
-        if(num_cmds == 1) {
-            run_cmd(commands[0], sys_get_stdin(), sys_get_stdout());
-            free_args(commands[0].argv);
-            continue;
-        }
-
-        for(int i = 0; i < num_cmds; i++){
+        for (int i = 0; i < num_cmds - 1; i++){
             pipes[i] = sys_pipe_open(NON_CANNONICAL);
-            if(i == 0){
+
+            if (i == 0) {
                 run_cmd(commands[i], sys_get_stdin(), pipes[i]);
-            }else if(i == num_cmds - 1){
-                run_cmd(commands[i], pipes[i-1], sys_get_stdout());
-            }else{
-                run_cmd(commands[i], pipes[i-1], pipes[i]);
+            } else {
+                run_cmd(commands[i], pipes[i - 1], pipes[i]);
             }
+
             sys_pipe_send_eof(pipes[i]);
-
         }
-        
-        for(int i = 0; i < num_cmds - 1; i++){
+
+        run_cmd(commands[num_cmds - 1], pipes[num_cmds - 2], sys_get_stdout());
+
+        for (int i = 0; i < num_cmds - 1; i++){
             sys_pipe_close(pipes[i]);
-        }
-
-        for(int i = 0; i < num_cmds; i++){
             free_args(commands[i].argv);
         }
-
+        free_args(commands[num_cmds - 1].argv);
     }
 }
 

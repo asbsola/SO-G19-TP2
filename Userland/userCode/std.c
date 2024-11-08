@@ -165,6 +165,12 @@ char getchar() {
     return sys_get_character_pressed();
 }
 
+int getline(char* buffer){
+    int len = 0;
+    while(sys_read(sys_get_stdin(), buffer+len, 1) != EOF && buffer[len] != '\n') len++;
+    return len+1;
+}
+
 uint32_t atoi(const char* s) {
     uint32_t out = 0;
 
@@ -177,7 +183,7 @@ uint32_t atoi(const char* s) {
 void scanf(const char* fmt, void* ptr) {
     char scan_buff[SCANF_BUFF_MAX_SIZE] = {0};
 
-    uint32_t len = sys_read(sys_get_stdin(), scan_buff, SCANF_BUFF_MAX_SIZE);
+    uint32_t len = getline(scan_buff);
     scan_buff[len - 1] = '\0';
 
     if (strcmp(fmt, "%d") == 0)

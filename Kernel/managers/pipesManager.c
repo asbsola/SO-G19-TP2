@@ -127,8 +127,9 @@ int read_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buffer, int size) {
         down_sem(pipes_manager->semaphore_manager, pipe->read_bytes_sem);
 
         if (pipe->eof && pipe->reading_index == pipe->writing_index) {
-            if(pipe->mode == EOF_CONSUMER) pipe->eof = 0;
+            if(pipe->mode == EOF_CONSUMER && i == 0) pipe->eof = 0;
             else up_sem(pipes_manager->semaphore_manager, pipe->read_bytes_sem);
+            if(size != 0 && i == 0) return EOF;
             return i;
         }
 

@@ -48,6 +48,7 @@ void run_shell()
     char shell_input[MAX_SHELL_INPUT];
     shell_input[0] = 0;
     sys_nicent(sys_get_pid(), HIGH);
+
     while (strcmp(shell_input, "exit") != 0)
     {
         sys_set_font_size(current_font_size);
@@ -417,15 +418,19 @@ uint64_t loop(char** argv, int argc) {
 
 
 uint64_t cat(char** argv, int argc) {
-    char buffer[10];
+    const int max_len = 1024;
+    char buffer[max_len];
     
     fd_t stdin = sys_get_stdin();
     fd_t stdout = sys_get_stdout();
-    uint64_t readed = 0;
-    while((readed = sys_read(stdin, buffer, 10)) != EOF) { //seria distinto de eof.
-        sys_write(stdout, buffer, readed);
+    int i = 1;
+    while(i > 0){
+        i = 0;
+        char c = 0;
+        while(c != '\n' && sys_read(stdin, &c, 1) != EOF && i < max_len-1) buffer[i++] = c;
+        buffer[i] = 0;
+        sys_write(stdout, buffer, i+1);
     }
-
     return 0;
 }
 
@@ -435,38 +440,31 @@ uint64_t wc(char** argv, int argc) {
     fd_t stdin = sys_get_stdin();
 
     uint64_t readed = 0;
-    uint64_t lines;
+    uint64_t lines = 0;
 
-    while((readed = sys_read(stdin, buffer, 10)) != EOF) { //seria distinto de eof.
-        lines = 0;
+    while((readed = sys_read(stdin, buffer, 10)) != EOF) {
         for(int i = 0; i < readed; i++) {
             if(buffer[i] == '\n') lines++;
         }
-        
-        printf("Lines: %d\n", lines);
     }
-
+    printf("Lines: %d\n", lines);
     return 0;
 }
 
 uint64_t filter(char** argv, int argc) {
-    char buffer[10];
-    char filtered_buffer[10];
-
+    const int max_len = 1024;
+    char filtered_buffer[max_len];
+    
     fd_t stdin = sys_get_stdin();
     fd_t stdout = sys_get_stdout();
-    uint64_t readed = 0;
-    while((readed = sys_read(stdin, buffer, 10)) != EOF) { //seria distinto de eof.
-        int i, j;
-        while(i < readed) {
-            if(isVowel(buffer[i])) 
-                filtered_buffer[j++] = buffer[i++];
-            else
-                i++;  
-        }
-        sys_write(stdout, filtered_buffer, i);
+    int i = 0;
+    char c = 0;
+    while(c != '\n' && sys_read(stdin, &c, 1) != EOF && i < max_len-1) {
+        if(isVowel(c))
+            filtered_buffer[i++] = c;
     }
-
+    filtered_buffer[i] = 0;
+    sys_write(stdout, filtered_buffer, i+1);
     return 0;
 }
 

@@ -26,7 +26,7 @@ ModuleDescriptor modules[] = {
     {"test_pipes", "tests pipes", PROCESS, test_pipes},
     {"mega_test_pipes", "mega tests pipes", PROCESS, mega_test_pipes},
     {"mem", "displays memory status", PROCESS, mem},
-    {"ps", "displays information about processes", PROCESS, ps},
+    {"ps", "displays information about processes", BUILT_IN, ps},
     {"nicent", "changes process priority by PID", BUILT_IN, nicent},
     {"kill", "terminates a process by its PID. If the flag 'r' is provided, it also terminates all its descendants", BUILT_IN, kill},
     {"cleanup", "removes all exited processes", BUILT_IN, cleanup},
@@ -465,7 +465,6 @@ uint64_t cat(char** argv, int argc) {
     while (i > 0){
         i = 0;
         char c = 0;
-        int out;
         while (c != '\n' && sys_read(stdin, &c, 1) != EOF && i < max_len-1) buffer[i++] = c;
         buffer[i] = 0;
         sys_write(stdout, buffer, i+1);
@@ -474,14 +473,15 @@ uint64_t cat(char** argv, int argc) {
 }
 
 uint64_t wc(char** argv, int argc) {
-    char buffer[10];
+    const int max_len = 1024;
+    char buffer[max_len];
     
     fd_t stdin = sys_get_stdin();
 
     uint64_t readed = 0;
     uint64_t lines = 0;
 
-    while ((readed = sys_read(stdin, buffer, 10)) != EOF) {
+    while ((readed = sys_read(stdin, buffer, max_len)) != EOF) {
         for (int i = 0; i < readed; i++) {
             if(buffer[i] == '\n') lines++;
         }

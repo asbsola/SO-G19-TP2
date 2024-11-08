@@ -196,6 +196,10 @@ uint64_t phylo(char **argv, int argc) {
         sys_kill_process_by_pid(philosophers[i].pid, 0);
     }
 
+    for (int j = 0; j < MAX_NUMBER_OF_PHILOSOPHERS; j++) {
+        sys_sem_close(chopsticks[j]);
+    }
+
     sys_pipe_close(view_pipe);
 
     sys_sem_close_named(ADD_REMOVE_MUTEX);

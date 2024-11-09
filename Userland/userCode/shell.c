@@ -64,7 +64,7 @@ void run_shell()
 
         if (num_cmds == 1) {
             pids[0] = run_cmd(commands[0], sys_get_stdin(), sys_get_stdout());
-        }else{
+        } else{
             int i;
             for (i = 0; i < num_cmds - 1; i++){
                 pipes[i] = sys_pipe_open(NON_CANNONICAL);
@@ -79,19 +79,19 @@ void run_shell()
             pids[i] = run_cmd(commands[num_cmds - 1], pipes[num_cmds - 2], sys_get_stdout());
         }
         for(int i = 0; i < num_cmds; i++){
-            if(commands[i].argc <= 1 || commands[i].argv[commands[i].argc - 1][0] != '&')
+            if (commands[i].argv[commands[i].argc - 1][0] != '&') {
                 sys_wait_pid(pids[i], &ans); 
-            if(i < num_cmds - 1) sys_pipe_send_eof(pipes[i]);
+            }
+            if (i < num_cmds - 1) {
+                sys_pipe_send_eof(pipes[i]);
+            }
         }
 
         for (int i = 0; i < num_cmds - 1; i++){
             sys_pipe_close(pipes[i]);
-            
-        }
-        for(int i = 0; i < num_cmds; i++){
             free_args(commands[i].argv); 
         }
-        
+        free_args(commands[num_cmds - 1].argv); 
     }
 }
 

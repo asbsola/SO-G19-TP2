@@ -26,7 +26,7 @@ ModuleDescriptor modules[] = {
     {"test_pipes", "tests pipes", PROCESS, test_pipes},
     {"mega_test_pipes", "mega tests pipes", PROCESS, mega_test_pipes},
     {"mem", "displays memory status", PROCESS, mem},
-    {"ps", "displays information about processes", BUILT_IN, ps},
+    {"ps", "displays information about processes", PROCESS, ps},
     {"nicent", "changes process priority by PID", BUILT_IN, nicent},
     {"kill", "terminates a process by its PID. If the flag 'r' is provided, it also terminates all its descendants", BUILT_IN, kill},
     {"cleanup", "removes all exited processes", BUILT_IN, cleanup},

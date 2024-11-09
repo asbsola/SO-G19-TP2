@@ -11,6 +11,7 @@
 #include <programs/eliminator.h>
 #include <programs/cucaracha.h>
 #include <programs/programs.h>
+#include <programs/phylo.h>
 
 #define MAX_SHELL_INPUT 1024
 #define MAX_COMMANDS 10
@@ -40,7 +41,6 @@ uint64_t kill(char** argv, int argc);
 uint64_t cleanup(char** argv, int argc);
 uint64_t block(char** argv, int argc);
 uint64_t unblock(char** argv, int argc);
-uint64_t phylo(char** argv, int argc);
 
 
 void run_shell();

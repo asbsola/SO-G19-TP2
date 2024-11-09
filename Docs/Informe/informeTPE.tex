@@ -172,8 +172,13 @@ Dado que no tenemos la posibilidad de mapear los semáforos en la memoria de un 
 
 Relacionado con esta última limitación, se decidió que si un proceso ejecuta un \texttt{sem\_close} o \texttt{sem\_close\_named}, el semáforo se elimine del vector de semáforos, de modo que ningún otro proceso pueda accederlo posteriormente. 
 
+\section{Pipes Manager}
+Este módulo permite la comunicación entre procesos mediante pipes, implementando las funciones \texttt{open\_pipe}, \texttt{close\_pipe}, \texttt{write\_pipe} y \texttt{read\_pipe}. Al igual que los semáforos, los pipes pueden crearse con nombres mediante la función \texttt{open\_pipe\_named}, lo que permite que se compartan entre procesos. Los pipes se gestionan mediante un vector de punteros, con un máximo de \texttt{MAX\_PIPES}, y cada pipe se define como una estructura que incluye un buffer circular de tamaño \texttt{BUFFER\_SIZE}.
+Al igual que en los semáforos, no existe una noción de pipe "abierto" dentro del espacio de memoria de un proceso, por lo que cualquier proceso puede acceder a un pipe conociendo su descriptor de archivo.
+Al enviar un EOF a un pipe, este deja de ser escribible, permitiendo solo la lectura de los datos en el buffer previos al EOF. Además, empleamos dos pipes especiales para la pantalla y para el teclado, que, aunque no son pipes propiamente, tienen un comportamiento similar. Este diseño generaba un problema al enviar un EOF a la salida estándar, la misma quedaba inutilizable. Para solucionarlo, añadimos un atributo especial \texttt{EOF\_CONSUMER} a los pipes, lo que permite un manejo adecuado de EOF.
+
 \section {Idle}
-El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede terminar, bloquear, ni cambiar su prioridad. Su función es, si los tuviera, liberar a sus hijo que estén en estado \texttt{EXITED} y luego ejecutar yield para ceder la cpu a otro proceso. El mismo al comenzar es el encargado de crear el proceso \texttt{shell}.
+El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede terminar, bloquear, ni cambiar su prioridad. Su función es, si los tuviera, liberar a sus hijo que estén en estado \texttt{EXITED} y luego ejecutar yield para ceder la cpu a otro proceso. El mismo al comenzar es el encargado de crear la \texttt{shell} y el proceso \texttt{screen\_service}.
 
 \section {Shell}
 La shell posee comandos que corren como procesos y otros que son comando built-in. Ejecutando el comando help se puede ver una lista con todos los comandos disponibles y si son procesos o built-in. Para todos los módulos que corren como procesos, se les puede poner como último argumento \texttt{\&} para que corran en background.

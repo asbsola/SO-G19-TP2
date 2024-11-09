@@ -476,11 +476,11 @@ uint64_t wc(char** argv, int argc) {
     
     fd_t stdin = sys_get_stdin();
 
-    uint64_t readed = 0;
+    uint64_t read = 0;
     uint64_t lines = 0;
 
-    while ((readed = sys_read(stdin, buffer, max_len)) != EOF) {
-        for (int i = 0; i < readed; i++) {
+    while ((read = sys_read(stdin, buffer, max_len)) != EOF) {
+        for (int i = 0; i < read; i++) {
             if(buffer[i] == '\n') lines++;
         }
     }

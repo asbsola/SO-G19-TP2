@@ -1,8 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <cucaracha.h>
-#include <syscall_adapters.h>
-#include <std.h>
+#include <programs/cucaracha.h>
+
 
 typedef struct{
     uint32_t freq;
@@ -21,7 +20,7 @@ note_t notes[] = {
 
 const uint32_t scale = 10;
 
-void play_la_cucaracha(){
+uint64_t cucaracha(char** argv, int argc) {
     sys_clear_screen(0);
 
     const uint32_t frame_count = sizeof(cucaracha_gif) / sizeof(cucaracha_gif[0]);
@@ -47,4 +46,5 @@ void play_la_cucaracha(){
         sys_beep(notes[i].freq, notes[i].duration);
         sleep(notes[i].delay);
     }
+    return 0;
 }

@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <syscall_adapters.h>
 #include <std.h>
+#include <stddef.h>
 
 #define SQUARE_SIZE 10
 #define MAX_LENGTH_PLAYER_NAME 20
@@ -42,7 +43,7 @@ typedef struct {
     uint8_t alive;
 } PlayerData;
 
-void play_eliminator();
+uint64_t eliminator(char** argv, int argc);
 void play();
 void change_settings_and_play();
 void print_setting(char * text, uint8_t max_text_size, uint8_t value, uint32_t hexColor, uint32_t posX, uint32_t posY);

@@ -2,11 +2,15 @@
 #define __cucaracha__h__
 
 #include <stdint.h>
+#include <syscall_adapters.h>
+#include <std.h>
 
-void play_la_cucaracha();
 
 #define CUCARACHA_GIF_WIDTH 50
 #define CUCARACHA_GIF_HEIGHT 50
+
+uint64_t cucaracha(char** argv, int argc);
+
 
 static const uint8_t cucaracha_gif[][CUCARACHA_GIF_WIDTH * CUCARACHA_GIF_HEIGHT] = {
     {

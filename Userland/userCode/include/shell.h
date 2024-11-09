@@ -3,10 +3,14 @@
 
 #include <syscall_adapters.h>
 #include <std.h>
-#include <cucaracha.h>
-#include <eliminator.h>
 #include <lib.h>
 #include <stddef.h>
+#include <tests.h>
+#include <def.h>
+#include <lib.h>
+#include <programs/eliminator.h>
+#include <programs/cucaracha.h>
+#include <programs/programs.h>
 
 #define MAX_SHELL_INPUT 1024
 #define MAX_COMMANDS 10
@@ -29,37 +33,15 @@ typedef struct
 
 uint64_t help(char** argv, int argc);
 uint64_t cls(char** argv, int argc);
-uint64_t info(char** argv, int argc);
 uint64_t font_size(char** argv, int argc);
-uint64_t time(char** argv, int argc);
-uint64_t regs(char** argv, int argc);
 uint64_t beep(char** argv, int argc);
-uint64_t song(char** argv, int argc);
-uint64_t calculator(char** argv, int argc);
-uint64_t eliminator(char** argv, int argc);
-uint64_t jump(char** argv, int argc);
-uint64_t test_mm(char** argv, int argc);
-uint64_t test_processes(char** argv, int argc);
-uint64_t test_wait(char** argv, int argc);
-uint64_t test_prio(char** argv, int argc);
-uint64_t test_prio_dist(char** argv, int argc);
-uint64_t test_idle_cleanup(char** argv, int argc);
-uint64_t test_sync(char** argv, int argc);
-uint64_t test_pipes(char** argv, int argc);
-uint64_t mega_test_pipes(char **argv, int argc);
-uint64_t mem(char** argv, int argc);
-uint64_t ps(char** argv, int argc);
 uint64_t nicent(char** argv, int argc);
 uint64_t kill(char** argv, int argc);
 uint64_t cleanup(char** argv, int argc);
 uint64_t block(char** argv, int argc);
 uint64_t unblock(char** argv, int argc);
-uint64_t loop(char** argv, int argc);
 uint64_t phylo(char** argv, int argc);
-uint64_t cat(char** argv, int argc);
-uint64_t wc(char** argv, int argc);
-uint64_t filter(char** argv, int argc);
-uint64_t echo(char** argv, int argc);
+
 
 void run_shell();
 uint64_t run_cmd(Command cmd, fd_t stdin, fd_t stdout);

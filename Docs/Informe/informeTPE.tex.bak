@@ -2,7 +2,7 @@
 \title{\textbf{Trabajo Práctico 2} \\ [1ex]
 \large Instituto Tecnológico de Buenos Aires - Sistemas Operativos (72.11) \\ [1ex]
 \large Grupo 19 }
-\date{14 de octubre de 2024}
+\date{11 de noviembre de 2024}
 \author{
 \textbf{Ignacio Searles}\\
 isearles@itba.edu.ar\\
@@ -170,13 +170,25 @@ Este módulo es el encargado de gestionar los semáforos mediante las siguientes
 
 Dado que no tenemos la posibilidad de mapear los semáforos en la memoria de un proceso, se decidió que, si un proceso realiza un \texttt{open} de un semáforo que ya existe, no se realice ninguna acción adicional. Por esta limitación, si un proceso conoce el nombre de un semáforo, puede hacer un \texttt{up} o \texttt{down} sobre él sin necesidad de haberlo abierto previamente.
 
-Relacionado con esta última limitación, se decidió que si un proceso ejecuta un \texttt{sem\_close} o \texttt{sem\_close\_named}, el semáforo se elimine del vector de semáforos, de modo que ningún otro proceso pueda accederlo posteriormente, si algun proceso estaba bloqueado en ese semaforo el mismo es liberado. 
+Relacionado con esta última limitación, se decidió que si un proceso ejecuta un \texttt{sem\_close} o \texttt{sem\_close\_named}, el semáforo se elimine del vector de semáforos, de modo que ningún otro proceso pueda acceder al mismo posteriormente, si algún proceso estaba bloqueado en ese semáforo el mismo es liberado. 
 
 \section{Pipes Manager}
 Este módulo permite la comunicación entre procesos mediante pipes, implementando las funciones \texttt{open\_pipe}, \texttt{close\_pipe}, \texttt{write\_pipe} y \texttt{read\_pipe}. Al igual que los semáforos, los pipes pueden crearse con nombres mediante la función \texttt{open\_pipe\_named}, lo que permite que se compartan entre procesos. Los pipes se gestionan mediante un vector de punteros, con un máximo de \texttt{MAX\_PIPES}, y cada pipe se define como una estructura que incluye un buffer circular de tamaño \texttt{BUFFER\_SIZE}.
-Al igual que en los semáforos, no existe una noción de pipe "abierto" dentro del espacio de memoria de un proceso, por lo que cualquier proceso puede acceder a un pipe conociendo su descriptor de archivo.
-Al enviar un EOF a un pipe, este deja de ser escribible, permitiendo solo la lectura de los datos en el buffer previos al EOF. Además, empleamos dos pipes especiales para la pantalla y para el teclado, que, aunque no son pipes propiamente, tienen un comportamiento similar. Este diseño generaba un problema al enviar un EOF a la salida estándar, la misma quedaba inutilizable. Para solucionarlo, añadimos un atributo especial \texttt{EOF\_CONSUMER} a los pipes, lo que permite un manejo adecuado de EOF.
+
+Al igual que en los semáforos, no existe una noción de pipe ``abierto" dentro del espacio de memoria de un proceso, por lo que cualquier proceso puede acceder a un pipe conociendo su file descriptor.
+
+Para generalizar el comportamiento de los pipes agregamos dos modos de operación a los mismos: \texttt{EOF\_CONSUMER} y  \texttt{NON\_EOF\_CONSUMER}. En el modo \texttt{NON\_EOF\_CONSUMER} al enviar un EOF a un pipe, este deja de ser escribible, permitiendo solo la lectura de los datos en el buffer previos al EOF. En el modo \texttt{EOF\_CONSUMER}, al enviar un EOF, el read va a leer hasta el EOF y consumirlo, permitiendo realizar nuevos write al pipe.
+
 Decidimos que cuando un proceso esta bloqueado en un read o un write, si el pipe se cierra, el proceso se desbloquea y se le devuelve EOF.
+
+\section {Entrada y salida}
+Para generalizar el comportamiento de la entrada y salida de los procesos, al momento de crear un proceso, se le debe especificar un pipe de entrada y un pipe de salida. A nivel userland, funciones como \texttt{puts}, \texttt{printf}, \texttt{scanf}, y el resto de funciones I/O, leen y escriben a los pipes de entrada y salida del proceso.
+
+Existen dos pipes standard creados al momento de inicializar el Kernel, un pipe de entrada  denominado \texttt{stdin} y otro de salida denominado \texttt{stdout}. Estos pipes presentan comportamiento especial:
+\begin{itemize}
+\item \texttt{stdin}: el driver de teclado escribe a este pipe. Es un pipe de tipo \texttt{NON\_EOF\_CONSUMER} por lo que los EOF pueden ser consumidos y el pipe reutilizado.
+\item \texttt{stdout}: existe un proceso creado por el Kernel denominado \texttt{screen\_service} que imprime el contenido de este pipe a la terminal.
+\end{itemize}
 
 \section {Idle}
 El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede terminar, bloquear, ni cambiar su prioridad. Su función es, si los tuviera, liberar a sus hijo que estén en estado \texttt{EXITED} y luego ejecutar yield para ceder la cpu a otro proceso. El mismo al comenzar es el encargado de crear la \texttt{shell} y el proceso \texttt{screen\_service}.
@@ -187,6 +199,8 @@ La shell posee comandos que corren como procesos y otros que son comando built-i
 La diferencia entre correr un proceso en background o foreground es que si el proceso está en foreground la shell hace un \texttt{waitpid} que espera a que el proceso termine y no si está en background. Los procesos pueden elegir si imprimir o no al buffer de texto si están en background.
 
 Agregamos shortcuts para matar procesos corridos por la shell en foreground. \texttt{Ctrl + C} mata al proceso actual y \texttt{Ctrl + Shift + C} mata al proceso actual y a todos sus descendientes (\texttt{superkill}).
+
+Agregamos un shortcut para enviar EOF a \texttt{stdin}. \texttt{Ctrl + D} envía un EOF al pipe \texttt{stdin}.
 
 A continuación se detallan algunos módulos que sirven para testear el funcionamiento del sistema:
 \begin{table}[h!]
@@ -234,9 +248,9 @@ A continuación se detallan algunos módulos que sirven para testear el funciona
     \label{tab:procesos}
 \end{table}
 
-Si bien hay varios test que fueron brindados por la catedra, decidimos hacer algunos tests propios para probar el funcionamiento del sistema. 
+Si bien hay varios test que fueron brindados por la cátedra, decidimos hacer algunos tests propios para probar el funcionamiento del sistema. 
 \begin{itemize}
-    \item test\_priority\_dist\: Este test crea múltiples procesos con diferentes prioridades y cuenta la cantidad de veces que ese proceso es elegido por el scheduler. Luego impirme cuantas veces fueron elegidos los procesos de cada una de las prioridades.
+    \item test\_priority\_dist\: Este test crea múltiples procesos con diferentes prioridades y cuenta la cantidad de veces que ese proceso es elegido por el scheduler. Luego imprime cuantas veces fueron elegidos los procesos de cada una de las prioridades. Fue creado con el proposito de verificar el correcto funcionamiento del scheduler pseudoaleatorio.
     \item test\_pipes\: Este test verifica la funcionalidad de los pipes creando pares de procesos escritores y lectores que se comunican a través de un pipe, verificando que la cantidad de bytes escritos sea la misma que la cantidad de bytes leídos.
     \item test\_idle\_cleanup\: Este test crea múltiples procesos y finaliza sin hacer wait a ninguno de ellos, verificando que el proceso idle los limpie correctamente.
     \item test\_wait\: Este test crea dos grupos de procesos, los mismos tienen un pequeño delay y luego retornan un valor. Finalmente, el test verifica si la suma de los valores de retorno de ambos grupos fue el mismo.
@@ -249,6 +263,7 @@ Si bien hay varios test que fueron brindados por la catedra, decidimos hacer alg
     \item Se decidió que la syscall \texttt{kill} permita especificar si al matar a un proceso se matan también a sus descendientes.
     \item Se decidió que en la shell, al llamar al comando kill, el mismo reciba el pid del proceso como argumento y de opcionalmente el argumento \texttt{kill} para matar a los descendientes del proceso.
     \item Se decidió que los procesos ejecutados sigan en la lista de PCBs hasta que mueran o terminen y se les haga \texttt{wait}. Por dicho motivo la shell tiene un comando \texttt{cleanup} para limpiar los procesos \texttt{EXITED} a los que no se les hizo \texttt{wait}.\item En lugar de tener un único comando en la shell que bloquee o desbloquee procesos dependiendo de su estado, se decidió tener dos comandos distintos \texttt{block} y \texttt{unblock}. Ambos reciben el pid del proceso a bloquear o desbloquear.
+    \item El driver de teclado tiene dos modos de operación: \texttt{CANNONICAL} y \texttt{NON\_CANONNICAL}. El modo \texttt{CANNONICAL} escribe a \texttt{stdin} cuando recibe un \texttt{newline} e imprime a \texttt{stdout} cada vez que se presiona una tecla. El modo \texttt{NON\_CANNONICAL} no imprime a \texttt{stdout} y escribe a \texttt{stdin} cada vez que recibe una tecla.
 \end{itemize}
 
 \section {Limitaciones}
@@ -258,11 +273,10 @@ Si bien hay varios test que fueron brindados por la catedra, decidimos hacer alg
     \item El sistema solo puede manejar tres prioridades.
     \item El stack de los procesos es de 8KB.
     \item El sistema solo puede manejar 4MB de memoria.
-    \item Al correr control + Shift + C, pueden quedar recursos abiertos por tanto leaks de memoria porque al no poder saber que recursos tiene un proceso, no podemos liberarlos.
+    \item Al correr control + Shift + C, pueden quedar recursos abiertos, lo cual implica leaks de memoria porque al no poder saber que recursos tiene un proceso, no podemos liberarlos.
 \end{itemize}
 
-Si bien están estas limitaciones, el sistema fue diseñado de tal manera que se pueden cambiar fácilmente.
-En el archivo \texttt{def.h} se encuentran las constantes que definen estas limitaciones.
+En cuanto a las limitaciones numéricas, el sistema fue diseñado de tal manera que se pueden cambiar fácilmente. En el archivo \texttt{def.h} se encuentran las constantes que definen estas limitaciones.
 
 
 \end{document}

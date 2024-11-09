@@ -9,7 +9,7 @@ static uint8_t show_initial_info = 1;
 
 int main() {
     if (show_initial_info) {
-        show_splash_screen();
+        //show_splash_screen();
 
         puts_with_color("GRUPO 19\n", 0x006fb6fb);
         puts_with_color("[SYSTEM INFO]\n\n", 0x006fb6fb);

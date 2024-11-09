@@ -42,13 +42,12 @@ ModuleDescriptor modules[] = {
 
 static int current_font_size = 1;
 
-char* get_last_arg(char** args);
-
 void run_shell()
 {
     char shell_input[MAX_SHELL_INPUT];
     shell_input[0] = 0;
     Command commands[MAX_COMMANDS];
+    pid_t pids[MAX_COMMANDS];
     fd_t pipes[MAX_COMMANDS - 1];
     int num_cmds = 0;
     sys_nicent(sys_get_pid(), HIGH);
@@ -60,34 +59,39 @@ void run_shell()
         puts_with_color("shell> ", 0x006fb5fb);
         scanf("%s", shell_input);
 
-        int ans = get_commands(shell_input, commands, &num_cmds);
+        int64_t ans = get_commands(shell_input, commands, &num_cmds);
         if(ans == -1) continue;
 
         if (num_cmds == 1) {
-            run_cmd(commands[0], sys_get_stdin(), sys_get_stdout());
-            free_args(commands[0].argv);
-            continue;
-        }
+            pids[0] = run_cmd(commands[0], sys_get_stdin(), sys_get_stdout());
+        }else{
+            int i;
+            for (i = 0; i < num_cmds - 1; i++){
+                pipes[i] = sys_pipe_open(NON_CANNONICAL);
 
-        for (int i = 0; i < num_cmds - 1; i++){
-            pipes[i] = sys_pipe_open(NON_CANNONICAL);
+                if (i == 0) {
+                    pids[i] = run_cmd(commands[i], sys_get_stdin(), pipes[i]);
+                } else {
+                    pids[i] = run_cmd(commands[i], pipes[i - 1], pipes[i]);
+                }
 
-            if (i == 0) {
-                run_cmd(commands[i], sys_get_stdin(), pipes[i]);
-            } else {
-                run_cmd(commands[i], pipes[i - 1], pipes[i]);
             }
-
-            sys_pipe_send_eof(pipes[i]);
+            pids[i] = run_cmd(commands[num_cmds - 1], pipes[num_cmds - 2], sys_get_stdout());
         }
-
-        run_cmd(commands[num_cmds - 1], pipes[num_cmds - 2], sys_get_stdout());
+        for(int i = 0; i < num_cmds; i++){
+            if(commands[i].argc <= 1 || commands[i].argv[commands[i].argc - 1][0] != '&')
+                sys_wait_pid(pids[i], &ans); 
+            if(i < num_cmds - 1) sys_pipe_send_eof(pipes[i]);
+        }
 
         for (int i = 0; i < num_cmds - 1; i++){
             sys_pipe_close(pipes[i]);
-            free_args(commands[i].argv);
+            
         }
-        free_args(commands[num_cmds - 1].argv);
+        for(int i = 0; i < num_cmds; i++){
+            free_args(commands[i].argv); 
+        }
+        
     }
 }
 
@@ -140,20 +144,20 @@ int get_commands(char* shell_input, Command* commands, int* num_cmds){
 
 uint64_t run_cmd(Command cmd, fd_t stdin, fd_t stdout)
 {
-    char* last_arg = get_last_arg(cmd.argv);
-    int64_t ret = 0;
-    uint8_t in_background = (last_arg != NULL && last_arg[0] == '&');
+    pid_t pid = -1;
 
     if (cmd.module.module_type == PROCESS) {
-        pid_t pid = sys_create_process(cmd.module.module, cmd.argv, stdin, stdout);
-                
-        if (!in_background) sys_wait_pid(pid, &ret);
+        pid = sys_create_process(cmd.module.module, cmd.argv, stdin, stdout);
+        if(pid == -1) {
+            puts_with_color("Error creating process\n", 0xFF0000);
+            return -1;
+        }
     }
-    else if (cmd.module.module_type == BUILT_IN) {
+    else if (cmd.module.module_type == BUILT_IN) 
         cmd.module.module(cmd.argv, cmd.argc);
-    }
+    
 
-    return ret;
+    return pid;
 }
 
 uint64_t help(char** argv, int argc)
@@ -347,12 +351,6 @@ uint64_t ps(char** argv, int argc) {
     return 0;
 }
 
-char* get_last_arg(char** args) {
-    for (uint64_t i = 0; args[i] != NULL; i++)
-        if (args[i + 1] == NULL) return args[i];
-
-    return NULL;
-}
 
 void free_args(char** args) {
     for (uint64_t i = 0; args[i] != NULL; i++)

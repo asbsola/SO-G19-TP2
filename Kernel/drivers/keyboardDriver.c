@@ -109,7 +109,9 @@ char get_character_pending(){
 }
 
 void set_input_mode(int mode){
-    buffer_size = 0;
-    first_key_index = 0;
+    if(mode == CANNONICAL){
+        buffer_size = 0;
+        first_key_index = 0;
+    }
     input_mode = mode;
 }

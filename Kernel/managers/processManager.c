@@ -69,6 +69,18 @@ int invalid_pid(processManagerADT process_manager, pid_t pid){
     return pid < 0 || pid >= MAX_PROCESSES || process_manager->processes[pid] == NULL;
 }
 
+pid_t get_parent_pid(processManagerADT process_manager, pid_t pid){
+    if(invalid_pid(process_manager, pid)) return -1;
+    return process_manager->processes[pid]->parent_pid;
+}
+
+pid_t get_grandparent_pid(processManagerADT process_manager, pid_t pid){
+    pid_t ppid = get_parent_pid(process_manager, pid);
+    if(invalid_pid(process_manager, ppid)) return -1;
+    return get_parent_pid(process_manager, ppid);
+}
+
+
 int has_finnished(processManagerADT process_manager, pid_t pid){
     return invalid_pid(process_manager, pid) || process_manager->processes[pid]->status == EXITED || process_manager->processes[pid]->status == KILLED;
 }
@@ -283,10 +295,6 @@ int kill_process(processManagerADT process_manager, pid_t pid, uint64_t recursiv
         remove_process(process_manager, pid);
     }
     return 0;
-}
-
-pid_t get_grandparent_pid(processManagerADT process_manager, pid_t pid){
-    return process_manager->processes[process_manager->processes[pid]->parent_pid]->parent_pid;
 }
 
 uint64_t kill_signal(processManagerADT process_manager, int recursive){

@@ -26,6 +26,7 @@ int remove_process(processManagerADT process_manager, pid_t pid);
 processControlBlockADT* get_processes(processManagerADT process_manager);
 processControlBlockADT get_process(processManagerADT process_manager, pid_t pid);
 
+pid_t get_parent_pid(processManagerADT process_manager, pid_t pid);
 uint64_t get_num_processes(processManagerADT process_manager);
 uint64_t get_max_pid(processManagerADT process_manager);
 uint64_t get_ps_data(processManagerADT process_manager, memoryManagerADT mem_manager);

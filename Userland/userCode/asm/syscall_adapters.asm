@@ -28,6 +28,7 @@ global sys_block_process_by_pid
 global sys_kill_process_by_pid
 global sys_unblock_process_by_pid
 global sys_get_pid
+global sys_get_ppid
 global sys_wait
 global sys_wait_pid
 global sys_nicent
@@ -141,51 +142,54 @@ sys_unblock_process_by_pid:
 
 sys_get_pid:
     syscall 27
-
-sys_wait:
+    
+sys_get_ppid:
     syscall 28
 
-sys_wait_pid:
+sys_wait:
     syscall 29
 
-sys_nicent:
+sys_wait_pid:
     syscall 30
 
-sys_yield:
+sys_nicent:
     syscall 31
 
-sys_sem_open_named:
+sys_yield:
     syscall 32
 
-sys_sem_close_named:
+sys_sem_open_named:
     syscall 33
 
-sys_sem_open:
+sys_sem_close_named:
     syscall 34
 
-sys_sem_close:
+sys_sem_open:
     syscall 35
 
-sys_sem_up:
+sys_sem_close:
     syscall 36
 
-sys_sem_down:
+sys_sem_up:
     syscall 37
 
-sys_get_stdin:
+sys_sem_down:
     syscall 38
 
-sys_get_stdout:
+sys_get_stdin:
     syscall 39
 
-sys_pipe_open_named:
+sys_get_stdout:
     syscall 40
 
-sys_pipe_open:
+sys_pipe_open_named:
     syscall 41
 
-sys_pipe_close:
+sys_pipe_open:
     syscall 42
 
-sys_pipe_send_eof:
+sys_pipe_close:
     syscall 43
+
+sys_pipe_send_eof:
+    syscall 44

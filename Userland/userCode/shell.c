@@ -336,7 +336,7 @@ uint64_t ps(char** argv, int argc) {
         printf("\tPriority: %s\n", process_priority_names[processes[i].priority]); 
         printf("\tStatus: %s\n", process_status_names[processes[i].status]);
 
-        if(sys_get_pid() == processes[i].parent_pid)
+        if(sys_get_ppid() == processes[i].parent_pid)
             printf("\tForeground: %s IN FOREGROUND\n", (processes[i].parent_is_waiting == WAITING) ? "" : "NOT");
         printf("\tStack pointer: %d\n", processes[i].stack_pointer);
         printf("\tBase pointer: %d\n", processes[i].base_pointer);

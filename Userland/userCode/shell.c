@@ -506,12 +506,10 @@ uint64_t filter(char** argv, int argc) {
 }
 
 uint64_t echo(char** argv, int argc) {
-    if (argc < 2) {
-        sys_write(sys_get_stdout(),"\n", 1);
-        
-    } else{
-        sys_write(sys_get_stdout(),argv[1], strlen(argv[1]));
+    if (argc >= 2) {
+        puts(argv[1]);
     }
+    putchar('\n');
 
     return 0;
 }

@@ -111,6 +111,9 @@ int write_pipe(pipesManagerADT pipes_manager, fd_t fd, const char* buffer, int s
 
     while(i < size && !pipe->eof) {
         down_sem(pipes_manager->semaphore_manager, pipe->write_bytes_sem);
+        
+        if (pipes_manager->pipes[fd] == NULL) return -1;
+
         pipe->buffer[pipe->writing_index] = buffer[i++];
         pipe->writing_index = next_index(pipe->writing_index);
         up_sem(pipes_manager->semaphore_manager, pipe->read_bytes_sem);
@@ -125,6 +128,8 @@ int read_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buffer, int size) {
     int i = 0;
     while(i < size){
         down_sem(pipes_manager->semaphore_manager, pipe->read_bytes_sem);
+
+        if (pipes_manager->pipes[fd] == NULL) return EOF;
 
         if (pipe->eof && pipe->reading_index == pipe->writing_index) {
             if(pipe->mode == EOF_CONSUMER && i == 0) pipe->eof = 0;

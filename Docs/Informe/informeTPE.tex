@@ -170,12 +170,13 @@ Este módulo es el encargado de gestionar los semáforos mediante las siguientes
 
 Dado que no tenemos la posibilidad de mapear los semáforos en la memoria de un proceso, se decidió que, si un proceso realiza un \texttt{open} de un semáforo que ya existe, no se realice ninguna acción adicional. Por esta limitación, si un proceso conoce el nombre de un semáforo, puede hacer un \texttt{up} o \texttt{down} sobre él sin necesidad de haberlo abierto previamente.
 
-Relacionado con esta última limitación, se decidió que si un proceso ejecuta un \texttt{sem\_close} o \texttt{sem\_close\_named}, el semáforo se elimine del vector de semáforos, de modo que ningún otro proceso pueda accederlo posteriormente. 
+Relacionado con esta última limitación, se decidió que si un proceso ejecuta un \texttt{sem\_close} o \texttt{sem\_close\_named}, el semáforo se elimine del vector de semáforos, de modo que ningún otro proceso pueda acceder al mismo posteriormente, si algún proceso estaba bloqueado en ese semáforo el mismo es liberado. 
 
 \section{Pipes Manager}
 Este módulo permite la comunicación entre procesos mediante pipes, implementando las funciones \texttt{open\_pipe}, \texttt{close\_pipe}, \texttt{write\_pipe} y \texttt{read\_pipe}. Al igual que los semáforos, los pipes pueden crearse con nombres mediante la función \texttt{open\_pipe\_named}, lo que permite que se compartan entre procesos. Los pipes se gestionan mediante un vector de punteros, con un máximo de \texttt{MAX\_PIPES}, y cada pipe se define como una estructura que incluye un buffer circular de tamaño \texttt{BUFFER\_SIZE}.
 Al igual que en los semáforos, no existe una noción de pipe "abierto" dentro del espacio de memoria de un proceso, por lo que cualquier proceso puede acceder a un pipe conociendo su descriptor de archivo.
-Al enviar un EOF a un pipe, este deja de ser escribible, permitiendo solo la lectura de los datos en el buffer previos al EOF. Además, empleamos dos pipes especiales para la pantalla y para el teclado, que, aunque no son pipes propiamente, tienen un comportamiento similar. Este diseño generaba un problema al enviar un EOF a la salida estándar, la misma quedaba inutilizable. Para solucionarlo, añadimos un atributo especial \texttt{EOF\_CONSUMER} a los pipes, lo que permite un manejo adecuado de EOF.
+Al enviar un EOF a un pipe, este deja de ser escribible, permitiendo solo la lectura de los datos en el buffer previos al EOF. Además, empleamos dos pipes especiales para la pantalla y para el teclado, que, aunque no son pipes propiamente, tienen un comportamiento similar. Este diseño generaba un problema al enviar un EOF a la salida estándar, la misma quedaba in-utilizable. Para solucionarlo, añadimos un atributo especial \texttt{EOF\_CONSUMER} a los pipes, lo que permite un manejo adecuado de EOF.
+Decidimos que cuando un proceso esta bloqueado en un read o un write, si el pipe se cierra, el proceso se desbloquea y se le devuelve EOF.
 
 \section {Idle}
 El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede terminar, bloquear, ni cambiar su prioridad. Su función es, si los tuviera, liberar a sus hijo que estén en estado \texttt{EXITED} y luego ejecutar yield para ceder la cpu a otro proceso. El mismo al comenzar es el encargado de crear la \texttt{shell} y el proceso \texttt{screen\_service}.
@@ -188,13 +189,57 @@ La diferencia entre correr un proceso en background o foreground es que si el pr
 Agregamos shortcuts para matar procesos corridos por la shell en foreground. \texttt{Ctrl + C} mata al proceso actual y \texttt{Ctrl + Shift + C} mata al proceso actual y a todos sus descendientes (\texttt{superkill}).
 
 A continuación se detallan algunos módulos que sirven para testear el funcionamiento del sistema:
-\begin{itemize}
-    \item \texttt{test\_processes}: El mismo espera los siguientes argumentos: \texttt{cantidad\_iteraciones}, \newline \texttt{cantidad\_procesos} y opcionalmente \texttt{\&}. Si bien se le realizaron modificaciones, este test fue provisto por la cátedra.
-    \item \texttt{test\_priority}:  El mismo espera los siguientes argumentos: \texttt{cantidad\_procesos}, teniendo un máximo de 250; y opcionalmente \texttt{\&}. Si bien se le realizaron modificaciones, este test fue provisto por la cátedra.
-    \item \texttt{test\_priority\_dist}:  El mismo espera los siguientes argumentos: \texttt{cantidad\_procesos}, teniendo un máximo de 250; y opcionalmente \texttt{\&}. Este proceso, ejecuta fracciones iguales de procesos con cada prioridad. Luego, muestra la cantidad de veces que se ejecutaron los procesos con cada una de las prioridades.
-    \item \texttt{test\_idle\_cleanup}: Muestra que el idle borre bien a todos los hijos que estén en estado \texttt{EXITED}.
-    \item \texttt{test\_wait}: El mismo espera los siguientes argumentos: \texttt{cantidad\_iteraciones}, \newline \texttt{cantidad\_procesos} y opcionalmente \texttt{\&}. Este test verifica que waitpid no lance errores.
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Proceso} & \textbf{Argumento 1} & \textbf{Argumento 2} & \textbf{Argumento 3} \\
+        \hline
+        test\_mm & max\_iters & max\_memory & - \\
+        \hline
+        test\_processes & max\_iters & max\_processes & - \\
+        \hline
+        test\_wait & max\_iters & max\_processes & - \\
+        \hline
+        test\_prio & max\_processes & - & - \\
+        \hline
+        test\_prio\_dist & max\_processes & - & - \\
+        \hline
+        test\_idle\_cleanup & max\_processes & - & - \\
+        \hline
+        test\_sync & max\_iters & max\_pair\_processes & use\_syncro \\
+        \hline
+        test\_pipes & msg\_len & max\_pair\_processes & - \\
+        \hline
+        mem & - & - & - \\
+        \hline
+        block & pid & - & - \\
+        \hline
+        unblock & pid & - & - \\
+        \hline
+        loop & waiting\_time & - & - \\
+        \hline
+        phylo & - & - & - \\
+        \hline
+        cat & - & - & - \\
+        \hline
+        wc & - & - & - \\
+        \hline
+        filter & - & - & - \\
+        \hline
+        echo & string & - & - \\
+        \hline
+    \end{tabular}
+    \caption{Tabla de procesos y sus argumentos}
+    \label{tab:procesos}
+\end{table}
 
+Si bien hay varios test que fueron brindados por la cátedra, decidimos hacer algunos tests propios para probar el funcionamiento del sistema. 
+\begin{itemize}
+    \item test\_priority\_dist\: Este test crea múltiples procesos con diferentes prioridades y cuenta la cantidad de veces que ese proceso es elegido por el scheduler. Luego imprime cuantas veces fueron elegidos los procesos de cada una de las prioridades.
+    \item test\_pipes\: Este test verifica la funcionalidad de los pipes creando pares de procesos escritores y lectores que se comunican a través de un pipe, verificando que la cantidad de bytes escritos sea la misma que la cantidad de bytes leídos.
+    \item test\_idle\_cleanup\: Este test crea múltiples procesos y finaliza sin hacer wait a ninguno de ellos, verificando que el proceso idle los limpie correctamente.
+    \item test\_wait\: Este test crea dos grupos de procesos, los mismos tienen un pequeño delay y luego retornan un valor. Finalmente, el test verifica si la suma de los valores de retorno de ambos grupos fue el mismo.
 \end{itemize}
 
 \section {Otras decisiones de diseño}
@@ -213,6 +258,7 @@ A continuación se detallan algunos módulos que sirven para testear el funciona
     \item El sistema solo puede manejar tres prioridades.
     \item El stack de los procesos es de 8KB.
     \item El sistema solo puede manejar 4MB de memoria.
+    \item Al correr control + Shift + C, pueden quedar recursos abiertos por tanto leaks de memoria porque al no poder saber que recursos tiene un proceso, no podemos liberarlos.
 \end{itemize}
 
 Si bien están estas limitaciones, el sistema fue diseñado de tal manera que se pueden cambiar fácilmente.

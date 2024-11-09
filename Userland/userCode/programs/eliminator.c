@@ -1,7 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <eliminator.h>
-#include <stddef.h>
+#include <programs/eliminator.h>
+
 
 static uint32_t normalized_screen_width;
 static uint32_t normalized_screen_height;
@@ -256,7 +256,7 @@ int endGame() {
     }
 }
 
-void play_eliminator() {
+uint64_t eliminator(char** argv, int argc) {
 
     uint32_t screen_width = sys_get_screen_width();
     uint32_t screen_height = sys_get_screen_height();
@@ -270,14 +270,14 @@ void play_eliminator() {
     
 
     buffer = sys_malloc(bufferHeight * sizeof(uint32_t*));
-    if(buffer == NULL) return;
+    if(buffer == NULL) return -1;
 
     for(int i=0; i<bufferHeight; i++){
         buffer[i] = sys_malloc(bufferWidth * sizeof(uint32_t));
         if(buffer[i] == NULL){
             for(int j=0; j<i; j++) sys_free(buffer[j]);
             sys_free(buffer);
-            return;
+            return -1;
         }
         for(int j=0; j<bufferWidth; j++){
             buffer[i][j] = 0;
@@ -301,4 +301,6 @@ void play_eliminator() {
     for(int i=0; i<bufferHeight; i++)
         sys_free(buffer[i]);
     sys_free(buffer);
+
+    return 0;
 }

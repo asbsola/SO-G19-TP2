@@ -12,8 +12,8 @@ void sys_draw_square(uint32_t hexColor, uint32_t posX, uint32_t posY, uint32_t s
 char *sys_get_time(int time_zone);
 uint32_t sys_get_screen_width();
 uint32_t sys_get_screen_height();
-uint8_t sys_get_key_pressed();
-char sys_get_character_pressed();
+uint8_t sys_get_key_pressed(int wait);
+char sys_get_character_pressed(int wait);
 void sys_clear_text_buffer();
 void sys_get_cpu_vendor(char *buff);
 void sys_beep(uint64_t freq, uint64_t milis);

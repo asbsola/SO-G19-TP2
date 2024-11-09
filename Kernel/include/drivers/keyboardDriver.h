@@ -17,10 +17,12 @@
 #define CNTRL_CODE_RELEASED 0x9D
 #define ESCAPE_CODE_PRESSED 0x01
 
+int initialize_keyboard();
 void keyboard_handler(processManagerADT process_manager, semaphoreManagerADT semaphore_manager, const registers64_t * registers);
 uint8_t get_key_pending();
 char get_character_pending();
 uint8_t get_scan_code();
 void set_input_mode(int mode);
 
+void flush();
 #endif

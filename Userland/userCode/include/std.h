@@ -25,7 +25,7 @@ char* itoa(int64_t num, char* dest, uint32_t dest_max_len);
 void printf(const char* fmt, ...);
 
 char getchar();
-int getline(char* buffer);
+int getline(char* buffer, int max_len);
 uint32_t atoi(const char* s);
 
 #define SCANF_BUFF_MAX_SIZE 1024

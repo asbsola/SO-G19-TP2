@@ -105,6 +105,12 @@ int main()
 		delay(2000);
 		return -1;
 	}
+
+	if(initialize_keyboard() == -1){
+    	write_to_video_text_buffer("Could not initialize keyboard\n", 18, HEX_RED);
+		delay(2000);
+		return -1;
+	}
 	
     _sti();
 

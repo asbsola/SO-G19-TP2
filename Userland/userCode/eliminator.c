@@ -23,7 +23,7 @@ void init_presentation() {
     sys_put_text("by los egrep", 12, HEX_RED, 100, 170);
     sys_put_text("Press any key to start", 23, HEX_RED, 100, 240);
 
-    while(sys_get_key_pressed() == 0);
+    sys_get_key_pressed(WAITING);
 }
 
 void init_menu() {
@@ -47,7 +47,7 @@ void change_settings_and_play() {
     sys_put_text("SPEED (1-5): ", 13, HEX_RED, 100, 100);
     char key = 0;
     while(key < '1' || key > '5') {
-        key = sys_get_character_pressed();
+        key = sys_get_character_pressed(WAITING);
     }
     speed = key - '0';
     
@@ -56,7 +56,7 @@ void change_settings_and_play() {
     sys_put_text("PLAYERS (1-2): ", 15, HEX_RED, 100, 150);
     key = 0;
     while(key != '1' && key != '2') {
-        key = sys_get_character_pressed();
+        key = sys_get_character_pressed(WAITING);
     }
     players = key - '0';
     print_setting("PLAYERS (1-2): ", 16, players, HEX_RED, 100, 150);
@@ -69,7 +69,7 @@ void change_settings_and_play() {
 
     sys_put_text("Press any key to start", 22, HEX_RED, 100, 400);
 
-    while(sys_get_character_pressed() == 0);
+    sys_get_character_pressed(WAITING);
 
     play();
 }
@@ -82,7 +82,7 @@ void scan_player_name(char * text, int len, uint8_t player_number, PlayerData* p
     for(i = 0; i < MAX_LENGTH_PLAYER_NAME && key != '\n'; i++) {
         key = 0;
         while(!isAlpha(key) && key != '\n') {
-            key = sys_get_character_pressed();
+            key = sys_get_character_pressed(WAITING);
         }
         if(key != '\n') player->name[i] = key;
         else player->name[i] = '\0';
@@ -169,7 +169,7 @@ void play() {
             char key;
             int player1Dir = player1Data.direction;
             int player2Dir = player2Data.direction;
-            while((key = sys_get_key_pressed()) != 0){
+            while((key = sys_get_key_pressed(NOT_WAITING)) != 0){
                 changeDirection(key, &player1Dir, &player2Dir);
             }
             player1Data.direction = player1Dir;
@@ -247,7 +247,7 @@ int endGame() {
     sys_put_text("Or [ENTER] to go back to menu", 29, HEX_WHITE, 70, 300);
 
     while(1) {
-        char key = sys_get_character_pressed();
+        char key = sys_get_character_pressed(WAITING);
         if(key == ' ') {
             return 1;
         } else if (key == '\n') {
@@ -287,7 +287,7 @@ void play_eliminator() {
     init_presentation();
     
     init_menu();
-    char key = sys_get_character_pressed();
+    char key = sys_get_character_pressed(WAITING);
 
     while(key != 'x' && key != 'X') {
         if(key == ' ') {
@@ -295,7 +295,7 @@ void play_eliminator() {
         } else if (key == '\n') {
             change_settings_and_play();
         }
-        key = sys_get_character_pressed();
+        key = sys_get_character_pressed(WAITING);
     }
 
     for(int i=0; i<bufferHeight; i++)

@@ -29,6 +29,7 @@ sabassi@itba.edu.ar\\
 
 \usepackage{caption, threeparttable}
 \usepackage{hyperref}
+\usepackage{listings}
 
 \usepackage[margin=1.3in]{geometry}
 
@@ -250,7 +251,7 @@ A continuación se detallan algunos módulos que sirven para testear el funciona
 
 Si bien hay varios test que fueron brindados por la cátedra, decidimos hacer algunos tests propios para probar el funcionamiento del sistema. 
 \begin{itemize}
-    \item test\_priority\_dist\: Este test crea múltiples procesos con diferentes prioridades y cuenta la cantidad de veces que ese proceso es elegido por el scheduler. Luego imprime cuantas veces fueron elegidos los procesos de cada una de las prioridades. Fue creado con el proposito de verificar el correcto funcionamiento del scheduler pseudoaleatorio.
+    \item test\_priority\_dist\: Este test crea múltiples procesos con diferentes prioridades y cuenta la cantidad de veces que ese proceso es elegido por el scheduler. Luego imprime cuantas veces fueron elegidos los procesos de cada una de las prioridades. Fue creado con el propósito de verificar el correcto funcionamiento del scheduler pseudoaleatorio.
     \item test\_pipes\: Este test verifica la funcionalidad de los pipes creando pares de procesos escritores y lectores que se comunican a través de un pipe, verificando que la cantidad de bytes escritos sea la misma que la cantidad de bytes leídos.
     \item test\_idle\_cleanup\: Este test crea múltiples procesos y finaliza sin hacer wait a ninguno de ellos, verificando que el proceso idle los limpie correctamente.
     \item test\_wait\: Este test crea dos grupos de procesos, los mismos tienen un pequeño delay y luego retornan un valor. Finalmente, el test verifica si la suma de los valores de retorno de ambos grupos fue el mismo.
@@ -278,5 +279,26 @@ Si bien hay varios test que fueron brindados por la cátedra, decidimos hacer al
 
 En cuanto a las limitaciones numéricas, el sistema fue diseñado de tal manera que se pueden cambiar fácilmente. En el archivo \texttt{def.h} se encuentran las constantes que definen estas limitaciones.
 
-
+\section {Warnings de PVS-Studio}
+A continuación se detallan los warnings encontrados por PVS-Studio que son considerados falsos positivos:
+\begin{itemize}
+    \item Varios Warnings en Bootloader, se decidio no tocar este codigo.
+    \item Error V576. Este error se encuentra en muchos archivos, el mismo es desestimato ya que indica un error de formato en printf y en scanf, pues PVS-Studio asocia printf y scanf con las funciones de la libreria estandar de C. 
+    \item Error V776. Este error indica que hay un loop infinito. Pero este error es un falso positivo ya que se utiliza para los tests.
+    \item Error V566. Este error indica que puede haber problemas al utilizar una constante entera como puntero. Esto es un falso positivo ya que en nuestro sistema estamos harcodeando la direccion donde se carga el codigo de userland a traves de esta constante.
+    \item Error V560. Este error nos indica que la condició\texttt{if (c != '\textbackslash n')}
+    siempre es verdadera. Pero analizando el siguiente fragmento de codigo podemos ver rapidamente que es un falso positivo.
+\end{itemize}
+\begin{lstlisting}[language=C]
+    while (i > 0) {
+        i = 0;
+        c = 0;
+        while (c != '\n' && sys_read(stdin, &c, 1) != EOF && i < BUF_SIZE - 1)
+            buffer[i++] = c;
+        buffer[i] = 0;
+        sys_write(stdout, buffer, i + 1);
+    }
+    return 0;
+\end{lstlisting}
+    
 \end{document}

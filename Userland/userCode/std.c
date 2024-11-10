@@ -186,7 +186,7 @@ uint32_t atoi(const char* s) {
 void scanf(const char* fmt, void* ptr) {
     char scan_buff[SCANF_BUFF_MAX_SIZE] = {0};
 
-    uint32_t len = getline(scan_buff, SCANF_BUFF_MAX_SIZE);
+    uint32_t len = sys_read(sys_get_stdin(), scan_buff, SCANF_BUFF_MAX_SIZE);
     scan_buff[len - 1] = '\0';
 
     if (strcmp(fmt, "%d") == 0)

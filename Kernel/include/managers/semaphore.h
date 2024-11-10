@@ -5,10 +5,10 @@
 #include <utils/list.h>
 
 struct semaphoreCDT {
-    uint64_t value;
-    uint8_t lock;
-    char* name;
-    ListADT waiting_processes;
+  uint64_t value;
+  uint8_t lock;
+  char *name;
+  ListADT waiting_processes;
 };
 
 typedef struct semaphoreCDT *semaphoreADT;

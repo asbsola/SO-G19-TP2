@@ -2,10 +2,10 @@
 #define __KERNEL_MANAGERS_H__
 
 #include <managers/memoryManager.h>
+#include <managers/pipesManager.h>
 #include <managers/processManager.h>
 #include <managers/scheduler.h>
 #include <managers/semaphoreManager.h>
-#include <managers/pipesManager.h>
 
 extern memoryManagerADT the_memory_manager;
 extern processManagerADT the_process_manager;

@@ -7,6 +7,6 @@
 
 #define LINE_MAX_LEN 1024
 
-uint64_t screen_service(char** argv, int argc);
+uint64_t screen_service(char **argv, int argc);
 
 #endif

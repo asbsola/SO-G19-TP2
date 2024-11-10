@@ -3,6 +3,6 @@
 
 #include <stdint.h>
 
-uint64_t idle(char** argv, int argc);
+uint64_t idle(char **argv, int argc);
 
 #endif

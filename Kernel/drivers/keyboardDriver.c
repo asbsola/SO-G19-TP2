@@ -74,8 +74,13 @@ void keyboard_handler(processManagerADT process_manager, semaphoreManagerADT sem
     if(c[0] == '\b') {
         if(--buffer_size < 0) {
             buffer_size = 0;
+            return;
         }
-        else if(input_mode == CANNONICAL) write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, c, 2);
+        if(input_mode == CANNONICAL){
+            if(map_to_ascii[key_buffer[first_key_index+buffer_size]] == '\t')
+                write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, "\b\b\b\b", 5);
+            else write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, c, 2);
+        }
         return;
     }
     

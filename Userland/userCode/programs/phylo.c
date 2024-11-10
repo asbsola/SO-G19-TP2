@@ -17,23 +17,19 @@ uint64_t view(char **argv, int argc) {
         if(buffer[len-1] == '\0'){
             int n = len-1;
             str[0] = '\0';
-            strcat(str, str, "\n ");
+            strcat(str, str, "\n -");
             for(int i=0; i<n/2; i++){
-                char aux[] = {'-', buffer[i], '-', '\0'};
+                char aux[] = {buffer[i], '-', '\0'};
                 strcat(str, str, aux);
             }
-            strcat(str, str, "\n");
-            for(int i=0; i<3; i++){
-                strcat(str, str, "|");
-                for(int i=0; i<n/2; i++)
-                    strcat(str, str, "   ");
-                char c = (i != 1 || n % 2 == 0? '|' : buffer[n/2]);
-                char aux[] = {c, '\n', '\0'};
-                strcat(str, str, aux);
-            }
-            strcat(str, str, " ");
+            strcat(str, str, "\n| ");
+            for(int i=0; i<n/2; i++)
+                strcat(str, str, "  ");
+            char c = (n % 2 == 0? '|' : buffer[n/2]);
+            char aux[] = {c, '\n', ' ', '-', '\0'};
+            strcat(str, str, aux);
             for(int i=0; i<n/2; i++){
-                char aux[] = {'-', buffer[n-i-1], '-', '\0'};
+                char aux[] = {buffer[n-i-1], '-', '\0'};
                 strcat(str, str, aux);
             }
             strcat(str, str, "\n");

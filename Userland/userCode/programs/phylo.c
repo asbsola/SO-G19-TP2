@@ -10,12 +10,34 @@ uint32_t number_of_philosophers = INITIAL_NUMBER_OF_PHILOSOPHERS;
 
 uint64_t view(char **argv, int argc) {
     char buffer[MAX_NUMBER_OF_PHILOSOPHERS + 1] = {0};
+    char str[15*MAX_NUMBER_OF_PHILOSOPHERS/2+15] = {0};
     int len = 0;
     int read = 0;
-    while ((read = sys_read(view_pipe, &buffer[len++], 1)) != EOF && len <= MAX_NUMBER_OF_PHILOSOPHERS) {
+    while ((read = sys_read(view_pipe, &buffer[len++], 1)) != EOF && len <= MAX_NUMBER_OF_PHILOSOPHERS+1) {
         if(buffer[len-1] == '\0'){
-            puts(buffer);
-            puts("\n");
+            int n = len-1;
+            str[0] = '\0';
+            strcat(str, str, "\n ");
+            for(int i=0; i<n/2; i++){
+                char aux[] = {'-', buffer[i], '-', '\0'};
+                strcat(str, str, aux);
+            }
+            strcat(str, str, "\n");
+            for(int i=0; i<3; i++){
+                strcat(str, str, "|");
+                for(int i=0; i<n/2; i++)
+                    strcat(str, str, "   ");
+                char c = (i != 1 || n % 2 == 0? '|' : buffer[n/2]);
+                char aux[] = {c, '\n', '\0'};
+                strcat(str, str, aux);
+            }
+            strcat(str, str, " ");
+            for(int i=0; i<n/2; i++){
+                char aux[] = {'-', buffer[n-i-1], '-', '\0'};
+                strcat(str, str, aux);
+            }
+            strcat(str, str, "\n");
+            puts(str);
             len = 0;
         }
     }
@@ -39,7 +61,7 @@ void eat(uint64_t id) {
     philosophers[id].state = EATING;
     write_philosophers_state_to_pipe();
 
-    uint64_t eat_time = 1000 + GetUniform(1000);
+    uint64_t eat_time = MIN_EAT_TIME + GetUniform(RANDOM_EAT_RANGE);
     sleep(eat_time);
 
     sys_yield();
@@ -49,7 +71,7 @@ void think(uint64_t id) {
     philosophers[id].state = THINKING;
     write_philosophers_state_to_pipe();
 
-    uint64_t think_time = 1500 + GetUniform(1000);
+    uint64_t think_time = MIN_THINK_TIME + GetUniform(RANDOM_THINK_RANGE);
     sleep(think_time);
 
     sys_yield();

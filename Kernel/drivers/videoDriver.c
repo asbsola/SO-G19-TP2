@@ -175,7 +175,7 @@ void write_to_video_text_buffer(const char* data, uint32_t data_len, uint32_t he
         switch (data[i]) {
             case '\e':
                 hexColor = hex_color_string_to_number(&data[i + 1]);
-                i += (data_len - HEX_COLOR_LEN > 0) ? HEX_COLOR_LEN : (data_len - HEX_COLOR_LEN);
+                i += (data_len - HEX_COLOR_LEN != 0) ? HEX_COLOR_LEN : (data_len - HEX_COLOR_LEN);
                 break;
             case '\n':
                 screenTextInfo.indexY += 1;

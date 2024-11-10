@@ -19,7 +19,7 @@ uint64_t writer(char **argv, int argc) {
 }
 
 uint64_t reader(char **argv, int argc) {
-    char buff[MAX_LEN];
+    char buff[MAX_LEN] = {0};
     int len = sys_read(sys_get_stdin(), buff, MAX_LEN);
     if(len == EOF) return 0;
     int res = 0;

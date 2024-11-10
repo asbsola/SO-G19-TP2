@@ -1,12 +1,8 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <managers/kernel_managers.h>
-#include <drivers/keyboardDriver.h>
-#include <lib.h>
-#include <killer.h>
-#include <def.h>
 
-#define MAX(a, b) ((a)>(b)?(a):(b))
-#define MIN(a, b) ((a)<(b)?(a):(b))
+#include <drivers/keyboardDriver.h>
+
 
 uint8_t key_buffer[MAX_LEN_BUFFER];
 static int first_key_index = 0;

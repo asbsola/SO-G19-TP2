@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <programs/phylo.h>
 
 philosopher philosophers[MAX_NUMBER_OF_PHILOSOPHERS];
@@ -7,7 +9,7 @@ sem_t chopsticks[MAX_NUMBER_OF_PHILOSOPHERS];
 uint32_t number_of_philosophers = INITIAL_NUMBER_OF_PHILOSOPHERS;
 
 uint64_t view(char **argv, int argc) {
-    char buffer[MAX_NUMBER_OF_PHILOSOPHERS + 1];
+    char buffer[MAX_NUMBER_OF_PHILOSOPHERS + 1] = {0};
     int len = 0;
     int read = 0;
     while ((read = sys_read(view_pipe, &buffer[len++], 1)) != EOF && len <= MAX_NUMBER_OF_PHILOSOPHERS) {

@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <programs/programs.h>
 
 
@@ -144,18 +146,19 @@ uint64_t loop(char** argv, int argc) {
     return 0;
 }
 
+#define BUF_SIZE 1024
 
 uint64_t cat(char** argv, int argc) {
-    const int max_len = 1024;
-    char buffer[max_len];
+    char buffer[BUF_SIZE] = {0};
     
     fd_t stdin = sys_get_stdin();
     fd_t stdout = sys_get_stdout();
     int i = 1;
+    char c;
     while (i > 0){
         i = 0;
-        char c = 0;
-        while (c != '\n' && sys_read(stdin, &c, 1) != EOF && i < max_len-1) buffer[i++] = c;
+        c = 0;
+        while (c != '\n' && sys_read(stdin, &c, 1) != EOF && i < BUF_SIZE-1) buffer[i++] = c;
         buffer[i] = 0;
         sys_write(stdout, buffer, i+1);
     }
@@ -163,15 +166,14 @@ uint64_t cat(char** argv, int argc) {
 }
 
 uint64_t wc(char** argv, int argc) {
-    const int max_len = 1024;
-    char buffer[max_len];
+    char buffer[BUF_SIZE] = {0 };
     
     fd_t stdin = sys_get_stdin();
 
     uint64_t read = 0;
     uint64_t lines = 0;
 
-    while ((read = sys_read(stdin, buffer, max_len)) != EOF) {
+    while ((read = sys_read(stdin, buffer, BUF_SIZE)) != EOF) {
         for (int i = 0; i < read; i++) {
             if(buffer[i] == '\n') lines++;
         }
@@ -181,14 +183,13 @@ uint64_t wc(char** argv, int argc) {
 }
 
 uint64_t filter(char** argv, int argc) {
-    const int max_len = 1024;
-    char filtered_buffer[max_len];
+    char filtered_buffer[BUF_SIZE] = { 0};
     
     fd_t stdin = sys_get_stdin();
     fd_t stdout = sys_get_stdout();
     int i = 0;
     char c = 0;
-    while (sys_read(stdin, &c, 1) != EOF && i < max_len-1) {
+    while (sys_read(stdin, &c, 1) != EOF && i < BUF_SIZE-1) {
         if (!isVowel(c))
             filtered_buffer[i++] = c;
     }
@@ -198,8 +199,8 @@ uint64_t filter(char** argv, int argc) {
 }
 
 uint64_t echo(char** argv, int argc) {
-    if (argc >= 2) {
-        puts(argv[1]);
+    for(int i = 1; i < argc; i++) {
+        printf("%s ", argv[i]);
     }
     putchar('\n');
 

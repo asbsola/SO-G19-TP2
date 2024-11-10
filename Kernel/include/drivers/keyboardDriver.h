@@ -5,6 +5,13 @@
 #include <managers/processManager.h>
 #include <managers/semaphoreManager.h>
 #include <registers.h>
+#include <lib.h>
+#include <killer.h>
+#include <def.h>
+#include <managers/kernel_managers.h>
+
+#define MAX(a, b) ((a)>(b)?(a):(b))
+#define MIN(a, b) ((a)<(b)?(a):(b))
 
 #define MAX_LEN_BUFFER 256
 #define CAPS_OFFSET 84
@@ -19,8 +26,8 @@
 
 int initialize_keyboard();
 void keyboard_handler(processManagerADT process_manager, semaphoreManagerADT semaphore_manager, const registers64_t * registers);
-uint8_t get_key_pending();
-char get_character_pending();
+uint8_t get_key_pending(int wait);
+char get_character_pending(int wait);
 uint8_t get_scan_code();
 void set_input_mode(int mode);
 

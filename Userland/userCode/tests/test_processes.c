@@ -50,7 +50,7 @@ uint64_t test_processes(char **argv, int argc) {
         return -1;
     }
 
-    uint8_t in_background = (argc >= 3 && argv[argc - 1][0] == '&');
+    uint8_t in_background = (argc >= 4 && argv[argc - 1][0] == '&');
 
 
     while (iter++ < max_iters) {

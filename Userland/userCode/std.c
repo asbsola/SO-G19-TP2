@@ -162,7 +162,7 @@ void printf(const char* fmt, ...) {
 }
 
 char getchar() {
-    char c;
+    char c = 0;
     if(sys_read(sys_get_stdin(), &c, 1) == EOF) return 0;
     return c;
 }
@@ -259,7 +259,7 @@ void trim(char* str) {
     int end = strlen(str) - 1;
 
     while (str[start] == ' ') start++;
-    while (str[end] == ' ' && end >= start) end--;
+    while (end >= start && str[end] == ' ') end--;
 
     int i;
     for (i = 0; start <= end; start++, i++) {

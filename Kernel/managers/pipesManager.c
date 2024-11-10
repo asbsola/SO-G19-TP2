@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <managers/pipesManager.h>
 #define MAX(a, b) ((a)<(b)?(b):(a))
 
@@ -123,7 +125,7 @@ int write_pipe(pipesManagerADT pipes_manager, fd_t fd, const char* buffer, int s
 }
 
 int read_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buffer, int size) {
-    if (fd < 0 || fd >= MAX_PIPES || pipes_manager->pipes[fd] == NULL) return EOF;
+    if (fd < 0 || fd >= MAX_PIPES || pipes_manager->pipes[fd] == NULL ) return EOF;
     pipe * pipe = pipes_manager->pipes[fd];
     int i = 0;
     while(i < size){
@@ -134,7 +136,7 @@ int read_pipe(pipesManagerADT pipes_manager, fd_t fd, char* buffer, int size) {
         if (pipe->eof && pipe->reading_index == pipe->writing_index) {
             if(pipe->mode == EOF_CONSUMER && i == 0) pipe->eof = 0;
             else up_sem(pipes_manager->semaphore_manager, pipe->read_bytes_sem);
-            if(size != 0 && i == 0) return EOF;
+            if(i == 0) return EOF;
             return i;
         }
 

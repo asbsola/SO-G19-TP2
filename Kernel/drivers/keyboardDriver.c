@@ -33,76 +33,68 @@ int initialize_keyboard() {
   return 0;
 }
 
-void keyboard_handler(processManagerADT process_manager,
-                      semaphoreManagerADT semaphore_manager,
-                      const registers64_t *registers) {
-  uint8_t scan_code = get_scan_code();
-  if (scan_code == CAPS_LOCK_CODE_PRESSED ||
-      scan_code == LEFT_SHIFT_CODE_PRESSED ||
-      scan_code == RIGHT_SHIFT_CODE_PRESSED ||
-      scan_code == LEFT_SHIFT_CODE_RELEASED ||
-      scan_code == RIGHT_SHIFT_CODE_RELEASED) {
-    caps_enabled = !caps_enabled;
-    return;
-  }
-  if (scan_code == CNTRL_CODE_PRESSED) {
-    cntrl_down = 1;
-    return;
-  }
-  if (scan_code == CNTRL_CODE_RELEASED) {
-    cntrl_down = 0;
-    return;
-  }
-  if (cntrl_down &&
-      map_to_ascii[scan_code + caps_enabled * CAPS_OFFSET] == 'd' &&
-      input_mode == CANNONICAL) {
-    flush();
-    send_eof(the_pipes_manager, KEYBOARD_INPUT_FD);
-    return;
-  }
-  if (cntrl_down &&
-      map_to_ascii[scan_code + caps_enabled * CAPS_OFFSET] == 'c') {
-    char *argv[] = {"killer", NULL};
-    create_process(process_manager, IDLE_PROCESS_PID, killer, argv,
-                   KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
-    return;
-  }
-  if (cntrl_down &&
-      map_to_ascii[scan_code + caps_enabled * CAPS_OFFSET] == 'C') {
-    char *argv[] = {"killer", "r", NULL};
-    create_process(process_manager, IDLE_PROCESS_PID, killer, argv,
-                   KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
-    return;
-  }
-  if (scan_code == ESCAPE_CODE_PRESSED) {
-    save_registers(registers);
-    return;
-  }
-  if (scan_code > 0x80)
-    return;
-
-  char c[2] = {map_to_ascii[scan_code + caps_enabled * CAPS_OFFSET], 0};
-  if (c[0] == '\b') {
-    if (--buffer_size < 0) {
-      buffer_size = 0;
-    } else if (input_mode == CANNONICAL)
-      write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, c, 2);
-    return;
-  }
-
-  key_buffer[(first_key_index + buffer_size) % MAX_LEN_BUFFER] =
-      scan_code + caps_enabled * CAPS_OFFSET;
-  buffer_size++;
-  if (input_mode == NON_CANNONICAL) {
-    if (blocked) {
-      blocked = 0;
-      up_sem(the_semaphore_manager, key_sem);
+void keyboard_handler(processManagerADT process_manager, semaphoreManagerADT semaphore_manager, const registers64_t * registers){
+    uint8_t scan_code = get_scan_code();
+    if(scan_code == CAPS_LOCK_CODE_PRESSED
+    || scan_code == LEFT_SHIFT_CODE_PRESSED || scan_code == RIGHT_SHIFT_CODE_PRESSED
+    || scan_code == LEFT_SHIFT_CODE_RELEASED || scan_code == RIGHT_SHIFT_CODE_RELEASED){
+        caps_enabled = !caps_enabled;
+        return;
     }
-  } else {
-    write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, c, 2);
-    if (c[0] == '\n')
-      flush();
-  }
+    if(scan_code == CNTRL_CODE_PRESSED){
+        cntrl_down = 1;
+        return;
+    }
+    if(scan_code == CNTRL_CODE_RELEASED){
+        cntrl_down = 0;
+        return;
+    }
+    if(cntrl_down && map_to_ascii[scan_code + caps_enabled * CAPS_OFFSET] == 'd' && input_mode == CANNONICAL){
+        flush();
+        send_eof(the_pipes_manager, KEYBOARD_INPUT_FD);
+        return;
+    }
+    if(cntrl_down && map_to_ascii[scan_code + caps_enabled * CAPS_OFFSET] == 'c'){
+        char* argv[] = {"killer", NULL};
+        create_process(process_manager, IDLE_PROCESS_PID, killer, argv, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
+        return;
+    }
+    if(cntrl_down && map_to_ascii[scan_code + caps_enabled * CAPS_OFFSET] == 'C'){
+        char* argv[] = {"killer", "r", NULL};
+        create_process(process_manager, IDLE_PROCESS_PID, killer, argv, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
+        return;
+    }
+    if(scan_code == ESCAPE_CODE_PRESSED){
+        save_registers(registers);
+        return;
+    }
+    if(scan_code > 0x80) return;
+    
+    char c[2] = {map_to_ascii[scan_code + caps_enabled * CAPS_OFFSET], 0};
+    if(c[0] == '\b') {
+        if(--buffer_size < 0) {
+            buffer_size = 0;
+            return;
+        }
+        if(input_mode == CANNONICAL){
+            if(map_to_ascii[key_buffer[first_key_index+buffer_size]] == '\t')
+                write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, "\b\b\b\b", 5);
+            else write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, c, 2);
+        }
+        return;
+    }
+    
+    key_buffer[(first_key_index + buffer_size) % MAX_LEN_BUFFER] = scan_code + caps_enabled * CAPS_OFFSET;
+    buffer_size++;
+    if(input_mode == NON_CANNONICAL){
+        if(blocked){
+            blocked = 0;
+            up_sem(the_semaphore_manager, key_sem);
+        }
+    } else {
+        write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, c, 2);
+        if(c[0] == '\n') flush();
+    }
 }
 
 void flush() {

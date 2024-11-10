@@ -27,7 +27,6 @@ ModuleDescriptor modules[] = {
      test_idle_cleanup},
     {"test_sync", "tests syncro", PROCESS, test_sync},
     {"test_pipes", "tests pipes", PROCESS, test_pipes},
-    {"mega_test_pipes", "mega tests pipes", PROCESS, mega_test_pipes},
     {"mem", "displays memory status", PROCESS, mem},
     {"ps", "displays information about processes", PROCESS, ps},
     {"nicent", "changes process priority by PID", BUILT_IN, nicent},
@@ -57,11 +56,16 @@ void run_shell() {
   int num_cmds = 0;
   sys_nicent(sys_get_pid(), HIGH);
 
-  while (strcmp(shell_input, "exit") != 0) {
-    sys_set_font_size(current_font_size);
+    while (1)
+    {
+        sys_set_font_size(current_font_size);
 
-    puts_with_color("shell> ", 0x006fb5fb);
-    scanf("%s", shell_input);
+        puts_with_color("\nshell> ", 0x006fb5fb);
+        int len = getline(shell_input, MAX_SHELL_INPUT);
+        shell_input[len-1] = '\0';
+
+        if(shell_input[0] == '\0') continue;
+        if(strcmp(shell_input, "exit") == 0) break;
 
     int64_t ans = get_commands(shell_input, commands, &num_cmds);
     if (ans == -1)

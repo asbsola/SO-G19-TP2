@@ -8,6 +8,10 @@
 
 #define MAX_NUMBER_OF_PHILOSOPHERS 15
 #define INITIAL_NUMBER_OF_PHILOSOPHERS 5
+#define MIN_EAT_TIME 500
+#define MIN_THINK_TIME 1000
+#define RANDOM_EAT_RANGE 500
+#define RANDOM_THINK_RANGE 1000
 #define VIEW_PIPE "view_philosophers_pipe"
 #define ADD_REMOVE_MUTEX "add_remove_mutex"
 

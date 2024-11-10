@@ -8,21 +8,21 @@
 static uint8_t show_initial_info = 1;
 
 int main() {
-  if (show_initial_info) {
-    show_splash_screen();
+	if (show_initial_info) {
+	    show_splash_screen();
 
-    puts_with_color("GRUPO 19\n", 0x006fb6fb);
-    puts_with_color("[SYSTEM INFO]\n\n", 0x006fb6fb);
-    char *argv_info[] = {"info", NULL};
-    info(argv_info, 1);
+		puts_with_color("GRUPO 19\n", 0x006fb6fb);
+		puts_with_color("[SYSTEM INFO]\n\n", 0x006fb6fb);
+		char *argv_info[] = {"info", NULL};
+		info(argv_info, 1);
 
-    puts_with_color("[HELP]\n\n", 0x006fb6fb);
-    char *argv_help[] = {"help", NULL};
-    help(argv_help, 1);
-    show_initial_info = 0;
-  }
+		puts_with_color("[HELP]\n\n", 0x006fb6fb);
+		char *argv_help[] = {"help", NULL};
+		help(argv_help, 1);
+		show_initial_info = 0;
+	}
 
-  run_shell();
+	run_shell();
 
-  return 0xDEADBEEF;
+	return 0xDEADBEEF;
 }

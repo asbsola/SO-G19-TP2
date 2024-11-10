@@ -56,10 +56,6 @@ uint64_t calculator(char **argv, int argc) {
     response = num1 * num2;
     break;
   case '/':
-    if (num2 == 0) {
-      printf("Division by zero is not allowed.\n");
-      return -1;
-    }
     response = num1 / num2;
     break;
   default:

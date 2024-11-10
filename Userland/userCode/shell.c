@@ -60,7 +60,7 @@ void run_shell() {
     {
         sys_set_font_size(current_font_size);
 
-        puts_with_color("\nshell> ", 0x006fb5fb);
+        puts_with_color("shell> ", 0x006fb5fb);
         scan_line("%s", shell_input);
 
         if(shell_input[0] == '\0') continue;
@@ -174,7 +174,7 @@ void free_args(char **args) {
 uint64_t help(char **argv, int argc) {
   puts_with_color(
       "arguments are separated by ' ' (spaces).\nadd & at the last argument of "
-      "a command to run in background (only for processes).\n\n",
+      "a command to run in background (only for processes).\nuse | to pipe commands\n\n",
       0xc2daff);
 
   puts("available modules:\n");

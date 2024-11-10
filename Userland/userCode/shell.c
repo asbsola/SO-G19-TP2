@@ -55,9 +55,11 @@ void run_shell()
     {
         sys_set_font_size(current_font_size);
 
-        puts_with_color("shell> ", 0x006fb5fb);
+        puts_with_color("\nshell> ", 0x006fb5fb);
         int len = getline(shell_input, MAX_SHELL_INPUT);
         shell_input[len-1] = '\0';
+
+        if(shell_input[0] == '\0') continue;
 
         int64_t ans = get_commands(shell_input, commands, &num_cmds);
         if(ans == -1) continue;

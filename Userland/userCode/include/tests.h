@@ -12,5 +12,4 @@ uint64_t test_idle_cleanup(char** argv, int argc);
 uint64_t test_sync(char** argv, int argc);
 uint64_t test_pipes(char** argv, int argc);
 
-
 #endif

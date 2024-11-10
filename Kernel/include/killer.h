@@ -1,9 +1,9 @@
-#ifndef __KILLER_H__
-#define __KILLER_H__
+#ifndef __KILLER__H__
+#define __KILLER__H__
 
-#include <stdint.h>
 #include <managers/processManager.h>
+#include <stdint.h>
 
-uint64_t killer(char** argv, int argc);
+uint64_t killer(char **argv, int argc);
 
 #endif

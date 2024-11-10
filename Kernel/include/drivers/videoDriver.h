@@ -1,5 +1,5 @@
-#ifndef _VIDEO_H_
-#define _VIDEO_H_
+#ifndef __VIDEO__H__
+#define __VIDEO__H__
 
 #include <stdint.h>
 
@@ -28,12 +28,15 @@ uint32_t get_video_buffer_height();
 
 void put_pixel(uint32_t hexColor, uint64_t x, uint64_t y);
 void clear_screen(uint32_t clearColor);
-void draw_square(uint32_t hexColor, uint32_t posX, uint32_t posY, uint32_t size);
-void draw_string(const char* str, uint32_t len, uint32_t hexColor, uint32_t posX, uint32_t posY);
+void draw_square(uint32_t hexColor, uint32_t posX, uint32_t posY,
+                 uint32_t size);
+void draw_string(const char *str, uint32_t len, uint32_t hexColor,
+                 uint32_t posX, uint32_t posY);
 
 void set_font_size(uint32_t fontSize);
 void clear_video_text_buffer();
-void write_to_video_text_buffer(const char* data, uint32_t data_len, uint32_t hexColor);
+void write_to_video_text_buffer(const char *data, uint32_t data_len,
+                                uint32_t hexColor);
 void update_screen_text_buffer();
 
 #endif

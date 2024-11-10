@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include <drivers/keyboardDriver.h>
-
+#include <managers/kernel_managers.h>
 
 uint8_t key_buffer[MAX_LEN_BUFFER];
 static int first_key_index = 0;
@@ -14,23 +14,23 @@ static sem_t key_sem;
 static int blocked = 0;
 
 static char map_to_ascii[256] = {
-    0, '~', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', '\t', 
-    'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', '/', 
-    'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', 's', '\\',
-    'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 's', '*', 'a', ' ', '+',
-    '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'n', 's', '7', '8', '9',
-    '-', '4', '5', '6', '+', '1', '2', '3', '0', '.',
-    0, '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\b', '\t', 
-    'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n', '/', 
-    'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', '~', 's', '|',
-    'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 's', '*', 'a', ' ', '+',
-    '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'n', 's', '7', '8', '9',
-    '-', '4', '5', '6', '+', '1', '2', '3', '0', '.'
-};
+    0,    '~',  '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-',  '=',
+    '\b', '\t', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[',  ']',
+    '\n', '/',  'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`',
+    's',  '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 's',  '*',
+    'a',  ' ',  '+', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',  'n',
+    's',  '7',  '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '0',  '.',
+    0,    '~',  '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_',  '+',
+    '\b', '\t', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{',  '}',
+    '\n', '/',  'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"',  '~',
+    's',  '|',  'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 's',  '*',
+    'a',  ' ',  '+', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',  'n',
+    's',  '7',  '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '0',  '.'};
 
-int initialize_keyboard(){
-    if((key_sem = open_sem(the_semaphore_manager, 0)) == -1) return -1;
-    return 0;
+int initialize_keyboard() {
+  if ((key_sem = open_sem(the_semaphore_manager, 0)) == -1)
+    return -1;
+  return 0;
 }
 
 void keyboard_handler(processManagerADT process_manager, semaphoreManagerADT semaphore_manager, const registers64_t * registers){
@@ -97,33 +97,35 @@ void keyboard_handler(processManagerADT process_manager, semaphoreManagerADT sem
     }
 }
 
-void flush(){
-    while(buffer_size > 0){
-        write_pipe(the_pipes_manager, KEYBOARD_INPUT_FD, (const char*) &map_to_ascii[key_buffer[first_key_index]], 1);
-        first_key_index = (first_key_index + 1) % MAX_LEN_BUFFER;
-        buffer_size--;
-    }
-    first_key_index = 0;
-}
-
-uint8_t get_key_pending(int wait){
-    if (buffer_size == 0) {
-        if(!wait) return 0;
-        blocked = 1;
-        down_sem(the_semaphore_manager, key_sem);
-    }
-    uint8_t key = key_buffer[first_key_index];
+void flush() {
+  while (buffer_size > 0) {
+    write_pipe(the_pipes_manager, KEYBOARD_INPUT_FD,
+               (const char *)&map_to_ascii[key_buffer[first_key_index]], 1);
     first_key_index = (first_key_index + 1) % MAX_LEN_BUFFER;
     buffer_size--;
-    return key;
+  }
+  first_key_index = 0;
 }
 
-char get_character_pending(int wait){
-    return map_to_ascii[get_key_pending(wait)];
+uint8_t get_key_pending(int wait) {
+  if (buffer_size == 0) {
+    if (!wait)
+      return 0;
+    blocked = 1;
+    down_sem(the_semaphore_manager, key_sem);
+  }
+  uint8_t key = key_buffer[first_key_index];
+  first_key_index = (first_key_index + 1) % MAX_LEN_BUFFER;
+  buffer_size--;
+  return key;
 }
 
-void set_input_mode(int mode){
-    buffer_size = 0;
-    first_key_index = 0;
-    input_mode = mode;
+char get_character_pending(int wait) {
+  return map_to_ascii[get_key_pending(wait)];
+}
+
+void set_input_mode(int mode) {
+  buffer_size = 0;
+  first_key_index = 0;
+  input_mode = mode;
 }

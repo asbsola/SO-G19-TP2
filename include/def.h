@@ -1,17 +1,18 @@
-#ifndef  __DEF_H
+#ifndef __DEF_H
 #define __DEF_H
 
 #include <stdint.h>
 
 //------------------------------------------------------------
 
-#define PROCESS_STACK_SIZE (1<<13) // 8KB
+#define PROCESS_STACK_SIZE (1 << 13) // 8KB
 #define MAX_PROCESSES 256
 #define MAX_SEMAPHORES 256
-#define MEMORY_MANAGER_MEM_SIZE (1<<22) // 4MB
+#define MEMORY_MANAGER_MEM_SIZE (1 << 22) // 4MB
 #define MAX_PIPES 256
 #define BUFFER_SIZE 256
 //------------------------------------------------------------
+#define PIT_FREQUENCY 60
 
 #define NOT_IN_FOREGROUND 0
 #define IN_FOREGROUND 1
@@ -35,33 +36,22 @@ typedef int64_t pid_t;
 typedef int64_t sem_t;
 typedef int64_t fd_t;
 
-typedef enum
-{
-    RUNNING,
-    READY,
-    BLOCKED,
-    EXITED,
-    KILLED
-} processStatus;
-typedef enum
-{
-    LOW,
-    MEDIUM,
-    HIGH
-} processPriority;
+typedef enum { RUNNING, READY, BLOCKED, EXITED, KILLED } processStatus;
+typedef enum { LOW, MEDIUM, HIGH } processPriority;
 
-typedef struct
-{
-    pid_t pid;
-    pid_t parent_pid;
-    processPriority priority;
-    void *stack_pointer;
-    void *base_pointer;
-    const char* name;
-    uint8_t parent_is_waiting;
-    processStatus status;
+typedef struct {
+  pid_t pid;
+  pid_t parent_pid;
+  processPriority priority;
+  void *stack_pointer;
+  void *base_pointer;
+  const char *name;
+  uint8_t parent_is_waiting;
+  processStatus status;
 } process_info_t;
 
-#define PIT_FREQUENCY 60
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 #endif

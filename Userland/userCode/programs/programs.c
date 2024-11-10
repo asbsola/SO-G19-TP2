@@ -37,13 +37,13 @@ uint64_t calculator(char **argv, int argc) {
   printf("Enter only positive numbers.\n");
 
   printf("First number: ");
-  scanf("%d", &num1);
+  scan_line("%d", &num1);
 
   printf("Operator: ");
-  scanf("%c", &operator);
+  scan_line("%c", &operator);
 
   printf("Second number: ");
-  scanf("%d", &num2);
+  scan_line("%d", &num2);
 
   switch (operator) {
   case '+':
@@ -74,7 +74,7 @@ uint64_t calculator(char **argv, int argc) {
 uint64_t jump(char **argv, int argc) {
   uint64_t dir = 0;
   printf("Address: ");
-  scanf("%d", &dir);
+  scan_line("%d", &dir);
   printf("Jumping to address %d\n", dir);
   jump_to_dir(dir);
 

@@ -27,8 +27,8 @@ char getchar();
 int getline(char *buffer, int max_len);
 uint32_t atoi(const char *s);
 
-#define SCANF_BUFF_MAX_SIZE 1024
-void scanf(const char *fmt, void *ptr);
+#define SCAN_BUFF_MAX_SIZE 1024
+void scan_line(const char *fmt, void *ptr);
 
 int isAlpha(char c);
 

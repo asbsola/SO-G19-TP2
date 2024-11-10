@@ -61,8 +61,7 @@ void run_shell() {
         sys_set_font_size(current_font_size);
 
         puts_with_color("\nshell> ", 0x006fb5fb);
-        int len = getline(shell_input, MAX_SHELL_INPUT);
-        shell_input[len-1] = '\0';
+        scan_line("%s", shell_input);
 
         if(shell_input[0] == '\0') continue;
         if(strcmp(shell_input, "exit") == 0) break;
@@ -203,11 +202,11 @@ uint64_t cls(char **argv, int argc) {
 uint64_t font_size(char **argv, int argc) {
   int n = 0;
   printf("Choose font size (1-5) or 0 to exit: ");
-  scanf("%d", &n);
+  scan_line("%d", &n);
 
   while (n < 0 || n >= 6) {
     printf("Choose a valid font size (1-5) or 0 to exit: ");
-    scanf("%d", &n);
+    scan_line("%d", &n);
   }
 
   if (n != 0) {

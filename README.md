@@ -8,6 +8,12 @@ El resto del proyecto fue ejecutado usando qemu.
 
 ### Generación y ejecución imagen
 
+Primero deber ser compilado el Toolchain. Para ello ejecutar:
+```bash
+cd Toolchain
+make
+```
+
 Para compilar el proyecto usando el bitmap memory manager ejecutar (en el root del proyecto):
 ```bash
 make

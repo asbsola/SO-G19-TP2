@@ -1,5 +1,5 @@
-#ifndef __lib__h__
-#define __lib__h__
+#ifndef __LIB__H__
+#define __LIB__H__
 
 #include <stdint.h>
 

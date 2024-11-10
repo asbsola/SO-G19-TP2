@@ -1,10 +1,18 @@
-#ifndef __SCHEDULER_H__
-#define __SCHEDULER_H__
+#ifndef __SCHEDULER__H__
+#define __SCHEDULER__H__
 
-#include <idle.h>
-#include <managers/memoryManager.h>
+
+
 #include <managers/processControlBlock.h>
 #include <stdint.h>
+#include <registers.h>
+#include <utils/list.h>
+#include <utils/utils.h>
+#include <def.h>
+#include <drivers/videoDriver.h>
+#include <lib.h>
+#include <managers/memoryManager.h>
+
 
 typedef struct schedulerCDT *schedulerADT;
 

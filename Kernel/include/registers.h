@@ -1,5 +1,5 @@
-#ifndef __regs__h__
-#define __regs__h__
+#ifndef __REGS__H__
+#define __REGS__H__
 
 #include <stdint.h>
 

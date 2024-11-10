@@ -1,5 +1,5 @@
-#ifndef __eliminator__h__
-#define __eliminator__h__
+#ifndef __ELIMINATOR__H__
+#define __ELIMINATOR__H__
 
 #include <std.h>
 #include <stddef.h>

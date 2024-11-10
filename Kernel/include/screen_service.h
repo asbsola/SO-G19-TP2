@@ -1,5 +1,5 @@
-#ifndef __SCREEN_SERVICE_H__
-#define __SCREEN_SERVICE_H__
+#ifndef __SCREEN_SERVICE__H__
+#define __SCREEN_SERVICE__H__
 
 #include <def.h>
 #include <drivers/videoDriver.h>

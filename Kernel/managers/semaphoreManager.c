@@ -1,10 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <managers/processControlBlock.h>
+
 #include <managers/semaphoreManager.h>
-#include <utils/list.h>
-#include <utils/string.h>
-#define MAX(a, b) ((a) < (b) ? (b) : (a))
 
 struct semaphoreManagerCDT {
   sem_t last_sem;

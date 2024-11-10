@@ -1,5 +1,5 @@
-#ifndef __PHYLO__
-#define __PHYLO__
+#ifndef __PHYLO__H__
+#define __PHYLO__H__
 
 #include <def.h>
 #include <std.h>

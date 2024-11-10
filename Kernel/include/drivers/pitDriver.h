@@ -1,5 +1,5 @@
-#ifndef _pit_H_
-#define _pit_H_
+#ifndef __PIT__H__
+#define __PIT__H__
 
 #include <managers/scheduler.h>
 #include <registers.h>

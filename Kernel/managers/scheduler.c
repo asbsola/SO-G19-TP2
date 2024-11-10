@@ -1,12 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <def.h>
-#include <drivers/videoDriver.h>
-#include <lib.h>
+
 #include <managers/scheduler.h>
-#include <registers.h>
-#include <utils/list.h>
-#include <utils/utils.h>
 
 struct schedulerCDT {
   memoryManagerADT memory_manager;

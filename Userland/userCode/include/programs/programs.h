@@ -1,5 +1,5 @@
-#ifndef __PROGRAMS__
-#define __PROGRAMS__
+#ifndef __PROGRAMS__H__
+#define __PROGRAMS__H__
 
 #include <def.h>
 #include <lib.h>

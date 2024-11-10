@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <shell_caller.h>
 
 #include <managers/memoryManager.h>
 #include <managers/pipesManager.h>
@@ -60,7 +59,9 @@ void *initializeKernelBinary() {
 
   return getStackBase();
 }
-
+semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager,
+                                           schedulerADT scheduler,
+                                           processManagerADT process_manager);
 int main() {
   _cli();
   initialize_pit(PIT_FREQUENCY);

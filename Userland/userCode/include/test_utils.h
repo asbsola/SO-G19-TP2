@@ -1,5 +1,5 @@
-#ifndef __TEST_UTILS__
-#define __TEST_UTILS__
+#ifndef __TEST_UTILS__H__
+#define __TEST_UTILS__H__
 
 #include <stdint.h>
 
@@ -14,4 +14,5 @@ uint64_t endless_loop(char **argv, int argc);
 uint64_t endless_counter(char **argv, int argc);
 uint64_t echo_test(char **argv, int argc);
 void endless_loop_print(uint64_t wait);
+
 #endif

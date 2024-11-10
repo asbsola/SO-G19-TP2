@@ -1,5 +1,5 @@
-#ifndef __SEMAPHORE_H__
-#define __SEMAPHORE_H__
+#ifndef __SEMAPHORE__H__
+#define __SEMAPHORE__H__
 
 #include <def.h>
 #include <utils/list.h>

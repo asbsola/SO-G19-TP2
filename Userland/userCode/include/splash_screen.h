@@ -1,5 +1,5 @@
-#ifndef __SPLASH_SCREEN_H__
-#define __SPLASH_SCREEN_H__
+#ifndef __SPLASH_SCREEN__H__
+#define __SPLASH_SCREEN__H__
 
 #define TOTAL_TIME 2500
 

@@ -1,5 +1,5 @@
-#ifndef __cucaracha__h__
-#define __cucaracha__h__
+#ifndef __CUCARACHA__H__
+#define __CUCARACHA__H__
 
 #include <std.h>
 #include <stdint.h>

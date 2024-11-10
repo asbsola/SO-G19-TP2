@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include <drivers/keyboardDriver.h>
+#include <managers/kernel_managers.h>
 
 uint8_t key_buffer[MAX_LEN_BUFFER];
 static int first_key_index = 0;

@@ -1,7 +1,9 @@
-#ifndef __MEMORY_MANAGER_H__
-#define __MEMORY_MANAGER_H__
+#ifndef __MEMORY_MANAGER__H__
+#define __MEMORY_MANAGER__H__
 
 #include <stdint.h>
+#include <stddef.h>
+#include <def.h>
 
 #define ALIGNMENT 8
 

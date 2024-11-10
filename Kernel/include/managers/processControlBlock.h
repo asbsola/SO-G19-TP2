@@ -1,5 +1,5 @@
-#ifndef __PCB_H__
-#define __PCB_H__
+#ifndef __PCB__H__
+#define __PCB__H__
 
 #include <def.h>
 #include <managers/semaphore.h>

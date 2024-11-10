@@ -1,15 +1,6 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include "def.h"
-#include <idle.h>
 #include <managers/processManager.h>
-#include <registers.h>
-#include <utils/string.h>
-
-#define MAX(a, b) ((a) < (b) ? (b) : (a))
-
-extern void start_process_wrapper();
-extern void yield();
 
 char **copy_argv(processManagerADT processes_manager, char **argv);
 void free_argv(processManagerADT process_manager, char **argv);

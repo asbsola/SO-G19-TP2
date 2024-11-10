@@ -1,17 +1,15 @@
-#ifndef _KEYBOARD_H_
-#define _KEYBOARD_H_
+#ifndef __KEYBOARD__H__
+#define __KEYBOARD__H__
 
 #include <def.h>
 #include <killer.h>
 #include <lib.h>
-#include <managers/kernel_managers.h>
 #include <managers/processManager.h>
 #include <managers/semaphoreManager.h>
 #include <registers.h>
 #include <stdint.h>
 
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
 
 #define MAX_LEN_BUFFER 256
 #define CAPS_OFFSET 84

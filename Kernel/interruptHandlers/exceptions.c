@@ -1,10 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <drivers/videoDriver.h>
-#include <interruptHandlers/exceptions.h>
-#include <interruptHandlers/interrupts.h>
-#include <stdint.h>
 
+#include <interruptHandlers/exceptions.h>
 #include <managers/kernel_managers.h>
 
 void exceptionDispatcher(int id, const registers64_t *registers) {

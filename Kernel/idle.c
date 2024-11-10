@@ -1,13 +1,8 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <drivers/videoDriver.h>
-#include <idle.h>
-#include <interruptHandlers/interrupts.h>
-#include <managers/kernel_managers.h>
-#include <screen_service.h>
-#include <shell_caller.h>
 
-extern void yield();
+#include <idle.h>
+#include <managers/kernel_managers.h>
 
 void remove_orphans(processManagerADT process_manager) {
   processControlBlockADT *processes = get_processes(process_manager);

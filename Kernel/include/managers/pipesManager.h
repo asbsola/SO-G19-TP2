@@ -1,11 +1,10 @@
-#ifndef __PIPES_MANAGER_H__
-#define __PIPES_MANAGER_H__
+#ifndef __PIPES_MANAGER__H__
+#define __PIPES_MANAGER__H__
 
 #include <def.h>
-#include <managers/memoryManager.h>
-#include <managers/processManager.h>
-#include <managers/semaphoreManager.h>
 #include <utils/string.h>
+#include <managers/memoryManager.h>
+#include <managers/semaphoreManager.h>
 
 typedef struct pipesManagerCDT *pipesManagerADT;
 

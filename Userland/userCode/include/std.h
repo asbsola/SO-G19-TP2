@@ -1,5 +1,5 @@
-#ifndef __STD__
-#define __STD__
+#ifndef __STD__H__
+#define __STD__H__
 
 #include <stdarg.h>
 #include <stddef.h>

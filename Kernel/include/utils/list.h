@@ -1,5 +1,5 @@
-#ifndef LIST_H
-#define LIST_H
+#ifndef __LIST__H__
+#define __LIST__H__
 
 #include <managers/memoryManager.h>
 #include <stddef.h>

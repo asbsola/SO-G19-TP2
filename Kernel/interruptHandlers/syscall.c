@@ -1,20 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-
-#include <drivers/keyboardDriver.h>
-#include <drivers/pitDriver.h>
-#include <drivers/rtcDriver.h>
-#include <drivers/soundDriver.h>
-#include <drivers/videoDriver.h>
-#include <interruptHandlers/interrupts.h>
 #include <interruptHandlers/syscall.h>
-#include <lib.h>
-#include <managers/pipesManager.h>
-#include <stdint.h>
-
 #include <managers/kernel_managers.h>
-
-extern void yield();
 
 uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10,
                   uint64_t r8, uint64_t r9) {

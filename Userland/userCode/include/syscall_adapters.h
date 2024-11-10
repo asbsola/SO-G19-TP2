@@ -1,5 +1,5 @@
-#ifndef __syscall_adapters__
-#define __syscall_adapters__
+#ifndef __SYSCALL_ADAPTERS__H__
+#define __SYSCALL_ADAPTERS__H__
 
 #include <def.h>
 #include <stdint.h>

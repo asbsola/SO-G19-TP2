@@ -1,11 +1,14 @@
-#ifndef __SEMAPHORE_MANAGER_H__
-#define __SEMAPHORE_MANAGER_H__
+#ifndef __SEMAPHORE_MANAGER__H__
+#define __SEMAPHORE_MANAGER__H__
 
 #include <def.h>
+#include <utils/list.h>
+#include <utils/string.h>
 #include <managers/memoryManager.h>
 #include <managers/processManager.h>
 #include <managers/scheduler.h>
 
+typedef struct processManagerCDT *processManagerADT;
 typedef struct semaphoreManagerCDT *semaphoreManagerADT;
 
 semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager,

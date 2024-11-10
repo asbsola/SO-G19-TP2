@@ -12,6 +12,7 @@
 #define MAX_PIPES 256
 #define BUFFER_SIZE 256
 //------------------------------------------------------------
+#define PIT_FREQUENCY 60
 
 #define NOT_IN_FOREGROUND 0
 #define IN_FOREGROUND 1
@@ -49,6 +50,8 @@ typedef struct {
   processStatus status;
 } process_info_t;
 
-#define PIT_FREQUENCY 60
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef __UTILS_H
-#define __UTILS_H
+#ifndef __UTILS__H__
+#define __UTILS__H__
 
 #include <stdint.h>
 #define HEX_COLOR_LEN 6

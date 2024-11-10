@@ -1,12 +1,16 @@
-#ifndef __PROCESS_MANAGER_H__
-#define __PROCESS_MANAGER_H__
+#ifndef __PROCESS_MANAGER__H__
+#define __PROCESS_MANAGER__H__
 
 #include <def.h>
-#include <interruptHandlers/interrupts.h>
-#include <managers/memoryManager.h>
-#include <managers/processControlBlock.h>
-#include <managers/scheduler.h>
 #include <stdint.h>
+#include <registers.h>
+#include <utils/string.h>
+#include <process.h>
+#include <idle.h>
+#include <managers/scheduler.h>
+#include <managers/memoryManager.h>
+
+
 
 #define IDLE_PROCESS_PID 0
 

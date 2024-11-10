@@ -3,8 +3,8 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <managers/kernel_managers.h>
 #include <screen_service.h>
+#include <process.h>
 
-extern void yield();
 uint64_t screen_service(char **argv, int argc) {
   set_font_size(1);
   clear_video_text_buffer();

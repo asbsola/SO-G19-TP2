@@ -1,9 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <managers/memoryManager.h>
-#include <stdio.h>
 
-#define max(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN_BLOCK_SIZE_ORDER 8 // min_block_size = 2^order
 // #define NULL 0
 

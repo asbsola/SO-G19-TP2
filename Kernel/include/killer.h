@@ -1,5 +1,5 @@
-#ifndef __KILLER_H__
-#define __KILLER_H__
+#ifndef __KILLER__H__
+#define __KILLER__H__
 
 #include <managers/processManager.h>
 #include <stdint.h>

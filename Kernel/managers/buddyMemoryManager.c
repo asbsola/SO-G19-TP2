@@ -3,6 +3,7 @@
 #include <managers/memoryManager.h>
 
 #define MIN_BLOCK_SIZE_ORDER 8 // min_block_size = 2^order
+#define max(a, b) (((a) > (b)) ? (a) : (b))
 // #define NULL 0
 
 uint64_t nlog2(uint64_t n);

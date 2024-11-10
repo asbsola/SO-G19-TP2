@@ -156,8 +156,8 @@ uint64_t phylo(char **argv, int argc) {
         return -1;
     }
 
-    puts_with_color("phylo instructions: 'a' to add - 'r' to remove - 'q' to quit\n\n's' to start:\n", 0xc2daff);
-    while(getchar() != 's');
+    puts_with_color("phylo instructions: 'a' to add - 'r' to remove - 'q' to quit\n\npress any key to start:\n", 0xc2daff);
+    sys_get_key_pressed(WAITING);
 
     sys_set_font_size(2);
 

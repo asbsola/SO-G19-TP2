@@ -23,7 +23,6 @@ ModuleDescriptor modules[] = {
     {"test_idle_cleanup", "tests idle cleanup of orphans", PROCESS, test_idle_cleanup},
     {"test_sync", "tests syncro", PROCESS, test_sync},
     {"test_pipes", "tests pipes", PROCESS, test_pipes},
-    {"mega_test_pipes", "mega tests pipes", PROCESS, mega_test_pipes},
     {"mem", "displays memory status", PROCESS, mem},
     {"ps", "displays information about processes", PROCESS, ps},
     {"nicent", "changes process priority by PID", BUILT_IN, nicent},
@@ -51,7 +50,7 @@ void run_shell()
     int num_cmds = 0;
     sys_nicent(sys_get_pid(), HIGH);
 
-    while (strcmp(shell_input, "exit") != 0)
+    while (1)
     {
         sys_set_font_size(current_font_size);
 
@@ -60,6 +59,7 @@ void run_shell()
         shell_input[len-1] = '\0';
 
         if(shell_input[0] == '\0') continue;
+        if(strcmp(shell_input, "exit") == 0) break;
 
         int64_t ans = get_commands(shell_input, commands, &num_cmds);
         if(ans == -1) continue;

@@ -113,6 +113,8 @@ El process manager proporciona varias funciones importantes para la gestión de 
 
 En la creación de procesos armamos el stack de tal manera que al ejecutarse el próximo context switch sea análogo a un proceso que ya estaba ejecutando. Durante la creación del proceso seteamos el registro \texttt{rip} para saltar a una función wrapper, la misma se encarga de llamar a la función dada con \texttt{argv} y \texttt{argc} (tanto el puntero a la función, pid y argv usados por el wrapper se cargan en el stack). Además, la función wrapper hace un exit del proceso al terminar la ejecución del mismo.
 
+En caso que algún proceso provoque una excepción, se maneja la excepción y se realiza un \texttt{kill\_process} del proceso.
+
 \section {Scheduler}
 El scheduler es el encargado de gestionar todo lo relacionado con los cambios de contexto. \\ \texttt{init\_scheduler} inicializa el scheduler. Para gestionar los procesos, se utiliza \texttt{schedule\_process} para agregar un proceso al scheduler, y \texttt{deschedule\_process} para removerlo. \texttt{get\_current\_process} devuelve el proceso actualmente en ejecución. La función \texttt{change\_process\_priority} permite cambiar al proceso de lista. Finalmente, \texttt{context\_switch} realiza el cambio de contexto entre procesos, permitiendo la alternancia en la ejecución de distintos procesos.
 

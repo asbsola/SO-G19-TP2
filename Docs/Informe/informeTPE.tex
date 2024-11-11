@@ -171,14 +171,14 @@ Dichas probabilidades las usamos al momento de hacer el context switch para deci
 
 \section{Semaphore Manager}
 
-Este módulo es el encargado de gestionar los semáforos mediante las siguientes funciones: \texttt{open\_sem}, \texttt{close\_sem}, \texttt{up\_sem} y \texttt{down\_sem}. Al utilizar estas funciones, al momento de hacer un \texttt{open} se obtiene un ID del semáforo, y luego se pueden ejecutar el resto de las funciones utilizando ese ID. Además, se implementaron semáforos con nombres, permitiendo compartirlos entre procesos. Para ello, se utilizan las funciones \texttt{open\_sem\_named}, \texttt{close\_sem\_named}, \texttt{up\_sem\_named} y \texttt{down\_sem\_named}.
+Este módulo es el encargado de gestionar los semáforos mediante las siguientes funciones: \texttt{sem\_open}, \texttt{sem\_close}, \texttt{sem\_up} y \texttt{sem\_down}. Al utilizar estas funciones, al momento de hacer un \texttt{open} se obtiene un ID del semáforo, y luego se pueden ejecutar el resto de las funciones utilizando ese ID. Además, se implementaron semáforos con nombres, permitiendo compartirlos entre procesos. Para ello, se utilizan las funciones \texttt{sem\_open\_named}, \texttt{sem\_close\_named}.
 
 Dado que no tenemos la posibilidad de mapear los semáforos en la memoria de un proceso, se decidió que, si un proceso realiza un \texttt{open} de un semáforo que ya existe, no se realice ninguna acción adicional. Por esta limitación, si un proceso conoce el nombre de un semáforo, puede hacer un \texttt{up} o \texttt{down} sobre él sin necesidad de haberlo abierto previamente.
 
 Relacionado con esta última limitación, se decidió que si un proceso ejecuta un \texttt{sem\_close} o \texttt{sem\_close\_named}, el semáforo se elimine del vector de semáforos, de modo que ningún otro proceso pueda acceder al mismo posteriormente, si algún proceso estaba bloqueado en ese semáforo el mismo es liberado. 
 
 \section{Pipes Manager}
-Este módulo permite la comunicación entre procesos mediante pipes, implementando las funciones \texttt{open\_pipe}, \texttt{close\_pipe}, \texttt{write\_pipe} y \texttt{read\_pipe}. Al igual que los semáforos, los pipes pueden crearse con nombres mediante la función \texttt{open\_pipe\_named}, lo que permite que se compartan entre procesos. Los pipes se gestionan mediante un vector de punteros, con un máximo de \texttt{MAX\_PIPES}, y cada pipe se define como una estructura que incluye un buffer circular de tamaño \texttt{BUFFER\_SIZE}.
+Este módulo permite la comunicación entre procesos mediante pipes, implementando las funciones \texttt{pipe\_open}, \texttt{pipe\_close}, \texttt{pipe\_write} y \texttt{pipe\_read}. Al igual que los semáforos, los pipes pueden crearse con nombres mediante la función \texttt{pipe\_open\_named}, lo que permite que se compartan entre procesos. Los pipes se gestionan mediante un vector de punteros, con un máximo de \texttt{MAX\_PIPES}, y cada pipe se define como una estructura que incluye un buffer circular de tamaño \texttt{BUFFER\_SIZE}.
 
 Al igual que en los semáforos, no existe una noción de pipe ``abierto" dentro del espacio de memoria de un proceso, por lo que cualquier proceso puede acceder a un pipe conociendo su file descriptor.
 
@@ -235,6 +235,10 @@ A continuación se detallan algunos módulos que sirven para testear el funciona
         block & pid & - & - \\
         \hline
         unblock & pid & - & - \\
+        \hline
+        kill & pid & - & - \\
+        \hline
+        nice & pid & priority & - \\
         \hline
         loop & waiting\_time & - & - \\
         \hline

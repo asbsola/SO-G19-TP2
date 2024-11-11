@@ -12,12 +12,12 @@ typedef struct processManagerCDT *processManagerADT;
 typedef struct semaphoreManagerCDT *semaphoreManagerADT;
 
 semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager, schedulerADT scheduler, processManagerADT process_manager);
-sem_t open_sem(semaphoreManagerADT semaphore_manager, uint64_t value);
-int close_sem(semaphoreManagerADT semaphore_manager, sem_t sem);
-int up_sem(semaphoreManagerADT semaphore_manager, sem_t sem);
-int down_sem(semaphoreManagerADT semaphore_manager, sem_t sem);
+sem_t sem_open(semaphoreManagerADT semaphore_manager, uint64_t value);
+int sem_close(semaphoreManagerADT semaphore_manager, sem_t sem);
+int sem_up(semaphoreManagerADT semaphore_manager, sem_t sem);
+int sem_down(semaphoreManagerADT semaphore_manager, sem_t sem);
 
-sem_t open_sem_named(semaphoreManagerADT semaphore_manager, uint64_t value, char *name);
-int close_sem_named(semaphoreManagerADT semaphore_manager, char *name);
+sem_t sem_open_named(semaphoreManagerADT semaphore_manager, uint64_t value, char *name);
+int sem_close_named(semaphoreManagerADT semaphore_manager, char *name);
 
 #endif

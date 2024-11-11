@@ -10,10 +10,10 @@ uint64_t screen_service(char **argv, int argc) {
 	clear_video_text_buffer();
 
 	while (1) {
-		char buff[LINE_MAX_LEN];
+		char buff[SIZE];
 		int len = 0;
-		while (len < LINE_MAX_LEN && (len == 0 || buff[len - 1] != '\0')) {
-			int inc = read_pipe(the_pipes_manager, get_stdin(the_process_manager, get_current_pid(the_scheduler)), buff + len, 1);
+		while (len < SIZE && (len == 0 || buff[len - 1] != '\0')) {
+			int inc = pipe_read(the_pipes_manager, get_stdin(the_process_manager, get_current_pid(the_scheduler)), buff + len, 1);
 			if (inc == EOF || inc == 0) break;
 			len += inc;
 		}

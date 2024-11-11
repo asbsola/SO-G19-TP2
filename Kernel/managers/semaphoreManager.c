@@ -45,7 +45,7 @@ sem_t get_sem_named(semaphoreManagerADT semaphore_manager, char *name) {
 	return -1;
 }
 
-sem_t open_sem(semaphoreManagerADT semaphore_manager, uint64_t value) {
+sem_t sem_open(semaphoreManagerADT semaphore_manager, uint64_t value) {
 	if (semaphore_manager->num_semaphores >= MAX_SEMAPHORES) return -1;
 	acquire(&semaphore_manager->sem_lock);
 
@@ -75,7 +75,7 @@ sem_t open_sem(semaphoreManagerADT semaphore_manager, uint64_t value) {
 	return sem;
 }
 
-sem_t open_sem_named(semaphoreManagerADT semaphore_manager, uint64_t value, char *name) {
+sem_t sem_open_named(semaphoreManagerADT semaphore_manager, uint64_t value, char *name) {
 	acquire(&semaphore_manager->named_sem_lock);
 	sem_t sem = get_sem_named(semaphore_manager, name);
 
@@ -84,7 +84,7 @@ sem_t open_sem_named(semaphoreManagerADT semaphore_manager, uint64_t value, char
 		return sem;
 	}
 
-	sem = open_sem(semaphore_manager, value);
+	sem = sem_open(semaphore_manager, value);
 	if (sem == -1) {
 		release(&semaphore_manager->named_sem_lock);
 		return -1;
@@ -95,7 +95,7 @@ sem_t open_sem_named(semaphoreManagerADT semaphore_manager, uint64_t value, char
 	semaphore->name = mem_alloc(semaphore_manager->memory_manager, (len + 1) * sizeof(char));
 	if (semaphore->name == NULL) {
 		release(&semaphore_manager->named_sem_lock);
-		close_sem(semaphore_manager, sem);
+		sem_close(semaphore_manager, sem);
 		return -1;
 	}
 	str_cpy(semaphore->name, name);
@@ -113,7 +113,7 @@ void unblock_waiting(semaphoreManagerADT semaphore_manager, semaphoreADT semADT)
 	}
 }
 
-int close_sem(semaphoreManagerADT semaphore_manager, sem_t sem) {
+int sem_close(semaphoreManagerADT semaphore_manager, sem_t sem) {
 	if (invalid_sem(semaphore_manager, sem)) return -1;
 	semaphoreADT semaphore = semaphore_manager->semaphores[sem];
 
@@ -134,12 +134,12 @@ int close_sem(semaphoreManagerADT semaphore_manager, sem_t sem) {
 	return 0;
 }
 
-int close_sem_named(semaphoreManagerADT semaphore_manager, char *name) {
+int sem_close_named(semaphoreManagerADT semaphore_manager, char *name) {
 	sem_t sem = get_sem_named(semaphore_manager, name);
-	return close_sem(semaphore_manager, sem);
+	return sem_close(semaphore_manager, sem);
 }
 
-int up_sem(semaphoreManagerADT semaphore_manager, sem_t sem) {
+int sem_up(semaphoreManagerADT semaphore_manager, sem_t sem) {
 	if (invalid_sem(semaphore_manager, sem)) return -1;
 	semaphoreADT semADT = semaphore_manager->semaphores[sem];
 
@@ -156,7 +156,7 @@ int up_sem(semaphoreManagerADT semaphore_manager, sem_t sem) {
 	return 0;
 }
 
-int down_sem(semaphoreManagerADT semaphore_manager, sem_t sem) {
+int sem_down(semaphoreManagerADT semaphore_manager, sem_t sem) {
 	if (invalid_sem(semaphore_manager, sem)) return -1;
 	semaphoreADT semADT = semaphore_manager->semaphores[sem];
 

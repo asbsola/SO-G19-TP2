@@ -5,7 +5,7 @@
 #include <drivers/videoDriver.h>
 #include <utils/utils.h>
 
-#define LINE_MAX_LEN 1024
+#define SIZE 1024
 
 uint64_t screen_service(char **argv, int argc);
 

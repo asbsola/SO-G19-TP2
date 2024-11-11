@@ -10,12 +10,12 @@ typedef struct pipesManagerCDT *pipesManagerADT;
 
 pipesManagerADT init_pipes_manager(memoryManagerADT memory_manager, semaphoreManagerADT semaphore_manager);
 
-fd_t open_pipe(pipesManagerADT pipes_manager, int mode);
-int close_pipe(pipesManagerADT pipes_manager, fd_t fd);
-int write_pipe(pipesManagerADT pipes_manager, fd_t fd, const char *buffer, int size);
-int read_pipe(pipesManagerADT pipes_manager, fd_t fd, char *buffer, int size);
+fd_t pipe_open(pipesManagerADT pipes_manager, int mode);
+int pipe_close(pipesManagerADT pipes_manager, fd_t fd);
+int pipe_write(pipesManagerADT pipes_manager, fd_t fd, const char *buffer, int size);
+int pipe_read(pipesManagerADT pipes_manager, fd_t fd, char *buffer, int size);
 int send_eof(pipesManagerADT pipes_manager, fd_t fd);
 
-fd_t open_pipe_named(pipesManagerADT pipes_manager, char *name, int mode);
+fd_t pipe_open_named(pipesManagerADT pipes_manager, char *name, int mode);
 
 #endif

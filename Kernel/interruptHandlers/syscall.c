@@ -5,13 +5,13 @@
 
 uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
 	if (rdi == KEYBOARD_INPUT_FD) set_input_mode(CANNONICAL);
-	int len = read_pipe(the_pipes_manager, rdi, (char *)rsi, rdx);
+	int len = pipe_read(the_pipes_manager, rdi, (char *)rsi, rdx);
 	if (rdi == KEYBOARD_INPUT_FD) set_input_mode(NON_CANNONICAL);
 	return len;
 }
 
 uint64_t sys_write(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-	return write_pipe(the_pipes_manager, rdi, (const char *)rsi, rdx);
+	return pipe_write(the_pipes_manager, rdi, (const char *)rsi, rdx);
 }
 
 uint64_t sys_set_font_size(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
@@ -149,27 +149,27 @@ uint64_t sys_yield(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint6
 }
 
 uint64_t sys_sem_open_named(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-	return open_sem_named(the_semaphore_manager, rsi, (char *)rdi);
+	return sem_open_named(the_semaphore_manager, rsi, (char *)rdi);
 }
 
 uint64_t sys_sem_close_named(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-	return close_sem_named(the_semaphore_manager, (char *)rdi);
+	return sem_close_named(the_semaphore_manager, (char *)rdi);
 }
 
 uint64_t sys_sem_open(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-	return open_sem(the_semaphore_manager, rdi);
+	return sem_open(the_semaphore_manager, rdi);
 }
 
 uint64_t sys_sem_close(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-	return close_sem(the_semaphore_manager, (sem_t)rdi);
+	return sem_close(the_semaphore_manager, (sem_t)rdi);
 }
 
 uint64_t sys_sem_up(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-	return up_sem(the_semaphore_manager, (sem_t)rdi);
+	return sem_up(the_semaphore_manager, (sem_t)rdi);
 }
 
 uint64_t sys_sem_down(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-	return down_sem(the_semaphore_manager, (sem_t)rdi);
+	return sem_down(the_semaphore_manager, (sem_t)rdi);
 }
 
 uint64_t sys_get_stdin(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
@@ -181,15 +181,15 @@ uint64_t sys_get_stdout(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, 
 }
 
 uint64_t sys_pipe_open_named(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-	return open_pipe_named(the_pipes_manager, (char *)rdi, rsi);
+	return pipe_open_named(the_pipes_manager, (char *)rdi, rsi);
 }
 
 uint64_t sys_pipe_open(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-	return open_pipe(the_pipes_manager, rdi);
+	return pipe_open(the_pipes_manager, rdi);
 }
 
 uint64_t sys_pipe_close(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-	return close_pipe(the_pipes_manager, rdi);
+	return pipe_close(the_pipes_manager, rdi);
 }
 
 uint64_t sys_pipe_send_eof(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {

@@ -16,7 +16,7 @@ static int blocked = 0;
 static char map_to_ascii[256] = {0, '~', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', '\t', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', '/', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', 's', '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 's', '*', 'a', ' ', '+', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'n', 's', '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '0', '.', 0, '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\b', '\t', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n', '/', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', '~', 's', '|', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 's', '*', 'a', ' ', '+', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'n', 's', '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '0', '.'};
 
 int initialize_keyboard() {
-	if ((key_sem = open_sem(the_semaphore_manager, 0)) == -1) return -1;
+	if ((key_sem = sem_open(the_semaphore_manager, 0)) == -1) return -1;
 	return 0;
 }
 
@@ -63,9 +63,9 @@ void keyboard_handler(processManagerADT process_manager, semaphoreManagerADT sem
 		}
 		if (input_mode == CANNONICAL) {
 			if (map_to_ascii[key_buffer[first_key_index + buffer_size]] == '\t')
-				write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, "\b\b\b\b", 5);
+				pipe_write(the_pipes_manager, SCREEN_OUTPUT_FD, "\b\b\b\b", 5);
 			else
-				write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, c, 2);
+				pipe_write(the_pipes_manager, SCREEN_OUTPUT_FD, c, 2);
 		}
 		return;
 	}
@@ -75,17 +75,17 @@ void keyboard_handler(processManagerADT process_manager, semaphoreManagerADT sem
 	if (input_mode == NON_CANNONICAL) {
 		if (blocked) {
 			blocked = 0;
-			up_sem(the_semaphore_manager, key_sem);
+			sem_up(the_semaphore_manager, key_sem);
 		}
 	} else {
-		write_pipe(the_pipes_manager, SCREEN_OUTPUT_FD, c, 2);
+		pipe_write(the_pipes_manager, SCREEN_OUTPUT_FD, c, 2);
 		if (c[0] == '\n') flush();
 	}
 }
 
 void flush() {
 	while (buffer_size > 0) {
-		write_pipe(the_pipes_manager, KEYBOARD_INPUT_FD, (const char*)&map_to_ascii[key_buffer[first_key_index]], 1);
+		pipe_write(the_pipes_manager, KEYBOARD_INPUT_FD, (const char*)&map_to_ascii[key_buffer[first_key_index]], 1);
 		first_key_index = (first_key_index + 1) % MAX_LEN_BUFFER;
 		buffer_size--;
 	}
@@ -96,7 +96,7 @@ uint8_t get_key_pending(int wait) {
 	if (buffer_size == 0) {
 		if (!wait) return 0;
 		blocked = 1;
-		down_sem(the_semaphore_manager, key_sem);
+		sem_down(the_semaphore_manager, key_sem);
 	}
 	uint8_t key = key_buffer[first_key_index];
 	first_key_index = (first_key_index + 1) % MAX_LEN_BUFFER;

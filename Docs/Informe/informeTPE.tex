@@ -277,8 +277,8 @@ Si bien hay varios test que fueron brindados por la cátedra, decidimos hacer al
     \item El sistema tiene un límite de 256 semáforos.
     \item El sistema solo puede manejar tres prioridades.
     \item El stack de los procesos es de 8KB.
-    \item El sistema solo puede manejar 4MB de memoria.
-    \item Al correr \texttt{Ctrl + Shift + C} o \texttt{Ctrl + C}, pueden quedar recursos abiertos, lo cual implica leaks de memoria porque al no poder saber que recursos tiene un proceso, no podemos liberarlos.
+    \item El sistema cuenta con 4MB de memoria.
+    \item Al correr \texttt{Ctrl + Shift + C} o \texttt{Ctrl + C}, pueden quedar recursos abiertos, lo cual implica leaks de memoria.
 \end{itemize}
 
 En cuanto a las limitaciones numéricas, el sistema fue diseñado de tal manera que se pueden cambiar fácilmente. En el archivo \texttt{def.h} se encuentran las constantes que definen estas limitaciones.

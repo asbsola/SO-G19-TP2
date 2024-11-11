@@ -57,7 +57,7 @@ void run_shell() {
         shell_input[len - 1] = '\0';
 
 		if (strcmp(shell_input, "exit") == 0 || (len == 1 && sys_get_stdin() != KEYBOARD_INPUT_FD)) break;
-		if (shell_input[0] == '\0') continue;
+		if (len == 1) continue;
 
 		int64_t ans = get_commands(shell_input, commands, &num_cmds);
 		if (ans == -1) continue;

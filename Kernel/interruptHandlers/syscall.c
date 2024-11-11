@@ -197,6 +197,10 @@ uint64_t sys_pipe_send_eof(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r1
 	return send_eof(the_pipes_manager, rdi);
 }
 
+uint64_t sys_get_process_status(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
+	return get_process_status(the_process_manager, rdi);
+}
+
 uint64_t (*syscalls[])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t) = {
     sys_read, sys_write,
     sys_put_text, sys_set_font_size, sys_draw_square,
@@ -209,7 +213,7 @@ uint64_t (*syscalls[])(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_
     sys_get_pid, sys_get_ppid, sys_wait, sys_wait_pid, sys_nice, sys_yield, 
     sys_sem_open_named, sys_sem_close_named, sys_sem_open, sys_sem_close, sys_sem_up, sys_sem_down,
     sys_get_stdin, sys_get_stdout,
-    sys_pipe_open_named, sys_pipe_open, sys_pipe_close, sys_pipe_send_eof
+    sys_pipe_open_named, sys_pipe_open, sys_pipe_close, sys_pipe_send_eof, sys_get_process_status
 };
 
 uint64_t syscall_handler(const registers64_t *registers) {

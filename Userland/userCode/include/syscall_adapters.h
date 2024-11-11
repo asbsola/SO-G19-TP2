@@ -49,4 +49,7 @@ fd_t sys_pipe_open_named(const char *name, int mode);
 fd_t sys_pipe_open(int mode);
 fd_t sys_pipe_close(fd_t pipe);
 fd_t sys_pipe_send_eof(fd_t pipe);
+processStatus sys_get_process_status(pid_t pid);
+
+
 #endif

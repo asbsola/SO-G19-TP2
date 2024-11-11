@@ -223,6 +223,11 @@ int unblock_process(processManagerADT process_manager, pid_t pid) {
 	return 0;
 }
 
+uint64_t get_process_status(processManagerADT process_manager, pid_t rdi){
+	if (invalid_pid(process_manager, rdi)) return -1;
+	return process_manager->processes[rdi]->status;
+}
+
 int remove_process(processManagerADT process_manager, pid_t pid) {
 	if (invalid_pid(process_manager, pid)) return -1;
 

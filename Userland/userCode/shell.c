@@ -263,7 +263,13 @@ uint64_t block(char **argv, int argc) {
 	}
 	int pid = atoi(argv[1]);
 
-	return sys_block_process_by_pid(pid);
+	processStatus status = sys_get_process_status(pid);
+
+	if(status == BLOCKED) sys_unblock_process_by_pid(pid);
+	
+	if(status == READY || status == RUNNING) sys_block_process_by_pid(pid);
+
+	return 0;
 }
 
 uint64_t unblock(char **argv, int argc) {

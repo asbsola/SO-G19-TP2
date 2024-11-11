@@ -27,7 +27,7 @@ uint64_t process_inc(char **argv, int argc) {
 	}
 	if ((inc = satoi(argv[2])) == 0) return -1;
 	if ((use_sem = satoi(argv[3])) < 0) {
-		puts_with_color("test_sync: ERROR error max_iters must be greater than 0\n", 0xFF0000);
+		puts_with_color("test_sync: ERROR error use_sem must be greater than 0\n", 0xFF0000);
 		return -1;
 	}
 

@@ -84,7 +84,7 @@ int main() {
 		delay(2000);
 		return -1;
 	}
-	the_pipes_manager = init_pipes_manager(the_memory_manager, the_semaphore_manager);
+	the_pipes_manager = init_pipes_manager(the_memory_manager, the_semaphore_manager, the_process_manager, the_scheduler);
 	if (the_pipes_manager == NULL) {
 		write_to_video_text_buffer("Not enough memory\n", 18, HEX_RED);
 		delay(2000);

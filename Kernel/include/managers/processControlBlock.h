@@ -15,6 +15,7 @@ typedef struct processControlBlockCDT {
 	uint64_t ret;
 	uint8_t parent_is_waiting;
 	semaphoreADT blocking_sem;
+    sem_t pipe_mutex;
 	fd_t stdin;
 	fd_t stdout;
 	int input_mode;

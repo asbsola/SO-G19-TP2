@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <interruptHandlers/syscall.h>
 #include <managers/kernel_managers.h>
+#include <killer.h>
 
 uint64_t sys_read(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
 	if (rdi == KEYBOARD_INPUT_FD) set_input_mode(CANNONICAL);
@@ -116,7 +117,7 @@ uint64_t sys_block_process_by_pid(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint
 }
 
 uint64_t sys_kill_process_by_pid(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {
-	return kill_process(the_process_manager, rdi, rsi);
+	return kill_signal(rdi, rsi);
 }
 
 uint64_t sys_unblock_process_by_pid(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9) {

@@ -4,11 +4,13 @@
 #include <def.h>
 #include <managers/memoryManager.h>
 #include <managers/semaphoreManager.h>
+#include <managers/processManager.h>
+#include <managers/scheduler.h>
 #include <utils/string.h>
 
 typedef struct pipesManagerCDT *pipesManagerADT;
 
-pipesManagerADT init_pipes_manager(memoryManagerADT memory_manager, semaphoreManagerADT semaphore_manager);
+pipesManagerADT init_pipes_manager(memoryManagerADT memory_manager, semaphoreManagerADT semaphore_manager, processManagerADT process_manager, schedulerADT scheduler);
 
 fd_t pipe_open(pipesManagerADT pipes_manager, int mode);
 int pipe_close(pipesManagerADT pipes_manager, fd_t fd);

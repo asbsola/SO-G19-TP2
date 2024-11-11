@@ -117,6 +117,7 @@ pid_t create_process(processManagerADT process_manager, pid_t parent_pid, uint64
 	process_pcb->argv = argv_copy;
 	process_pcb->stdin = stdin;
 	process_pcb->stdout = stdout;
+	process_pcb->pipe_mutex = -1;
 
 	struct startFrame *start_frame = (startFrame *)(process_pcb->stack + PROCESS_STACK_SIZE - sizeof(startFrame));
 	start_frame->process_manager = process_manager;
@@ -268,9 +269,10 @@ int kill_process(processManagerADT process_manager, pid_t pid, uint64_t recursiv
 	return 0;
 }
 
-uint64_t kill_signal(processManagerADT process_manager, int recursive) {
+pid_t get_fg_pid(processManagerADT process_manager) {
 	for (pid_t pid = 0; pid <= process_manager->max_pid; pid++)
-		if (pid != IDLE_PROCESS_PID && process_manager->processes[pid]->parent_is_waiting == WAITING && get_grandparent_pid(process_manager, pid) == IDLE_PROCESS_PID) return kill_process(process_manager, pid, recursive);
+		if (pid != IDLE_PROCESS_PID && process_manager->processes[pid]->parent_is_waiting == WAITING && get_grandparent_pid(process_manager, pid) == IDLE_PROCESS_PID) return pid;
+
 	return -1;
 }
 

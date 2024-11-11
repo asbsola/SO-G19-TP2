@@ -35,7 +35,8 @@ uint64_t wait(processManagerADT process_manager, int64_t *ret);
 uint64_t wait_process(processManagerADT process_manager, pid_t child_pid, int64_t *ret);
 uint64_t nicent(processManagerADT process_manager, pid_t pid, processPriority priority);
 
-uint64_t kill_signal(processManagerADT process_manager, int recursive);
+int is_child(processManagerADT process_manager, pid_t my_pid, pid_t child_pid);
+pid_t get_fg_pid(processManagerADT process_manager);
 
 fd_t get_stdin(processManagerADT process_manager, pid_t pid);
 fd_t get_stdout(processManagerADT process_manager, pid_t pid);

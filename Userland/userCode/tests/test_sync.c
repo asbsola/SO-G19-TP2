@@ -60,6 +60,11 @@ uint64_t test_sync(char **argv, int argc) {
 		return -1;
 	}
 
+	if ((satoi(argv[1])) <= 0) {
+		puts_with_color("test_sync: ERROR error max_iters must be greater than 0\n", 0xFF0000);
+		return -1;
+	}
+
 	int process_count = satoi(argv[2]);
 
 	if (process_count < 0 || process_count > (MAX_PROCESSES / 2)) {

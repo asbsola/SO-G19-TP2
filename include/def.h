@@ -5,10 +5,10 @@
 
 //------------------------------------------------------------
 
-#define PROCESS_STACK_SIZE (1 << 13) // 8KB
+#define PROCESS_STACK_SIZE (1 << 13)  // 8KB
 #define MAX_PROCESSES 256
 #define MAX_SEMAPHORES 256
-#define MEMORY_MANAGER_MEM_SIZE (1 << 22) // 4MB
+#define MEMORY_MANAGER_MEM_SIZE (1 << 22)  // 4MB
 #define MAX_PIPES 256
 #define BUFFER_SIZE 256
 //------------------------------------------------------------
@@ -40,16 +40,15 @@ typedef enum { RUNNING, READY, BLOCKED, EXITED, KILLED } processStatus;
 typedef enum { LOW, MEDIUM, HIGH } processPriority;
 
 typedef struct {
-  pid_t pid;
-  pid_t parent_pid;
-  processPriority priority;
-  void *stack_pointer;
-  void *base_pointer;
-  const char *name;
-  uint8_t parent_is_waiting;
-  processStatus status;
+	pid_t pid;
+	pid_t parent_pid;
+	processPriority priority;
+	void *stack_pointer;
+	void *base_pointer;
+	const char *name;
+	uint8_t parent_is_waiting;
+	processStatus status;
 } process_info_t;
-
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))

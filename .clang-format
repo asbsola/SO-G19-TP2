@@ -1,0 +1,14 @@
+Language: Cpp
+BasedOnStyle: Google # o el estilo base que prefieras
+UseTab: Always
+TabWidth: 4
+IndentWidth: 4
+ColumnLimit: 9999 # Evita el recorte de líneas estableciendo un límite alto
+AllowShortBlocksOnASingleLine: Always # Omitir llaves en bloques de una sola línea
+AllowShortIfStatementsOnASingleLine: WithoutElse # Permite if de una línea sin llaves cuando no hay else
+BreakBeforeBraces: Attach # Ubicación de las llaves para bloques de varias líneas
+AllowShortFunctionsOnASingleLine: None
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: False
+PenaltyBreakString: 1000
+PenaltyBreakComment: 300

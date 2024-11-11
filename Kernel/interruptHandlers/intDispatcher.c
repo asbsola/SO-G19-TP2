@@ -7,10 +7,8 @@
 #include <stdint.h>
 
 uint64_t irqDispatcher(uint64_t irq, const registers64_t *registers) {
-	if (irq == 0)
-		return timer_handler(the_scheduler, registers);
-	if (irq == 1)
-		keyboard_handler(the_process_manager, the_semaphore_manager, registers);
+	if (irq == 0) return timer_handler(the_scheduler, registers);
+	if (irq == 1) keyboard_handler(the_process_manager, the_semaphore_manager, registers);
 	return (uint64_t)registers;
 }
 

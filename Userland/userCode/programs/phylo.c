@@ -10,26 +10,25 @@ uint32_t number_of_philosophers = INITIAL_NUMBER_OF_PHILOSOPHERS;
 
 uint64_t view(char **argv, int argc) {
 	char buffer[MAX_NUMBER_OF_PHILOSOPHERS + 1] = {0};
-	char str[15*MAX_NUMBER_OF_PHILOSOPHERS/2+15] = {0};
+	char str[15 * MAX_NUMBER_OF_PHILOSOPHERS / 2 + 15] = {0};
 	int len = 0;
 	int read = 0;
-	while ((read = sys_read(view_pipe, &buffer[len++], 1)) != EOF && len <= MAX_NUMBER_OF_PHILOSOPHERS+1) {
-		if(buffer[len-1] == '\0'){
-			int n = len-1;
+	while ((read = sys_read(view_pipe, &buffer[len++], 1)) != EOF && len <= MAX_NUMBER_OF_PHILOSOPHERS + 1) {
+		if (buffer[len - 1] == '\0') {
+			int n = len - 1;
 			str[0] = '\0';
 			strcat(str, str, "\n -");
-			for(int i=0; i<n/2; i++){
+			for (int i = 0; i < n / 2; i++) {
 				char aux[] = {buffer[i], '-', '\0'};
 				strcat(str, str, aux);
 			}
 			strcat(str, str, "\n| ");
-			for(int i=0; i<n/2; i++)
-				strcat(str, str, "  ");
-			char c = (n % 2 == 0? '|' : buffer[n/2]);
+			for (int i = 0; i < n / 2; i++) strcat(str, str, "  ");
+			char c = (n % 2 == 0 ? '|' : buffer[n / 2]);
 			char aux[] = {c, '\n', ' ', '-', '\0'};
 			strcat(str, str, aux);
-			for(int i=0; i<n/2; i++){
-				char aux[] = {buffer[n-i-1], '-', '\0'};
+			for (int i = 0; i < n / 2; i++) {
+				char aux[] = {buffer[n - i - 1], '-', '\0'};
 				strcat(str, str, aux);
 			}
 			strcat(str, str, "\n");
@@ -44,8 +43,10 @@ uint64_t view(char **argv, int argc) {
 void write_philosophers_state_to_pipe() {
 	char buffer[number_of_philosophers + 1];
 	for (int i = 0; i < number_of_philosophers; i++) {
-		if (philosophers[i].state == EATING) buffer[i] = 'E';
-		else buffer[i] = '.';
+		if (philosophers[i].state == EATING)
+			buffer[i] = 'E';
+		else
+			buffer[i] = '.';
 	}
 
 	buffer[number_of_philosophers] = '\0';
@@ -111,7 +112,7 @@ int add_philosopher() {
 
 	char buff[20];
 	itoa(number_of_philosophers - 1, buff, 20);
-	char* argv[] = {"thinking_man", buff, 0};
+	char *argv[] = {"thinking_man", buff, 0};
 
 	if ((philosophers[number_of_philosophers - 1].pid = sys_create_process(thinking_man, argv, KEYBOARD_INPUT_FD, view_pipe)) == -1) {
 		sys_sem_up(chopsticks[0]);
@@ -174,9 +175,7 @@ uint64_t phylo(char **argv, int argc) {
 	for (int i = 0; i < MAX_NUMBER_OF_PHILOSOPHERS; i++) {
 		if ((chopsticks[i] = sys_sem_open(1)) == -1) {
 			puts_with_color("phylo: ERROR opening semaphore\n", 0xFF0000);
-			for (int j = 0; j < i; j++) {
-				sys_sem_close(chopsticks[j]);
-			}
+			for (int j = 0; j < i; j++) { sys_sem_close(chopsticks[j]); }
 			sys_sem_close(add_remove_mutex);
 			return -1;
 		}
@@ -185,15 +184,13 @@ uint64_t phylo(char **argv, int argc) {
 	for (int i = 0; i < INITIAL_NUMBER_OF_PHILOSOPHERS; i++) {
 		if (add_philosopher() == -1) {
 			puts_with_color("phylo: ERROR creating process\n", 0xFF0000);
-			for (int j = 0; j < MAX_NUMBER_OF_PHILOSOPHERS; j++) {
-				sys_sem_close(chopsticks[j]);
-			}
+			for (int j = 0; j < MAX_NUMBER_OF_PHILOSOPHERS; j++) { sys_sem_close(chopsticks[j]); }
 			sys_sem_close(add_remove_mutex);
 			return -1;
 		}
 	}
 
-	char* args[] = {0};
+	char *args[] = {0};
 	sys_create_process(view, args, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
 
 	char key;
@@ -204,13 +201,9 @@ uint64_t phylo(char **argv, int argc) {
 			remove_philosopher();
 	}
 
-	for (int i = 0; i < number_of_philosophers; i++) {
-		sys_kill_process_by_pid(philosophers[i].pid, 0);
-	}
+	for (int i = 0; i < number_of_philosophers; i++) { sys_kill_process_by_pid(philosophers[i].pid, 0); }
 
-	for (int j = 0; j < MAX_NUMBER_OF_PHILOSOPHERS; j++) {
-		sys_sem_close(chopsticks[j]);
-	}
+	for (int j = 0; j < MAX_NUMBER_OF_PHILOSOPHERS; j++) { sys_sem_close(chopsticks[j]); }
 
 	sys_pipe_close(view_pipe);
 

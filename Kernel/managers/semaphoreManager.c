@@ -18,16 +18,12 @@ struct semaphoreManagerCDT {
 void acquire(uint8_t *lock);
 void release(uint8_t *lock);
 
-semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager,
-		schedulerADT scheduler,
-		processManagerADT process_manager) {
-	semaphoreManagerADT semaphore_manager =
-		mem_alloc(memory_manager, sizeof(struct semaphoreManagerCDT));
+semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager, schedulerADT scheduler, processManagerADT process_manager) {
+	semaphoreManagerADT semaphore_manager = mem_alloc(memory_manager, sizeof(struct semaphoreManagerCDT));
 
 	semaphore_manager->last_sem = -1;
 	semaphore_manager->num_semaphores = 0;
-	for (int i = 0; i < MAX_SEMAPHORES; i++)
-		semaphore_manager->semaphores[i] = NULL;
+	for (int i = 0; i < MAX_SEMAPHORES; i++) semaphore_manager->semaphores[i] = NULL;
 	semaphore_manager->sem_lock = 1;
 	semaphore_manager->named_sem_lock = 1;
 	semaphore_manager->memory_manager = memory_manager;
@@ -38,33 +34,25 @@ semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager,
 }
 
 int invalid_sem(semaphoreManagerADT semaphore_manager, sem_t sem) {
-	return sem < 0 || sem >= MAX_SEMAPHORES ||
-		semaphore_manager->semaphores[sem] == NULL;
+	return sem < 0 || sem >= MAX_SEMAPHORES || semaphore_manager->semaphores[sem] == NULL;
 }
 
 sem_t get_sem_named(semaphoreManagerADT semaphore_manager, char *name) {
 	sem_t sem;
 	for (sem = 0; sem <= semaphore_manager->last_sem; sem++) {
-		if (!invalid_sem(semaphore_manager, sem) &&
-				str_cmp(semaphore_manager->semaphores[sem]->name, name) == 0)
-			return sem;
+		if (!invalid_sem(semaphore_manager, sem) && str_cmp(semaphore_manager->semaphores[sem]->name, name) == 0) return sem;
 	}
 	return -1;
 }
 
 sem_t open_sem(semaphoreManagerADT semaphore_manager, uint64_t value) {
-	if (semaphore_manager->num_semaphores >= MAX_SEMAPHORES)
-		return -1;
+	if (semaphore_manager->num_semaphores >= MAX_SEMAPHORES) return -1;
 	acquire(&semaphore_manager->sem_lock);
 
 	sem_t sem;
-	for (sem = 0;
-			sem < MAX_SEMAPHORES && semaphore_manager->semaphores[sem] != NULL;
-			sem++)
-		;
+	for (sem = 0; sem < MAX_SEMAPHORES && semaphore_manager->semaphores[sem] != NULL; sem++);
 
-	semaphoreADT semaphore =
-		mem_alloc(semaphore_manager->memory_manager, sizeof(struct semaphoreCDT));
+	semaphoreADT semaphore = mem_alloc(semaphore_manager->memory_manager, sizeof(struct semaphoreCDT));
 	if (semaphore == NULL) {
 		release(&semaphore_manager->sem_lock);
 		return -1;
@@ -87,8 +75,7 @@ sem_t open_sem(semaphoreManagerADT semaphore_manager, uint64_t value) {
 	return sem;
 }
 
-sem_t open_sem_named(semaphoreManagerADT semaphore_manager, uint64_t value,
-		char *name) {
+sem_t open_sem_named(semaphoreManagerADT semaphore_manager, uint64_t value, char *name) {
 	acquire(&semaphore_manager->named_sem_lock);
 	sem_t sem = get_sem_named(semaphore_manager, name);
 
@@ -105,8 +92,7 @@ sem_t open_sem_named(semaphoreManagerADT semaphore_manager, uint64_t value,
 
 	semaphoreADT semaphore = semaphore_manager->semaphores[sem];
 	int len = str_len(name);
-	semaphore->name =
-		mem_alloc(semaphore_manager->memory_manager, (len + 1) * sizeof(char));
+	semaphore->name = mem_alloc(semaphore_manager->memory_manager, (len + 1) * sizeof(char));
 	if (semaphore->name == NULL) {
 		release(&semaphore_manager->named_sem_lock);
 		close_sem(semaphore_manager, sem);
@@ -118,8 +104,7 @@ sem_t open_sem_named(semaphoreManagerADT semaphore_manager, uint64_t value,
 	return sem;
 }
 
-void unblock_waiting(semaphoreManagerADT semaphore_manager,
-		semaphoreADT semADT) {
+void unblock_waiting(semaphoreManagerADT semaphore_manager, semaphoreADT semADT) {
 	while (!list_is_empty(semADT->waiting_processes)) {
 		processControlBlockADT processADT = list_next(semADT->waiting_processes);
 		unblock_process(semaphore_manager->process_manager, processADT->pid);
@@ -129,8 +114,7 @@ void unblock_waiting(semaphoreManagerADT semaphore_manager,
 }
 
 int close_sem(semaphoreManagerADT semaphore_manager, sem_t sem) {
-	if (invalid_sem(semaphore_manager, sem))
-		return -1;
+	if (invalid_sem(semaphore_manager, sem)) return -1;
 	semaphoreADT semaphore = semaphore_manager->semaphores[sem];
 
 	acquire(&semaphore->lock);
@@ -143,8 +127,7 @@ int close_sem(semaphoreManagerADT semaphore_manager, sem_t sem) {
 	semaphore_manager->num_semaphores--;
 	if (semaphore_manager->last_sem == sem) {
 		sem_t i;
-		for (i = sem - 1; i >= 0 && semaphore_manager->semaphores[i] == NULL; i--)
-			;
+		for (i = sem - 1; i >= 0 && semaphore_manager->semaphores[i] == NULL; i--);
 		semaphore_manager->last_sem = i;
 	}
 
@@ -157,8 +140,7 @@ int close_sem_named(semaphoreManagerADT semaphore_manager, char *name) {
 }
 
 int up_sem(semaphoreManagerADT semaphore_manager, sem_t sem) {
-	if (invalid_sem(semaphore_manager, sem))
-		return -1;
+	if (invalid_sem(semaphore_manager, sem)) return -1;
 	semaphoreADT semADT = semaphore_manager->semaphores[sem];
 
 	acquire(&semADT->lock);
@@ -175,16 +157,14 @@ int up_sem(semaphoreManagerADT semaphore_manager, sem_t sem) {
 }
 
 int down_sem(semaphoreManagerADT semaphore_manager, sem_t sem) {
-	if (invalid_sem(semaphore_manager, sem))
-		return -1;
+	if (invalid_sem(semaphore_manager, sem)) return -1;
 	semaphoreADT semADT = semaphore_manager->semaphores[sem];
 
 	acquire(&semADT->lock);
 
 	if (semADT->value == 0) {
 		pid_t current_pid = get_current_pid(semaphore_manager->scheduler);
-		processControlBlockADT current_process =
-			get_process(semaphore_manager->process_manager, current_pid);
+		processControlBlockADT current_process = get_process(semaphore_manager->process_manager, current_pid);
 		list_add(semADT->waiting_processes, current_process);
 		current_process->blocking_sem = semADT;
 

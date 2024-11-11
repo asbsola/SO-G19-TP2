@@ -17,8 +17,8 @@
 
 typedef enum { EATING, THINKING } philosopherState;
 typedef struct {
-  philosopherState state;
-  pid_t pid;
+	philosopherState state;
+	pid_t pid;
 } philosopher;
 
 uint64_t phylo(char **argv, int argc);

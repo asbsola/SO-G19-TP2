@@ -19,17 +19,14 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
 	uint32_t total;
 	uint64_t max_memory = 10000;
 
-	if (argc != 1)
-		return -1;
+	if (argc != 1) return -1;
 
-	if ((max_memory = satoi(argv[0])) <= 0)
-		return -1;
+	if ((max_memory = satoi(argv[0])) <= 0) return -1;
 
 	char memory[max_memory];
 	memoryManagerADT mem_manager = init_memory_manager(memory, max_memory);
 
-	if (mem_manager == NULL)
-		return -1;
+	if (mem_manager == NULL) return -1;
 
 	max_memory = get_usable_memory_size(mem_manager);
 	printf("Usable memory: %ld\n", max_memory);
@@ -51,8 +48,7 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
 			if (mm_rqs[rq].address) {
 				free_memory = get_free_memory_size(mem_manager);
 				total += mm_rqs[rq].size;
-				printf("Memoria allocada: %d - Memoria libre: %ld\n", mm_rqs[rq].size,
-						free_memory);
+				printf("Memoria allocada: %d - Memoria libre: %ld\n", mm_rqs[rq].size, free_memory);
 				rq++;
 			}
 		}
@@ -60,8 +56,7 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
 		// Set
 		uint32_t i;
 		for (i = 0; i < rq; i++)
-			if (mm_rqs[i].address)
-				memset(mm_rqs[i].address, i, mm_rqs[i].size);
+			if (mm_rqs[i].address) memset(mm_rqs[i].address, i, mm_rqs[i].size);
 
 		// Check
 		for (i = 0; i < rq; i++)
@@ -73,8 +68,7 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
 
 		// Free
 		for (i = 0; i < rq; i++)
-			if (mm_rqs[i].address)
-				mem_free(mem_manager, mm_rqs[i].address);
+			if (mm_rqs[i].address) mem_free(mem_manager, mm_rqs[i].address);
 	}
 	return 0;
 }

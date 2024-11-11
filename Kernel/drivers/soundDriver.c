@@ -6,8 +6,7 @@
 #include <stdint.h>
 
 void beep(uint64_t freq, uint64_t milis) {
-	if (freq == 0)
-		return;
+	if (freq == 0) return;
 	play_sound(freq);
 	delay(milis);
 	stop_sound();

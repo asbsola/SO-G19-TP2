@@ -11,19 +11,14 @@ struct schedulerCDT {
 };
 
 void free_process_list(ListADT process_list[], int size) {
-	for (int i = 0; i < size; i++) {
-		free_list(process_list[i]);
-	}
+	for (int i = 0; i < size; i++) { free_list(process_list[i]); }
 }
 
 schedulerADT init_scheduler(memoryManagerADT memory_manager) {
-	schedulerADT scheduler =
-		mem_alloc(memory_manager, sizeof(struct schedulerCDT));
-	if (scheduler == NULL)
-		return NULL;
+	schedulerADT scheduler = mem_alloc(memory_manager, sizeof(struct schedulerCDT));
+	if (scheduler == NULL) return NULL;
 
 	for (int i = 0; i < PRIORITY_LEVELS; i++) {
-
 		ListADT process_list = list_init(memory_manager);
 		if (process_list == NULL) {
 			free_process_list(scheduler->process_list, i);
@@ -39,8 +34,7 @@ schedulerADT init_scheduler(memoryManagerADT memory_manager) {
 }
 
 pid_t get_current_pid(schedulerADT scheduler) {
-	if (scheduler->current_process == NULL)
-		return -1;
+	if (scheduler->current_process == NULL) return -1;
 	return scheduler->current_process->pid;
 }
 
@@ -53,41 +47,27 @@ int deschedule_process(schedulerADT scheduler, processControlBlockADT process) {
 }
 
 int denominator(schedulerADT scheduler) {
-	return 4 * list_size(scheduler->process_list[HIGH]) +
-		2 * list_size(scheduler->process_list[MEDIUM]) +
-		list_size(scheduler->process_list[LOW]);
+	return 4 * list_size(scheduler->process_list[HIGH]) + 2 * list_size(scheduler->process_list[MEDIUM]) + list_size(scheduler->process_list[LOW]);
 }
 
 int get_probability_low(schedulerADT scheduler) {
-	if (denominator(scheduler) == 0)
-		return 0;
-	return list_size(scheduler->process_list[LOW]) * 10000 /
-		denominator(scheduler);
+	if (denominator(scheduler) == 0) return 0;
+	return list_size(scheduler->process_list[LOW]) * 10000 / denominator(scheduler);
 }
 
 int get_probability_medium(schedulerADT scheduler) {
-	if (denominator(scheduler) == 0)
-		return 0;
-	return list_size(scheduler->process_list[MEDIUM]) * 20000 /
-		denominator(scheduler);
+	if (denominator(scheduler) == 0) return 0;
+	return list_size(scheduler->process_list[MEDIUM]) * 20000 / denominator(scheduler);
 }
 int get_probability_high(schedulerADT scheduler) {
-	if (denominator(scheduler) == 0)
-		return 0;
-	return list_size(scheduler->process_list[HIGH]) * 40000 /
-		denominator(scheduler);
+	if (denominator(scheduler) == 0) return 0;
+	return list_size(scheduler->process_list[HIGH]) * 40000 / denominator(scheduler);
 }
 
 int get_next_priority(schedulerADT scheduler) {
-
 	uint32_t random = GetUniform(10000);
-	if (random < get_probability_high(scheduler) &&
-			!list_is_empty(scheduler->process_list[HIGH]))
-		return HIGH;
-	if (random <
-			get_probability_high(scheduler) + get_probability_medium(scheduler) &&
-			!list_is_empty(scheduler->process_list[MEDIUM]))
-		return MEDIUM;
+	if (random < get_probability_high(scheduler) && !list_is_empty(scheduler->process_list[HIGH])) return HIGH;
+	if (random < get_probability_high(scheduler) + get_probability_medium(scheduler) && !list_is_empty(scheduler->process_list[MEDIUM])) return MEDIUM;
 	return LOW;
 }
 
@@ -123,10 +103,7 @@ uint64_t context_switch(schedulerADT scheduler, uint64_t rsp) {
 	return scheduler->current_process->rsp;
 }
 
-int change_process_priority(schedulerADT scheduler,
-		processControlBlockADT process,
-		processPriority old_priority,
-		processPriority new_priority) {
+int change_process_priority(schedulerADT scheduler, processControlBlockADT process, processPriority old_priority, processPriority new_priority) {
 	deschedule_process(scheduler, process);
 	process->priority = new_priority;
 	schedule_process(scheduler, process);

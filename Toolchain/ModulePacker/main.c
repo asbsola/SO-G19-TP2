@@ -14,22 +14,18 @@ const char *argp_program_version = "x64BareBones ModulePacker (C) v0.2";
 const char *argp_program_bug_address = "arq-catedra@googlegroups.com";
 
 /* Program documentation. */
-static char doc[] =
-"ModulePacker is an appender of binary files to be loaded all together";
+static char doc[] = "ModulePacker is an appender of binary files to be loaded all together";
 
 /* A description of the arguments we accept. */
 static char args_doc[] = "KernelFile Module1 Module2 ...";
 
 /* The options we understand. */
-static struct argp_option options[] = {
-	{"output", 'o', "FILE", 0, "Output to FILE instead of standard output"},
-	{0}};
+static struct argp_option options[] = {{"output", 'o', "FILE", 0, "Output to FILE instead of standard output"}, {0}};
 
 /* Our argp parser. */
 static struct argp argp = {options, parse_opt, args_doc, doc};
 
 int main(int argc, char *argv[]) {
-
 	struct arguments arguments;
 
 	arguments.output_file = OUTPUT_FILE;
@@ -39,15 +35,12 @@ int main(int argc, char *argv[]) {
 
 	array_t fileArray = {arguments.args, arguments.count};
 
-	if (!checkFiles(fileArray)) {
-		return 1;
-	}
+	if (!checkFiles(fileArray)) { return 1; }
 
 	return !buildImage(fileArray, arguments.output_file);
 }
 
 int buildImage(array_t fileArray, char *output_file) {
-
 	FILE *target;
 
 	if ((target = fopen(output_file, "w")) == NULL) {
@@ -81,7 +74,6 @@ int buildImage(array_t fileArray, char *output_file) {
 }
 
 int checkFiles(array_t fileArray) {
-
 	int i = 0;
 	for (; i < fileArray.length; i++) {
 		if (access(fileArray.array[i], R_OK)) {
@@ -127,8 +119,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 			break;
 
 		case ARGP_KEY_END:
-			if (state->arg_num < 1)
-				argp_usage(state);
+			if (state->arg_num < 1) argp_usage(state);
 			arguments->count = state->arg_num;
 			break;
 

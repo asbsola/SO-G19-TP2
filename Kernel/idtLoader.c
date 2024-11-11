@@ -3,9 +3,8 @@
 
 #include <idtLoader.h>
 
-
 #pragma pack(push) /* Push de la alineación actual */
-#pragma pack(1)    /* Alinear las siguiente estructuras a 1 byte */
+#pragma pack(1)	   /* Alinear las siguiente estructuras a 1 byte */
 
 /* Descriptor de interrupcion */
 typedef struct {
@@ -17,7 +16,7 @@ typedef struct {
 
 #pragma pack(pop) /* Reestablece la alinceación actual */
 
-DESCR_INT *idt = (DESCR_INT *)0; // IDT de 255 entradas
+DESCR_INT *idt = (DESCR_INT *)0;  // IDT de 255 entradas
 
 void load_idt() {
 	setup_IDT_entry(0x00, (uint64_t)&_exception0Handler);
@@ -26,8 +25,8 @@ void load_idt() {
 	setup_IDT_entry(0x21, (uint64_t)&_irq01Handler);
 	setup_IDT_entry(0x80, (uint64_t)&_int80Handler);
 
-	picMasterMask(0xFC); // 1111 1100 (Timer tick and Keyboard unmasked)
-	picSlaveMask(0xFF);  // 1111 1111 (fully masked)
+	picMasterMask(0xFC);  // 1111 1100 (Timer tick and Keyboard unmasked)
+	picSlaveMask(0xFF);	  // 1111 1111 (fully masked)
 }
 
 void setup_IDT_entry(int index, uint64_t offset) {

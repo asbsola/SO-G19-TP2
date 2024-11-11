@@ -25,8 +25,7 @@ uint8_t memcheck(void *start, uint8_t value, uint32_t size) {
 	uint32_t i;
 
 	for (i = 0; i < size; i++, p++)
-		if (*p != value)
-			return 0;
+		if (*p != value) return 0;
 
 	return 1;
 }
@@ -37,8 +36,7 @@ int64_t satoi(char *str) {
 	int64_t res = 0;
 	int8_t sign = 1;
 
-	if (!str)
-		return 0;
+	if (!str) return 0;
 
 	if (str[i] == '-') {
 		i++;
@@ -46,8 +44,7 @@ int64_t satoi(char *str) {
 	}
 
 	for (; str[i] != '\0'; ++i) {
-		if (str[i] < '0' || str[i] > '9')
-			return 0;
+		if (str[i] < '0' || str[i] > '9') return 0;
 		res = res * 10 + str[i] - '0';
 	}
 
@@ -56,9 +53,7 @@ int64_t satoi(char *str) {
 
 uint64_t bussy_wait_proc(char **argv, int argc) {
 	uint64_t millis = 0;
-	if (argc < 2 || (millis = satoi(argv[1])) <= 0) {
-		return -1;
-	}
+	if (argc < 2 || (millis = satoi(argv[1])) <= 0) { return -1; }
 
 	sleep(millis);
 
@@ -66,8 +61,7 @@ uint64_t bussy_wait_proc(char **argv, int argc) {
 }
 
 uint64_t endless_loop(char **argv, int argc) {
-	while (1)
-		;
+	while (1);
 }
 
 int counters[] = {0, 0, 0};
@@ -85,4 +79,5 @@ uint64_t echo_test(char **argv, int argc) {
 	return atoi(argv[1]);
 }
 
-void endless_loop_print(uint64_t wait) {}
+void endless_loop_print(uint64_t wait) {
+}

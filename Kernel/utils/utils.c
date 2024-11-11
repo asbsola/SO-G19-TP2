@@ -30,9 +30,7 @@ uint8_t hexCharToInt(char c) {
 uint32_t hex_color_string_to_number(const char *hex_color) {
 	uint32_t out = 0;
 
-	for (int i = 0; i < HEX_COLOR_LEN && hex_color[i] != '\0'; i++) {
-		out = (out << 4) | hexCharToInt(hex_color[i]);
-	}
+	for (int i = 0; i < HEX_COLOR_LEN && hex_color[i] != '\0'; i++) { out = (out << 4) | hexCharToInt(hex_color[i]); }
 
 	return out;
 }

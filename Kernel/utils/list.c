@@ -18,8 +18,7 @@ struct List {
 
 ListADT list_init(memoryManagerADT memory_manager) {
 	ListADT list = (ListADT)mem_alloc(memory_manager, sizeof(struct List));
-	if (list == NULL)
-		return NULL;
+	if (list == NULL) return NULL;
 
 	list->head = NULL;
 	list->next = NULL;
@@ -30,8 +29,7 @@ ListADT list_init(memoryManagerADT memory_manager) {
 }
 
 void free_list(ListADT list) {
-	if (list == NULL)
-		return;
+	if (list == NULL) return;
 
 	ListNode *current = list->head;
 	ListNode *next;
@@ -45,13 +43,10 @@ void free_list(ListADT list) {
 }
 
 int list_add(ListADT list, void *data) {
-	if (list == NULL || data == NULL)
-		return 0;
+	if (list == NULL || data == NULL) return 0;
 
-	ListNode *new_node =
-		(ListNode *)mem_alloc(list->memory_manager, sizeof(ListNode));
-	if (new_node == NULL)
-		return 0;
+	ListNode *new_node = (ListNode *)mem_alloc(list->memory_manager, sizeof(ListNode));
+	if (new_node == NULL) return 0;
 
 	new_node->data = data;
 	if (list_is_empty(list)) {
@@ -69,24 +64,19 @@ int list_add(ListADT list, void *data) {
 }
 
 int list_remove(ListADT list, void *data) {
-	if (list == NULL || list_is_empty(list) || data == NULL)
-		return 0;
+	if (list == NULL || list_is_empty(list) || data == NULL) return 0;
 
 	ListNode *current = list->head;
 	ListNode *previous = list->last;
 	while (current->data != data) {
-		if (current == list->last)
-			return 0;
+		if (current == list->last) return 0;
 		previous = current;
 		current = current->next;
 	}
 	previous->next = current->next;
-	if (current == list->head)
-		list->head = current->next;
-	if (current == list->next)
-		list->next = current->next;
-	if (current == list->last)
-		list->last = previous;
+	if (current == list->head) list->head = current->next;
+	if (current == list->next) list->next = current->next;
+	if (current == list->last) list->last = previous;
 	mem_free(list->memory_manager, current);
 	list->size--;
 	if (list->size == 0) {
@@ -98,33 +88,28 @@ int list_remove(ListADT list, void *data) {
 }
 
 void *list_next(const ListADT list) {
-	if (list == NULL || list_is_empty(list))
-		return NULL;
+	if (list == NULL || list_is_empty(list)) return NULL;
 	void *data = list->next->data;
 	list->next = list->next->next;
 	return data;
 }
 
 size_t list_size(const ListADT list) {
-	if (list == NULL)
-		return 0;
+	if (list == NULL) return 0;
 	return list->size;
 }
 
 int list_is_empty(const ListADT list) {
-	if (list == NULL)
-		return 1;
+	if (list == NULL) return 1;
 	return list->size == 0;
 }
 
 void *get_element(const ListADT list, void *data) {
-	if (list == NULL || list_is_empty(list) || data == NULL)
-		return NULL;
+	if (list == NULL || list_is_empty(list) || data == NULL) return NULL;
 
 	ListNode *current = list->head;
 	while (current->data != data) {
-		if (current == list->last)
-			return NULL;
+		if (current == list->last) return NULL;
 		current = current->next;
 	}
 	return current->data;

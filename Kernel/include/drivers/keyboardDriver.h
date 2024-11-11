@@ -9,8 +9,6 @@
 #include <registers.h>
 #include <stdint.h>
 
-
-
 #define MAX_LEN_BUFFER 256
 #define CAPS_OFFSET 84
 #define CAPS_LOCK_CODE_PRESSED 0x3A
@@ -23,9 +21,7 @@
 #define ESCAPE_CODE_PRESSED 0x01
 
 int initialize_keyboard();
-void keyboard_handler(processManagerADT process_manager,
-                      semaphoreManagerADT semaphore_manager,
-                      const registers64_t *registers);
+void keyboard_handler(processManagerADT process_manager, semaphoreManagerADT semaphore_manager, const registers64_t *registers);
 uint8_t get_key_pending(int wait);
 char get_character_pending(int wait);
 uint8_t get_scan_code();

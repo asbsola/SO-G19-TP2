@@ -17,16 +17,16 @@
 typedef enum { BUILT_IN, PROCESS } command_type;
 
 typedef struct {
-  char *module_name;
-  char *module_description;
-  command_type module_type;
-  uint64_t (*module)(char **, int);
+	char *module_name;
+	char *module_description;
+	command_type module_type;
+	uint64_t (*module)(char **, int);
 } ModuleDescriptor;
 
 typedef struct {
-  ModuleDescriptor module;
-  char **argv;
-  int argc;
+	ModuleDescriptor module;
+	char **argv;
+	int argc;
 } Command;
 
 uint64_t help(char **argv, int argc);

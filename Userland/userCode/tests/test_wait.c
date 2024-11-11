@@ -27,28 +27,26 @@ uint64_t test_wait(char **argv, int argc) {
 	uint64_t iter = 0;
 
 	if (argc < 3) {
-		puts_with_color("test_wait: ERROR must provide max_iters and max_processes "
-				"(tops at 250)\n",
-				0xFF0000);
+		puts_with_color(
+			"test_wait: ERROR must provide max_iters and max_processes "
+			"(tops at 250)\n",
+			0xFF0000);
 		return -1;
 	}
 
 	max_iters = satoi(argv[1]);
 	if (max_iters <= 0) {
-		puts_with_color("test_wait: ERROR max_iters must be greater than 0\n",
-				0xFF0000);
+		puts_with_color("test_wait: ERROR max_iters must be greater than 0\n", 0xFF0000);
 		return -1;
 	}
 
 	max_processes = satoi(argv[2]);
 	if (max_processes <= 0) {
-		puts_with_color("test_wait: ERROR max_processes must be greater than 0\n",
-				0xFF0000);
+		puts_with_color("test_wait: ERROR max_processes must be greater than 0\n", 0xFF0000);
 		return -1;
 	}
 	if (max_processes > TOTAL_PROCESSES) {
-		puts_with_color("test_wait: ERROR max_processes must be less than 250\n",
-				0xFF0000);
+		puts_with_color("test_wait: ERROR max_processes must be less than 250\n", 0xFF0000);
 		return -1;
 	}
 
@@ -71,8 +69,7 @@ uint64_t test_wait(char **argv, int argc) {
 			itoa(rq, rq_str, 10);
 			itoa(MILLIS * action * 2, millis_param, 10);
 			char *argvAux[] = {"echo", rq_str, millis_param, NULL};
-			p_rqs[rq].pid = sys_create_process(echo_test, argvAux, KEYBOARD_INPUT_FD,
-					SCREEN_OUTPUT_FD);
+			p_rqs[rq].pid = sys_create_process(echo_test, argvAux, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
 
 			if (p_rqs[rq].pid == -1) {
 				puts_with_color("test_wait: ERROR creating process\n", 0xFF0000);
@@ -91,8 +88,7 @@ uint64_t test_wait(char **argv, int argc) {
 
 		sleep(MILLIS);
 
-		if (!in_background)
-			printf("waiting processes...\n");
+		if (!in_background) printf("waiting processes...\n");
 
 		// Randomly waits with one syscall, until all have been retrieved
 		while (working > 0) {
@@ -120,8 +116,7 @@ uint64_t test_wait(char **argv, int argc) {
 			itoa(rq, rq_str, 10);
 			itoa(MILLIS * 2, millis_param, 10);
 			char *argvAux[] = {"echo", rq_str, millis_param, NULL};
-			p_rqs[rq].pid = sys_create_process(echo_test, argvAux, KEYBOARD_INPUT_FD,
-					SCREEN_OUTPUT_FD);
+			p_rqs[rq].pid = sys_create_process(echo_test, argvAux, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);
 
 			if (p_rqs[rq].pid == -1) {
 				puts_with_color("test_wait: ERROR creating process\n", 0xFF0000);
@@ -140,8 +135,7 @@ uint64_t test_wait(char **argv, int argc) {
 
 		sleep(MILLIS);
 
-		if (!in_background)
-			printf("waiting processes...\n");
+		if (!in_background) printf("waiting processes...\n");
 
 		// Waits with the other syscalls, until all have been retrieved
 		while (working > 0) {

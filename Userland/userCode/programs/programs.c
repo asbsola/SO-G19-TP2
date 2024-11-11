@@ -81,15 +81,13 @@ uint64_t mem(char **argv, int argc) {
 	printf("Total memory:    %d\n", sys_get_total_memory_size());
 	printf("Usable memory:   %d\n", sys_get_usable_memory_size());
 	printf("Free memory:     %d\n", sys_get_free_memory_size());
-	printf("Occupied memory: %d\n",
-			sys_get_usable_memory_size() - sys_get_free_memory_size());
+	printf("Occupied memory: %d\n", sys_get_usable_memory_size() - sys_get_free_memory_size());
 
 	return 0;
 }
 
 const char *process_priority_names[] = {"LOW", "MEDIUM", "HIGH"};
-const char *process_status_names[] = {"RUNNING", "READY", "BLOCKED", "EXITED",
-	"KILLED"};
+const char *process_status_names[] = {"RUNNING", "READY", "BLOCKED", "EXITED", "KILLED"};
 
 uint64_t ps(char **argv, int argc) {
 	process_info_t *processes = (process_info_t *)sys_ps();
@@ -106,9 +104,7 @@ uint64_t ps(char **argv, int argc) {
 		printf("\tPriority: %s\n", process_priority_names[processes[i].priority]);
 		printf("\tStatus: %s\n", process_status_names[processes[i].status]);
 
-		if (sys_get_ppid() == processes[i].parent_pid)
-			printf("\tForeground: %s IN FOREGROUND\n",
-					(processes[i].parent_is_waiting == WAITING) ? "" : "NOT");
+		if (sys_get_ppid() == processes[i].parent_pid) printf("\tForeground: %s IN FOREGROUND\n", (processes[i].parent_is_waiting == WAITING) ? "" : "NOT");
 		printf("\tStack pointer: %d\n", processes[i].stack_pointer);
 		printf("\tBase pointer: %d\n", processes[i].base_pointer);
 	}
@@ -120,8 +116,7 @@ uint64_t ps(char **argv, int argc) {
 
 uint64_t loop(char **argv, int argc) {
 	if (argc < 2) {
-		puts_with_color("loop: ERROR must provide waiting time in seconds\n",
-				0xFF0000);
+		puts_with_color("loop: ERROR must provide waiting time in seconds\n", 0xFF0000);
 		return -1;
 	}
 
@@ -148,8 +143,7 @@ uint64_t cat(char **argv, int argc) {
 	while (i > 0) {
 		i = 0;
 		c = 0;
-		while (c != '\n' && sys_read(stdin, &c, 1) != EOF && i < BUF_SIZE - 1)
-			buffer[i++] = c;
+		while (c != '\n' && sys_read(stdin, &c, 1) != EOF && i < BUF_SIZE - 1) buffer[i++] = c;
 		buffer[i] = 0;
 		sys_write(stdout, buffer, i + 1);
 	}
@@ -166,8 +160,7 @@ uint64_t wc(char **argv, int argc) {
 
 	while ((read = sys_read(stdin, buffer, BUF_SIZE)) != EOF) {
 		for (int i = 0; i < read; i++) {
-			if (buffer[i] == '\n')
-				lines++;
+			if (buffer[i] == '\n') lines++;
 		}
 	}
 	printf("Lines: %d\n", lines);
@@ -182,8 +175,7 @@ uint64_t filter(char **argv, int argc) {
 	int i = 0;
 	char c = 0;
 	while (sys_read(stdin, &c, 1) != EOF && i < BUF_SIZE - 1) {
-		if (!isVowel(c))
-			filtered_buffer[i++] = c;
+		if (!isVowel(c)) filtered_buffer[i++] = c;
 	}
 	filtered_buffer[i] = 0;
 	sys_write(stdout, filtered_buffer, i + 1);
@@ -191,9 +183,7 @@ uint64_t filter(char **argv, int argc) {
 }
 
 uint64_t echo(char **argv, int argc) {
-	for (int i = 1; i < argc; i++) {
-		printf("%s ", argv[i]);
-	}
+	for (int i = 1; i < argc; i++) { printf("%s ", argv[i]); }
 	putchar('\n');
 
 	return 0;

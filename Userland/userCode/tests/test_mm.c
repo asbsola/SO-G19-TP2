@@ -20,16 +20,15 @@ uint64_t test_mm(char **argv, int argc) {
 	uint8_t in_background = (argc > 3 && argv[argc - 1][0] == '&');
 
 	uint64_t usable_memory = sys_get_usable_memory_size();
-	if (!in_background)
-		printf("Usable memory: %ld\n", usable_memory);
+	if (!in_background) printf("Usable memory: %ld\n", usable_memory);
 
 	uint64_t max_memory;
 	uint64_t max_iters;
-	if (argc < 3 || (max_iters = satoi(argv[1])) <= 0 ||
-			(max_memory = satoi(argv[2])) <= 0) {
-		puts_with_color("test_mm: ERROR must provide max_iters and max_memory "
-				"(tops at usable_memory / 2)\n",
-				0xFF0000);
+	if (argc < 3 || (max_iters = satoi(argv[1])) <= 0 || (max_memory = satoi(argv[2])) <= 0) {
+		puts_with_color(
+			"test_mm: ERROR must provide max_iters and max_memory "
+			"(tops at usable_memory / 2)\n",
+			0xFF0000);
 		return -1;
 	}
 
@@ -56,9 +55,7 @@ uint64_t test_mm(char **argv, int argc) {
 				free_memory = sys_get_free_memory_size();
 				total += mm_rqs[rq].size;
 
-				if (!in_background)
-					printf("Allocated memory: %d - Free memory: %ld, Ptr: %ld\n",
-							mm_rqs[rq].size, free_memory, (uint64_t)mm_rqs[rq].address);
+				if (!in_background) printf("Allocated memory: %d - Free memory: %ld, Ptr: %ld\n", mm_rqs[rq].size, free_memory, (uint64_t)mm_rqs[rq].address);
 
 				rq++;
 			}
@@ -67,8 +64,7 @@ uint64_t test_mm(char **argv, int argc) {
 		// Set
 		uint32_t i;
 		for (i = 0; i < rq; i++)
-			if (mm_rqs[i].address)
-				memset(mm_rqs[i].address, i, mm_rqs[i].size);
+			if (mm_rqs[i].address) memset(mm_rqs[i].address, i, mm_rqs[i].size);
 
 		// Check
 		for (i = 0; i < rq; i++)
@@ -80,11 +76,9 @@ uint64_t test_mm(char **argv, int argc) {
 
 		// Free
 		for (i = 0; i < rq; i++)
-			if (mm_rqs[i].address)
-				sys_free(mm_rqs[i].address);
+			if (mm_rqs[i].address) sys_free(mm_rqs[i].address);
 
-		if (!in_background)
-			puts_with_color("-----------------------------------\n", 0xc2daff);
+		if (!in_background) puts_with_color("-----------------------------------\n", 0xc2daff);
 	}
 
 	return 0;

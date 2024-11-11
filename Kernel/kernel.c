@@ -6,16 +6,14 @@
 #include <drivers/videoDriver.h>
 #include <interruptHandlers/interrupts.h>
 #include <lib.h>
-#include <moduleLoader.h>
-#include <stdint.h>
-#include <string.h>
-
-
 #include <managers/memoryManager.h>
 #include <managers/pipesManager.h>
 #include <managers/processManager.h>
 #include <managers/scheduler.h>
 #include <managers/semaphoreManager.h>
+#include <moduleLoader.h>
+#include <stdint.h>
+#include <string.h>
 
 static char managed_memory[MEMORY_MANAGER_MEM_SIZE];
 
@@ -33,8 +31,7 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
-static const uint64_t StackPageCount =
-16; // Stack Size = PageSize * StackPageCount
+static const uint64_t StackPageCount = 16;	// Stack Size = PageSize * StackPageCount
 
 typedef int (*EntryPoint)();
 
@@ -45,13 +42,11 @@ void clearBSS(void *bssAddress, uint64_t bssSize) {
 }
 
 void *getStackBase() {
-	return (void *)((uint64_t)&endOfKernel + PageSize * StackPageCount -
-			sizeof(uint64_t));
+	return (void *)((uint64_t)&endOfKernel + PageSize * StackPageCount - sizeof(uint64_t));
 }
 
 void *initializeKernelBinary() {
-	void *moduleAddresses[] = {(void *)SHELL_CODE_ADDRESS,
-		(void *)SHELL_DATA_ADDRESS};
+	void *moduleAddresses[] = {(void *)SHELL_CODE_ADDRESS, (void *)SHELL_DATA_ADDRESS};
 
 	loadModules(&endOfKernelBinary, moduleAddresses);
 
@@ -59,16 +54,13 @@ void *initializeKernelBinary() {
 
 	return getStackBase();
 }
-semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager,
-		schedulerADT scheduler,
-		processManagerADT process_manager);
+semaphoreManagerADT init_semaphore_manager(memoryManagerADT memory_manager, schedulerADT scheduler, processManagerADT process_manager);
 int main() {
 	_cli();
 	initialize_pit(PIT_FREQUENCY);
 	load_idt();
 
-	the_memory_manager =
-		init_memory_manager(managed_memory, MEMORY_MANAGER_MEM_SIZE);
+	the_memory_manager = init_memory_manager(managed_memory, MEMORY_MANAGER_MEM_SIZE);
 	if (the_memory_manager == NULL) {
 		write_to_video_text_buffer("Not enough memory\n", 18, HEX_RED);
 		delay(2000);
@@ -86,15 +78,13 @@ int main() {
 		delay(2000);
 		return -1;
 	}
-	the_semaphore_manager = init_semaphore_manager(
-			the_memory_manager, the_scheduler, the_process_manager);
+	the_semaphore_manager = init_semaphore_manager(the_memory_manager, the_scheduler, the_process_manager);
 	if (the_semaphore_manager == NULL) {
 		write_to_video_text_buffer("Not enough memory\n", 18, HEX_RED);
 		delay(2000);
 		return -1;
 	}
-	the_pipes_manager =
-		init_pipes_manager(the_memory_manager, the_semaphore_manager);
+	the_pipes_manager = init_pipes_manager(the_memory_manager, the_semaphore_manager);
 	if (the_pipes_manager == NULL) {
 		write_to_video_text_buffer("Not enough memory\n", 18, HEX_RED);
 		delay(2000);

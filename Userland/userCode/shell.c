@@ -53,10 +53,11 @@ void run_shell() {
 		sys_set_font_size(current_font_size);
 
 		puts_with_color("shell> ", 0x006fb5fb);
-		scan_line("%s", shell_input);
+		int len = getline(shell_input, MAX_SHELL_INPUT);
+        shell_input[len - 1] = '\0';
 
+		if (strcmp(shell_input, "exit") == 0 || (len == 1 && sys_get_stdin() != KEYBOARD_INPUT_FD)) break;
 		if (shell_input[0] == '\0') continue;
-		if (strcmp(shell_input, "exit") == 0) break;
 
 		int64_t ans = get_commands(shell_input, commands, &num_cmds);
 		if (ans == -1) continue;

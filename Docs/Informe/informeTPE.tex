@@ -63,7 +63,7 @@ A continuación, se detallan las instrucciones para compilar y ejecutar los test
 \item Compilación y ejecución de los tests dentro del kernel:
 
 \begin{enumerate}
-    \item Tener un contenedor de docker con la imagen provista por la catedra.
+    \item Tener un contenedor de docker con la imagen provista por la cátedra.
     \item En la raíz del proyecto, ejecutar \textbf{make}.
     \item Luego, ejecutar \textbf{./run.sh}.
     \item Por último, ejecutar \textbf{test\_mm \textless memoryAmount\textgreater}.
@@ -92,7 +92,7 @@ A continuación, se detallan las instrucciones para compilar y ejecutar los test
 \item Compilación y ejecución de los tests dentro del kernel:
 
 \begin{enumerate}
-    \item Tener un contenedor de docker con la imagen provista por la catedra.
+    \item Tener un contenedor de docker con la imagen provista por la cátedra.
     \item En la raíz del proyecto, ejecutar \textbf{make buddy}.
     \item Luego, ejecutar \textbf{./run.sh}.
     \item Por último, ejecutar \textbf{test\_mm \textless memoryAmount\textgreater}.
@@ -196,7 +196,7 @@ Existen dos pipes standard creados al momento de inicializar el Kernel, un pipe 
 \end{itemize}
 
 \section {Idle}
-El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede terminar, bloquear, ni cambiar su prioridad. Su función es, si los tuviera, liberar a sus hijos que estén en estado \texttt{EXITED} y luego ejecutar yield para ceder la cpu a otro proceso. El mismo al comenzar es el encargado de crear la \texttt{shell} y el proceso \texttt{screen\_service}, a medida que procesos no esperados quedan huerfanos, el process manager les asigna como padre a idle.
+El idle es un proceso que se crea al inicializar el process manager, el mismo no se puede terminar, bloquear, ni cambiar su prioridad. Su función es, si los tuviera, liberar a sus hijos que estén en estado \texttt{EXITED} y luego ejecutar yield para ceder la cpu a otro proceso. El mismo al comenzar es el encargado de crear la \texttt{shell} y el proceso \texttt{screen\_service}, a medida que procesos no esperados quedan huérfanos, el process manager les asigna como padre a idle.
 
 \section {Shell}
 La shell posee comandos que corren como procesos y otros que son comandos built-in. Ejecutando el comando help se puede ver una lista con todos los comandos disponibles y si son procesos o built-in. Para todos los módulos que corren como procesos, se les puede poner como último argumento \texttt{\&} para que corran en background.
@@ -268,7 +268,7 @@ Si bien hay varios test que fueron brindados por la cátedra, decidimos hacer al
     \item test\_priority\_dist\: Este test crea múltiples procesos con diferentes prioridades y cuenta la cantidad de veces que ese proceso es elegido por el scheduler. Luego imprime cuantas veces fueron elegidos los procesos de cada una de las prioridades. Fue creado con el propósito de verificar el correcto funcionamiento del scheduler pseudoaleatorio.
     \item test\_pipes\: Este test verifica la funcionalidad de los pipes creando pares de procesos escritores y lectores que se comunican a través de un pipe, verificando que la suma de los bytes escritos sea la misma que la suma de los bytes leídos.
     \item test\_idle\_cleanup\: Este test crea múltiples procesos y finaliza sin hacer wait a ninguno de ellos, permitiendo al usuario verificar que el proceso idle los limpie correctamente mediante el comando \texttt{ps}.
-    \item test\_wait\: Este test crea dos grupos de procesos, los mismos tienen un pequeño delay y luego retornan un valor. Finalmente, el test verifica si la suma de los valores de retorno de ambos grupos fue el mismo, asi se testean las syscalls \texttt{wait} y \texttt{wait\_pid}.
+    \item test\_wait\: Este test crea dos grupos de procesos, los mismos tienen un pequeño delay y luego retornan un valor. Finalmente, el test verifica si la suma de los valores de retorno de ambos grupos fue el mismo, así se testean las syscalls \texttt{wait} y \texttt{wait\_pid}.
 \end{itemize}
 
 \section {Otras decisiones de diseño}
@@ -301,7 +301,7 @@ A continuación se detallan los warnings encontrados por PVS-Studio que son cons
     \item Error V576. Este error se encuentra en muchos archivos, el mismo es desestimó ya que indica un error de formato en printf y en scanf, pues PVS-Studio asocia printf y scanf con las funciones de la librería estándar de C. 
     \item Error V776. Este error indica que hay un loop infinito. Pero este error es un falso positivo ya que se utiliza para los tests.
     \item Error V566. Este error indica que puede haber problemas al utilizar una constante entera como puntero. Esto es un falso positivo ya que en nuestro sistema estamos harcodeando la dirección donde se carga el código de userland a través de esta constante.
-    \item Error V656. Este error indica que dos variables fueron inicializadas con llamada a una misma funcion con iguales parametros. A continuación se muestra un fragmento de código donde se puede ver que es un falso positivo.
+    \item Error V656. Este error indica que dos variables fueron inicializadas con llamada a una misma función con iguales parámetros. A continuación se muestra un fragmento de código donde se puede ver que es un falso positivo.
 \end{itemize}
     \begin{lstlisting}[language=C]
         sem_t read_mutex = sem_open(pipes_manager->semaphore_manager, 1);
@@ -328,7 +328,7 @@ A continuación se detallan los warnings encontrados por PVS-Studio que son cons
 A continuación se detallan las instrucciones para compilar y ejecutar el sistema:
 
 \begin{enumerate}
-    \item Tener un contenedor de docker con la imagen provista por la catedra.
+    \item Tener un contenedor de docker con la imagen provista por la cátedra.
     \item En la raíz del proyecto, ejecutar \textbf{make}.
     \item Luego, ejecutar \textbf{./run.sh}.
 \end{enumerate}
@@ -336,7 +336,7 @@ A continuación se detallan las instrucciones para compilar y ejecutar el sistem
 Siguiendo los pasos mencionados anteriormente se utilizara el bitmap memory manager. En caso de querer utilizar el buddy memory manager, se deben seguir los siguientes pasos:
 
 \begin{enumerate}
-    \item Tener un contenedor de docker con la imagen provista por la catedra.
+    \item Tener un contenedor de docker con la imagen provista por la cátedra.
     \item En la raíz del proyecto, ejecutar \textbf{make buddy}.
     \item Luego, ejecutar \textbf{./run.sh}.
 \end{enumerate}

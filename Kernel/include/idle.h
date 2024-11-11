@@ -5,8 +5,7 @@
 #include <interruptHandlers/interrupts.h>
 #include <process.h>
 #include <screen_service.h>
-#include <shell_caller.h>
-#include <stdint.h>
+#include <def.h>
 
 uint64_t idle(char **argv, int argc);
 

@@ -35,6 +35,7 @@ ModuleDescriptor modules[] = {
     {"wc", "counts the number of lines in the input", PROCESS, wc}, 
     {"filter", "Filters the input vowels", PROCESS, filter}, 
     {"echo", "echos the input", PROCESS, echo},
+    {"sh", "a shell (inside a shell :O)", PROCESS, (uint64_t(*)(char **, int))(SHELL_CODE_ADDRESS)},
 };
 
 static int current_font_size = 1;

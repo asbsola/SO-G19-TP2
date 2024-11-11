@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#define SHELL_CODE_ADDRESS 0xE00000
+#define SHELL_DATA_ADDRESS 0xF00000
+
 //------------------------------------------------------------
 
 #define PROCESS_STACK_SIZE (1 << 13)  // 8KB

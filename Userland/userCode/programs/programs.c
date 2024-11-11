@@ -185,7 +185,10 @@ uint64_t filter(char **argv, int argc) {
 }
 
 uint64_t echo(char **argv, int argc) {
-	for (int i = 1; i < argc; i++) { printf("%s ", argv[i]); }
+	for (int i = 1; i < argc; i++) { 
+        puts(argv[i]);
+        if (i < argc - 1) putchar(' ');
+    }
 	putchar('\n');
 
 	return 0;

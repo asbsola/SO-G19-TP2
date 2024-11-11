@@ -37,7 +37,7 @@ uint64_t test_prio(char **argv, int argc) {
 	if (!in_background) puts_with_color("\nCHANGING PRIORITIES...\n", 0xc2daff);
 
 	for (i = 0; i < max_processes; i++)
-		if (sys_nicent(pids[i], prio[i]) == -1) {
+		if (sys_nice(pids[i], prio[i]) == -1) {
 			puts_with_color("test_priority: ERROR changing priority\n", 0xFF0000);
 			return -1;
 		}
@@ -57,7 +57,7 @@ uint64_t test_prio(char **argv, int argc) {
 	if (!in_background) puts_with_color("CHANGING PRIORITIES WHILE BLOCKED...\n", 0xc2daff);
 
 	for (i = 0; i < max_processes; i++)
-		if (sys_nicent(pids[i], MEDIUM) == -1) {
+		if (sys_nice(pids[i], MEDIUM) == -1) {
 			puts_with_color("test_priority: ERROR changing priority while blocked\n", 0xFF0000);
 			return -1;
 		}

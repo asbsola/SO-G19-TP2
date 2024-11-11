@@ -31,7 +31,7 @@ global sys_get_pid
 global sys_get_ppid
 global sys_wait
 global sys_wait_pid
-global sys_nicent
+global sys_nice
 global sys_yield
 global sys_sem_open_named
 global sys_sem_close_named
@@ -152,7 +152,7 @@ sys_wait:
 sys_wait_pid:
     syscall 30
 
-sys_nicent:
+sys_nice:
     syscall 31
 
 sys_yield:

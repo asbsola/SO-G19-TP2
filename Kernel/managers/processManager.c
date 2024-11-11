@@ -383,7 +383,7 @@ void free_argv(processManagerADT process_manager, char **argv) {
 	mem_free(process_manager->memory_manager, argv);
 }
 
-uint64_t nicent(processManagerADT process_manager, pid_t pid, processPriority priority) {
+uint64_t nice(processManagerADT process_manager, pid_t pid, processPriority priority) {
 	if (pid == IDLE_PROCESS_PID || has_finnished(process_manager, pid)) return -1;
 
 	if (process_manager->processes[pid]->status == BLOCKED) {

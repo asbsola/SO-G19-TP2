@@ -8,7 +8,7 @@ ModuleDescriptor modules[] = {
     {"sysinfo", "displays system information", PROCESS, info}, 
     {"fontsize", "change font size", BUILT_IN, font_size}, 
     {"time", "display current time", PROCESS, time}, 
-    {"regs", "displays captured registers (ESC key to capture)", PROCESS, regs}, 
+    {"regs", "displays captured registers (ESC key to capture)", BUILT_IN, regs}, 
     {"beep", "beeps", BUILT_IN, beep}, 
     {"song", "plays a short tune while displaying graphics", PROCESS, cucaracha}, 
     {"calculator", "positive integer calculator", PROCESS, calculator}, 
@@ -24,7 +24,7 @@ ModuleDescriptor modules[] = {
     {"test_pipes", "tests pipes", PROCESS, test_pipes}, 
     {"mem", "displays memory status", PROCESS, mem}, 
     {"ps", "displays information about processes", PROCESS, ps}, 
-    {"nicent", "changes process priority by PID", BUILT_IN, nicent}, 
+    {"nice", "changes process priority by PID", BUILT_IN, nice}, 
     {"kill", "terminates a process by its PID. If the flag 'r' is provided, it also terminates all its descendants", BUILT_IN, kill}, 
     {"cleanup", "removes all exited processes", BUILT_IN, cleanup}, 
     {"block", "blocks a procces by a PID", BUILT_IN, block}, 
@@ -46,7 +46,7 @@ void run_shell() {
 	pid_t pids[MAX_COMMANDS];
 	fd_t pipes[MAX_COMMANDS - 1];
 	int num_cmds = 0;
-	sys_nicent(sys_get_pid(), HIGH);
+	sys_nice(sys_get_pid(), HIGH);
 
 	while (1) {
 		sys_set_font_size(current_font_size);
@@ -200,9 +200,9 @@ uint64_t beep(char **argv, int argc) {
 	return 0;
 }
 
-uint64_t nicent(char **argv, int argc) {
+uint64_t nice(char **argv, int argc) {
 	if (argc < 3) {
-		puts_with_color("nicent: ERROR must provide pid and priority\n", 0xFF0000);
+		puts_with_color("nice: ERROR must provide pid and priority\n", 0xFF0000);
 		return -1;
 	}
 
@@ -216,12 +216,12 @@ uint64_t nicent(char **argv, int argc) {
 	else if (strcmp(argv[2], "HIGH") == 0)
 		priority = 2;
 	else {
-		puts_with_color("nicent: ERROR priority must be LOW, MEDIUM or HIGH\n", 0xFF0000);
+		puts_with_color("nice: ERROR priority must be LOW, MEDIUM or HIGH\n", 0xFF0000);
 		return -1;
 	}
 
-	if (sys_nicent(pid, priority) == -1) {
-		puts("nicent: ERROR changing priority\n");
+	if (sys_nice(pid, priority) == -1) {
+		puts("nice: ERROR changing priority\n");
 		return -1;
 	}
 

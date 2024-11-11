@@ -156,7 +156,7 @@ char getchar() {
 
 int getline(char *buffer, int max_len) {
 	int len = 0;
-	while (sys_read(sys_get_stdin(), buffer + len, 1) != EOF && len < max_len && buffer[len] != '\n') len++;
+	while (sys_read(sys_get_stdin(), buffer + len, 1) != EOF && len < max_len && buffer[len] != '\0' && buffer[len] != '\n') len++;
 	buffer[len++] = '\n';
 	return len;
 }

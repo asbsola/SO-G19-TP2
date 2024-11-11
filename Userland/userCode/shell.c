@@ -55,7 +55,7 @@ void run_shell() {
 		int len = getline(shell_input, MAX_SHELL_INPUT);
         shell_input[len - 1] = '\0';
 
-		if (strcmp(shell_input, "exit") == 0 || (len == 1 && sys_get_stdin() != KEYBOARD_INPUT_FD)) break;
+		if (strcmp(shell_input, "exit") == 0 || (len <= 1 && sys_get_stdin() != KEYBOARD_INPUT_FD)) break;
 		if (len == 1) continue;
 
 		int64_t ans = get_commands(shell_input, commands, &num_cmds);

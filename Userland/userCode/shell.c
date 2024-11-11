@@ -27,8 +27,7 @@ ModuleDescriptor modules[] = {
     {"nice", "changes process priority by PID", BUILT_IN, nice}, 
     {"kill", "terminates a process by its PID. If the flag 'r' is provided, it also terminates all its descendants", BUILT_IN, kill}, 
     {"cleanup", "removes all exited processes", BUILT_IN, cleanup}, 
-    {"block", "blocks a procces by a PID", BUILT_IN, block}, 
-    {"unblock", "unblocks a procces by a PID", BUILT_IN, unblock}, 
+    {"block", "blocks or unblocks a procces by a PID", BUILT_IN, block}, 
     {"loop", "prints its PID every n seconds", PROCESS, loop}, 
     {"phylo", "the dining philosophers problem", PROCESS, phylo}, 
     {"cat", "print on the standard output", PROCESS, cat}, 
@@ -53,10 +52,11 @@ void run_shell() {
 		sys_set_font_size(current_font_size);
 
 		puts_with_color("shell> ", 0x006fb5fb);
-		scan_line("%s", shell_input);
+		int len = getline(shell_input, MAX_SHELL_INPUT);
+        shell_input[len - 1] = '\0';
 
-		if (shell_input[0] == '\0') continue;
-		if (strcmp(shell_input, "exit") == 0) break;
+		if (strcmp(shell_input, "exit") == 0 || (len == 1 && sys_get_stdin() != KEYBOARD_INPUT_FD)) break;
+		if (len == 1) continue;
 
 		int64_t ans = get_commands(shell_input, commands, &num_cmds);
 		if (ans == -1) continue;
@@ -269,14 +269,4 @@ uint64_t block(char **argv, int argc) {
 	if(status == READY || status == RUNNING) sys_block_process_by_pid(pid);
 
 	return 0;
-}
-
-uint64_t unblock(char **argv, int argc) {
-	if (argc < 2) {
-		puts_with_color("unblock: ERROR must provide pid\n", 0xFF0000);
-		return -1;
-	}
-	int pid = atoi(argv[1]);
-
-	return sys_unblock_process_by_pid(pid);
 }

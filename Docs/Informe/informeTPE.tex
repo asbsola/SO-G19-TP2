@@ -220,9 +220,9 @@ A continuación se detallan algunos módulos que sirven para testear el funciona
         \hline
         test\_wait & max\_iters & max\_processes & - \\
         \hline
-        test\_prio & max\_processes & - & - \\
+        test\_priority & max\_processes & - & - \\
         \hline
-        test\_prio\_dist & max\_processes & - & - \\
+        test\_priority\_dist & max\_processes & - & - \\
         \hline
         test\_idle\_cleanup & max\_processes & - & - \\
         \hline
@@ -232,9 +232,9 @@ A continuación se detallan algunos módulos que sirven para testear el funciona
         \hline
         mem & - & - & - \\
         \hline
-        block & pid & - & - \\
+        ps & - & - & - \\
         \hline
-        unblock & pid & - & - \\
+        block & pid & - & - \\
         \hline
         kill & pid & [r (recursive)] & - \\
         \hline
@@ -252,8 +252,14 @@ A continuación se detallan algunos módulos que sirven para testear el funciona
         \hline
         echo & string & - & - \\
         \hline
+        loop & wait\_time & - & - \\
+        \hline
+        sh & - & - & - \\
+        \hline
+        jump & - & - & - \\
+        \hline
     \end{tabular}
-    \caption{Tabla de procesos y sus argumentos}
+    \caption{Tabla de comandos y sus argumentos}
     \label{tab:procesos}
 \end{table}
 
@@ -271,7 +277,7 @@ Si bien hay varios test que fueron brindados por la cátedra, decidimos hacer al
     \item Se decidió que al momento de crear un proceso el mismo se cree con prioridad \texttt{LOW}.
     \item Se decidió que la syscall \texttt{kill} permita especificar si al matar a un proceso se matan también a sus descendientes.
     \item Se decidió que en la shell, al llamar al comando kill, el mismo reciba el pid del proceso como argumento y de opcionalmente el argumento \texttt{r} para matar a los descendientes del proceso.
-    \item Se decidió que los procesos ejecutados sigan en la lista de PCBs hasta que mueran o terminen y se les haga \texttt{wait}. Por dicho motivo la shell tiene un comando \texttt{cleanup} para limpiar los procesos \texttt{EXITED} a los que no se les hizo \texttt{wait}.\item En lugar de tener un único comando en la shell que bloquee o desbloquee procesos dependiendo de su estado, se decidió tener dos comandos distintos \texttt{block} y \texttt{unblock}. Ambos reciben el pid del proceso a bloquear o desbloquear.
+    \item Se decidió que los procesos ejecutados sigan en la lista de PCBs hasta que mueran o terminen y se les haga \texttt{wait}. Por dicho motivo la shell tiene un comando \texttt{cleanup} para limpiar los procesos \texttt{EXITED} a los que no se les hizo \texttt{wait}.
     \item El driver de teclado tiene dos modos de operación: \texttt{CANNONICAL} y \texttt{NON\_CANONNICAL}. El modo \texttt{CANNONICAL} escribe a \texttt{fd(0)} cuando recibe un \texttt{newline} e imprime a \texttt{fd(1)} cada vez que se presiona una tecla. El modo \texttt{NON\_CANNONICAL} no imprime a \texttt{fd(1)} y escribe a \texttt{fd(0)} cada vez que recibe una tecla.
 \end{itemize}
 

@@ -24,6 +24,8 @@ int kill_process(processManagerADT process_manager, pid_t pid, uint64_t recursiv
 int unblock_process(processManagerADT process_manager, pid_t pid);
 int remove_process(processManagerADT process_manager, pid_t pid);
 
+uint64_t get_process_status(processManagerADT process_manager, pid_t rdi);
+
 processControlBlockADT *get_processes(processManagerADT process_manager);
 processControlBlockADT get_process(processManagerADT process_manager, pid_t pid);
 

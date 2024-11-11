@@ -45,6 +45,7 @@ global sys_pipe_open_named
 global sys_pipe_open
 global sys_pipe_close
 global sys_pipe_send_eof
+global sys_get_process_status
 
 %macro syscall 1
     push rbp
@@ -193,3 +194,6 @@ sys_pipe_close:
 
 sys_pipe_send_eof:
     syscall 44
+
+sys_get_process_status:
+    syscall 45

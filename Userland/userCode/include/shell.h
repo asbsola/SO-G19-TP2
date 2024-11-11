@@ -37,7 +37,6 @@ uint64_t nice(char **argv, int argc);
 uint64_t kill(char **argv, int argc);
 uint64_t cleanup(char **argv, int argc);
 uint64_t block(char **argv, int argc);
-uint64_t unblock(char **argv, int argc);
 
 void run_shell();
 uint64_t run_cmd(Command cmd, fd_t stdin, fd_t stdout);

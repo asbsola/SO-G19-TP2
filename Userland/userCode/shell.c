@@ -27,8 +27,7 @@ ModuleDescriptor modules[] = {
     {"nice", "changes process priority by PID", BUILT_IN, nice}, 
     {"kill", "terminates a process by its PID. If the flag 'r' is provided, it also terminates all its descendants", BUILT_IN, kill}, 
     {"cleanup", "removes all exited processes", BUILT_IN, cleanup}, 
-    {"block", "blocks a procces by a PID", BUILT_IN, block}, 
-    {"unblock", "unblocks a procces by a PID", BUILT_IN, unblock}, 
+    {"block", "blocks or unblocks a procces by a PID", BUILT_IN, block}, 
     {"loop", "prints its PID every n seconds", PROCESS, loop}, 
     {"phylo", "the dining philosophers problem", PROCESS, phylo}, 
     {"cat", "print on the standard output", PROCESS, cat}, 
@@ -270,14 +269,4 @@ uint64_t block(char **argv, int argc) {
 	if(status == READY || status == RUNNING) sys_block_process_by_pid(pid);
 
 	return 0;
-}
-
-uint64_t unblock(char **argv, int argc) {
-	if (argc < 2) {
-		puts_with_color("unblock: ERROR must provide pid\n", 0xFF0000);
-		return -1;
-	}
-	int pid = atoi(argv[1]);
-
-	return sys_unblock_process_by_pid(pid);
 }

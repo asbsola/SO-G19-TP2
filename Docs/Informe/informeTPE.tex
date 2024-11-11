@@ -171,7 +171,7 @@ Dichas probabilidades las usamos al momento de hacer el context switch para deci
 
 \section{Semaphore Manager}
 
-Este módulo es el encargado de gestionar los semáforos mediante las siguientes funciones: \texttt{sem\_open}, \texttt{sem\_close}, \texttt{sem\_up} y \texttt{sem\_down}. Al utilizar estas funciones, al momento de hacer un \texttt{open} se obtiene un ID del semáforo, y luego se pueden ejecutar el resto de las funciones utilizando ese ID. Además, se implementaron semáforos con nombres, permitiendo compartirlos entre procesos. Para ello, se utilizan las funciones \texttt{sem\_open\_named}, \texttt{sem\_close\_named}, \texttt{sem\_up\_named} y \texttt{sem\_down\_named}.
+Este módulo es el encargado de gestionar los semáforos mediante las siguientes funciones: \texttt{sem\_open}, \texttt{sem\_close}, \texttt{sem\_up} y \texttt{sem\_down}. Al utilizar estas funciones, al momento de hacer un \texttt{open} se obtiene un ID del semáforo, y luego se pueden ejecutar el resto de las funciones utilizando ese ID. Además, se implementaron semáforos con nombres, permitiendo compartirlos entre procesos. Para ello, se utilizan las funciones \texttt{sem\_open\_named}, \texttt{sem\_close\_named}.
 
 Dado que no tenemos la posibilidad de mapear los semáforos en la memoria de un proceso, se decidió que, si un proceso realiza un \texttt{open\_named} de un semáforo que ya existe, no se realice ninguna acción adicional, solo se devuelve el índice que refiere al mismo para que este proceso pueda utilizarlo.
 
@@ -235,6 +235,10 @@ A continuación se detallan algunos módulos que sirven para testear el funciona
         block & pid & - & - \\
         \hline
         unblock & pid & - & - \\
+        \hline
+        kill & pid & - & - \\
+        \hline
+        nice & pid & priority & - \\
         \hline
         loop & waiting\_time & - & - \\
         \hline

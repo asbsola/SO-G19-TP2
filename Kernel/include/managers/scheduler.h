@@ -11,6 +11,8 @@
 #include <utils/list.h>
 #include <utils/utils.h>
 
+#define RANDOM_RANGE 10000
+
 typedef struct schedulerCDT *schedulerADT;
 
 schedulerADT init_scheduler(memoryManagerADT memory_manager);

@@ -185,11 +185,23 @@ uint64_t filter(char **argv, int argc) {
 }
 
 uint64_t echo(char **argv, int argc) {
+    uint64_t buffer_len = 0;
 	for (int i = 1; i < argc; i++) { 
-        puts(argv[i]);
-        if (i < argc - 1) putchar(' ');
+        buffer_len += strlen(argv[i]);
+        buffer_len++;
     }
-	putchar('\n');
+    buffer_len++;
+
+    char buffer[buffer_len];
+    buffer[0] = '\0';
+
+	for (int i = 1; i < argc; i++) { 
+        strcat(buffer, buffer, argv[i]);
+        if (i < argc - 1) strcat(buffer, buffer, " ");
+    }
+    strcat(buffer, buffer, "\n");
+
+    puts(buffer);
 
 	return 0;
 }

@@ -12,7 +12,7 @@ void free_pipe_mutex(pid_t pid, uint64_t recursive) {
 
     processControlBlockADT pcb = get_process(the_process_manager, pid);
 
-    if (pcb->pipe_mutex != -1) sem_up(the_semaphore_manager, pcb->pipe_mutex);
+    if (pcb == NULL || pcb->pipe_mutex != -1) sem_up(the_semaphore_manager, pcb->pipe_mutex);
 }
 
 void free_pipe_mutex_recursive(pid_t my_pid) {
@@ -22,6 +22,10 @@ void free_pipe_mutex_recursive(pid_t my_pid) {
 
 
 int kill_signal(pid_t pid, uint64_t recursive) {
+    processControlBlockADT pcb = get_process(the_process_manager, pid);
+
+    if (pcb == NULL) return -1;
+
     free_pipe_mutex(pid, recursive);
     return kill_process(the_process_manager, pid, recursive);
 }

@@ -1,8 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <splash_screen.h>
-#include <std.h>
-#include <syscall_adapters.h>
+
 
 void show_splash_screen() {
 	sys_clear_screen(0);

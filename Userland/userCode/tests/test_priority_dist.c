@@ -1,11 +1,6 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <def.h>
-#include <std.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <syscall_adapters.h>
-#include <test_utils.h>
+#include <tests.h>
 
 #define WAIT_MILLIS 200000
 

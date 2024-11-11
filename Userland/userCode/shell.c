@@ -8,7 +8,7 @@ ModuleDescriptor modules[] = {
     {"sysinfo", "displays system information", PROCESS, info}, 
     {"fontsize", "change font size", BUILT_IN, font_size}, 
     {"time", "display current time", PROCESS, time}, 
-    {"regs", "displays captured registers (ESC key to capture)", PROCESS, regs}, 
+    {"regs", "displays captured registers (ESC key to capture)", BUILT_IN, regs}, 
     {"beep", "beeps", BUILT_IN, beep}, 
     {"song", "plays a short tune while displaying graphics", PROCESS, cucaracha}, 
     {"calculator", "positive integer calculator", PROCESS, calculator}, 

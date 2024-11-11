@@ -1,8 +1,6 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <std.h>
-#include <stddef.h>
-#include <test_utils.h>
+#include <tests.h>
 
 #define TOTAL_PAIR_PROCESSES (TOTAL_PROCESSES / 2)
 #define MAX_LEN 250

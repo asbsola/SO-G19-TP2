@@ -1,10 +1,6 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <std.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <syscall_adapters.h>
-#include <test_utils.h>
+#include <tests.h>
 
 #define SEM_NAME "sem"
 
@@ -61,6 +57,11 @@ uint64_t test_sync(char **argv, int argc) {
 			"test_sync: ERROR must provide max_iters, max_pair_processes and "
 			"use_syncro (0 is no syncro - 1 is syncro).\n",
 			0xFF0000);
+		return -1;
+	}
+
+	if ((satoi(argv[1])) <= 0) {
+		puts_with_color("test_sync: ERROR error max_iters must be greater than 0\n", 0xFF0000);
 		return -1;
 	}
 

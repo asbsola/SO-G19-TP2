@@ -14,7 +14,7 @@ void remove_orphans(processManagerADT process_manager) {
 uint64_t idle(char **argv, int argc) {
 	char *screen_service_args[] = {"screen_service", NULL};
 	pid_t screen_pid = create_process(the_process_manager, 0, screen_service, screen_service_args, SCREEN_OUTPUT_FD, -1);
-	nicent(the_process_manager, screen_pid, HIGH);
+	nice(the_process_manager, screen_pid, HIGH);
 
 	char *shell_args[] = {"shell", NULL};
 	create_process(the_process_manager, 0, (uint64_t(*)(char **, int))(SHELL_CODE_ADDRESS), shell_args, KEYBOARD_INPUT_FD, SCREEN_OUTPUT_FD);

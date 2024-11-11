@@ -33,7 +33,7 @@ uint64_t get_max_pid(processManagerADT process_manager);
 uint64_t get_ps_data(processManagerADT process_manager);
 uint64_t wait(processManagerADT process_manager, int64_t *ret);
 uint64_t wait_process(processManagerADT process_manager, pid_t child_pid, int64_t *ret);
-uint64_t nicent(processManagerADT process_manager, pid_t pid, processPriority priority);
+uint64_t nice(processManagerADT process_manager, pid_t pid, processPriority priority);
 
 int is_child(processManagerADT process_manager, pid_t my_pid, pid_t child_pid);
 pid_t get_fg_pid(processManagerADT process_manager);

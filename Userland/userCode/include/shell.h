@@ -33,7 +33,7 @@ uint64_t help(char **argv, int argc);
 uint64_t cls(char **argv, int argc);
 uint64_t font_size(char **argv, int argc);
 uint64_t beep(char **argv, int argc);
-uint64_t nicent(char **argv, int argc);
+uint64_t nice(char **argv, int argc);
 uint64_t kill(char **argv, int argc);
 uint64_t cleanup(char **argv, int argc);
 uint64_t block(char **argv, int argc);

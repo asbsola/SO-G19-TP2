@@ -36,7 +36,7 @@ uint64_t test_prio_dist(char **argv, int argc) {
 			puts_with_color("test_priority_dist: ERROR blocking process\n", 0xFF0000);
 			return -1;
 		}
-		sys_nicent(pids[i], i % 3);
+		sys_nice(pids[i], i % 3);
 	}
 
 	if (!in_background) puts_with_color("Unblocking...\n", 0xc2daff);

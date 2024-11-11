@@ -35,7 +35,7 @@ pid_t sys_get_pid();
 pid_t sys_get_ppid();
 int64_t sys_wait(int64_t *ret);
 int64_t sys_wait_pid(pid_t pid, int64_t *ret);
-uint64_t sys_nicent(pid_t pid, processPriority priority);
+uint64_t sys_nice(pid_t pid, processPriority priority);
 void sys_yield();
 int64_t sys_sem_open_named(const char *name, uint64_t value);
 int64_t sys_sem_close_named(const char *name);

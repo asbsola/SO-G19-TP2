@@ -66,6 +66,7 @@ A continuación, se detallan las instrucciones para compilar y ejecutar los test
     \item Tener un contenedor de docker con la imagen provista por la catedra.
     \item En la raíz del proyecto, ejecutar \textbf{make}.
     \item Luego, ejecutar \textbf{./run.sh}.
+    \item Por último, ejecutar \textbf{test\_mm \textless memoryAmount\textgreater}.
 \end{enumerate}
 
 \item Compilación y ejecución de los tests fuera del kernel:
@@ -94,6 +95,7 @@ A continuación, se detallan las instrucciones para compilar y ejecutar los test
     \item Tener un contenedor de docker con la imagen provista por la catedra.
     \item En la raíz del proyecto, ejecutar \textbf{make buddy}.
     \item Luego, ejecutar \textbf{./run.sh}.
+    \item Por último, ejecutar \textbf{test\_mm \textless memoryAmount\textgreater}.
 \end{enumerate}
 
 \item Compilación y ejecución de los tests fuera del kernel:
@@ -295,9 +297,17 @@ En cuanto a las limitaciones numéricas, el sistema fue diseñado de tal manera 
 A continuación se detallan los warnings encontrados por PVS-Studio que son considerados falsos positivos:
 \begin{itemize}
     \item Varios Warnings en Bootloader, se decidió no tocar este código.
+    \item Varios Warnings en Toolchain, se decidió no tocar este código.
     \item Error V576. Este error se encuentra en muchos archivos, el mismo es desestimó ya que indica un error de formato en printf y en scanf, pues PVS-Studio asocia printf y scanf con las funciones de la librería estándar de C. 
     \item Error V776. Este error indica que hay un loop infinito. Pero este error es un falso positivo ya que se utiliza para los tests.
     \item Error V566. Este error indica que puede haber problemas al utilizar una constante entera como puntero. Esto es un falso positivo ya que en nuestro sistema estamos harcodeando la dirección donde se carga el código de userland a través de esta constante.
+    \item Error V656. Este error indica que dos variables fueron inicializadas con llamada a una misma funcion con iguales parametros. A continuación se muestra un fragmento de código donde se puede ver que es un falso positivo.
+\end{itemize}
+    \begin{lstlisting}[language=C]
+        sem_t read_mutex = sem_open(pipes_manager->semaphore_manager, 1);
+        sem_t write_mutex = sem_open(pipes_manager->semaphore_manager, 1);
+    \end{lstlisting}
+\begin{itemize}   
     \item Error V560. Este error nos indica que la condición \texttt{if (c != '\textbackslash n')}
     siempre es verdadera. Pero analizando el siguiente fragmento de código podemos ver rápidamente que es un falso positivo.
 \end{itemize}
@@ -313,4 +323,23 @@ A continuación se detallan los warnings encontrados por PVS-Studio que son cons
     return 0;
 \end{lstlisting}
     
+\section {instrucciones de compilación y ejecución}
+
+A continuación se detallan las instrucciones para compilar y ejecutar el sistema:
+
+\begin{enumerate}
+    \item Tener un contenedor de docker con la imagen provista por la catedra.
+    \item En la raíz del proyecto, ejecutar \textbf{make}.
+    \item Luego, ejecutar \textbf{./run.sh}.
+\end{enumerate}
+
+Siguiendo los pasos mencionados anteriormente se utilizara el bitmap memory manager. En caso de querer utilizar el buddy memory manager, se deben seguir los siguientes pasos:
+
+\begin{enumerate}
+    \item Tener un contenedor de docker con la imagen provista por la catedra.
+    \item En la raíz del proyecto, ejecutar \textbf{make buddy}.
+    \item Luego, ejecutar \textbf{./run.sh}.
+\end{enumerate}
+
+
 \end{document}

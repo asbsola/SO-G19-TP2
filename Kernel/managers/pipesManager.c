@@ -117,9 +117,10 @@ int next_index(int index) {
 int pipe_write(pipesManagerADT pipes_manager, fd_t fd, const char *buffer, int size) {
 	if (fd < 0 || fd >= MAX_PIPES || pipes_manager->pipes[fd] == NULL) return -1;
 	pipe *pipe = pipes_manager->pipes[fd];
+	processControlBlockADT process = get_process(pipes_manager->process_manager, get_current_pid(pipes_manager->scheduler));
 	int i = 0;
 	sem_down(pipes_manager->semaphore_manager, pipe->write_mutex);
-    get_process(pipes_manager->process_manager, get_current_pid(pipes_manager->scheduler))->pipe_mutex = pipe->write_mutex;
+    process->pipe_mutex = pipe->write_mutex;
 
 	while (i < size && !pipe->eof) {
 		sem_down(pipes_manager->semaphore_manager, pipe->write_bytes_sem);
@@ -131,7 +132,7 @@ int pipe_write(pipesManagerADT pipes_manager, fd_t fd, const char *buffer, int s
 		sem_up(pipes_manager->semaphore_manager, pipe->read_bytes_sem);
 	}
 
-    get_process(pipes_manager->process_manager, get_current_pid(pipes_manager->scheduler))->pipe_mutex = -1;
+    process->pipe_mutex = -1;
 	sem_up(pipes_manager->semaphore_manager, pipe->write_mutex);
 	return i;
 }
@@ -139,9 +140,10 @@ int pipe_write(pipesManagerADT pipes_manager, fd_t fd, const char *buffer, int s
 int pipe_read(pipesManagerADT pipes_manager, fd_t fd, char *buffer, int size) {
 	if (fd < 0 || fd >= MAX_PIPES || pipes_manager->pipes[fd] == NULL) return EOF;
 	pipe *pipe = pipes_manager->pipes[fd];
+	processControlBlockADT process = get_process(pipes_manager->process_manager, get_current_pid(pipes_manager->scheduler));
 	int i = 0;
 	sem_down(pipes_manager->semaphore_manager, pipe->read_mutex);
-    get_process(pipes_manager->process_manager, get_current_pid(pipes_manager->scheduler))->pipe_mutex = pipe->read_mutex;
+    process->pipe_mutex = pipe->read_mutex;
 
 	while (i < size) {
 		sem_down(pipes_manager->semaphore_manager, pipe->read_bytes_sem);
@@ -154,7 +156,7 @@ int pipe_read(pipesManagerADT pipes_manager, fd_t fd, char *buffer, int size) {
 			else
 				sem_up(pipes_manager->semaphore_manager, pipe->read_bytes_sem);
 
-            get_process(pipes_manager->process_manager, get_current_pid(pipes_manager->scheduler))->pipe_mutex = -1;
+            process->pipe_mutex = -1;
 			sem_up(pipes_manager->semaphore_manager, pipe->read_mutex);
 			if (i == 0) return EOF;
 			return i;
@@ -165,7 +167,7 @@ int pipe_read(pipesManagerADT pipes_manager, fd_t fd, char *buffer, int size) {
 		sem_up(pipes_manager->semaphore_manager, pipe->write_bytes_sem);
 	}
 
-    get_process(pipes_manager->process_manager, get_current_pid(pipes_manager->scheduler))->pipe_mutex = -1;
+    process->pipe_mutex = -1;
 	sem_up(pipes_manager->semaphore_manager, pipe->read_mutex);
 	if (size != 0 && i == 0) return EOF;
 	return i;

@@ -325,8 +325,8 @@ uint64_t get_max_pid(processManagerADT process_manager) {
 	return process_manager->max_pid;
 }
 
-uint64_t get_ps_data(processManagerADT process_manager, memoryManagerADT mem_manager) {
-	process_info_t *processes = (process_info_t *)mem_alloc(mem_manager, sizeof(process_info_t) * (process_manager->num_processes + 1));
+uint64_t get_ps_data(processManagerADT process_manager) {
+	process_info_t *processes = (process_info_t *)mem_alloc(process_manager->memory_manager, sizeof(process_info_t) * (process_manager->num_processes + 1));
 	int index = 0;
 	for (int i = 0; i <= process_manager->max_pid; i++) {
 		if (process_manager->processes[i] != NULL) {
@@ -337,7 +337,11 @@ uint64_t get_ps_data(processManagerADT process_manager, memoryManagerADT mem_man
 			processes[index].base_pointer = process_manager->processes[i]->stack;
 			processes[index].status = process_manager->processes[i]->status;
 			processes[index].parent_is_waiting = process_manager->processes[i]->parent_is_waiting;
-			processes[index].name = process_manager->processes[i]->argv[0];
+
+            uint64_t len = str_len(process_manager->processes[i]->argv[0]);
+			processes[index].name = mem_alloc(process_manager->memory_manager, len + 1);
+            if (processes[index].name != NULL) str_cpy(processes[index].name, process_manager->processes[i]->argv[0]);
+
 			index++;
 		}
 	}

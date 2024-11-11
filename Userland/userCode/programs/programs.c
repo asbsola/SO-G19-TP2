@@ -94,7 +94,7 @@ uint64_t ps(char **argv, int argc) {
 	for (int i = 0; processes[i].pid != -1; i++) {
 		printf("\nProcess %d\n", i);
 		printf("\tPID: %d\n", processes[i].pid);
-		printf("\tName: %s\n", processes[i].name);
+        if (processes[i].name != NULL) printf("\tName: %s\n", processes[i].name);
 
 		if (processes[i].parent_pid == -1)
 			printf("\tParent PID: -1\n");
@@ -107,6 +107,8 @@ uint64_t ps(char **argv, int argc) {
 		if (sys_get_ppid() == processes[i].parent_pid) printf("\tForeground: %s IN FOREGROUND\n", (processes[i].parent_is_waiting == WAITING) ? "" : "NOT");
 		printf("\tStack pointer: %d\n", processes[i].stack_pointer);
 		printf("\tBase pointer: %d\n", processes[i].base_pointer);
+
+        if (processes[i].name != NULL) sys_free(processes[i].name);
 	}
 
 	sys_free(processes);

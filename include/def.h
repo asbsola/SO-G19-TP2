@@ -45,7 +45,7 @@ typedef struct {
 	processPriority priority;
 	void *stack_pointer;
 	void *base_pointer;
-	const char *name;
+	char *name;
 	uint8_t parent_is_waiting;
 	processStatus status;
 } process_info_t;

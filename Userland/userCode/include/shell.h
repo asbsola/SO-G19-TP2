@@ -39,7 +39,8 @@ uint64_t cleanup(char **argv, int argc);
 uint64_t block(char **argv, int argc);
 
 void run_shell();
-uint64_t run_cmd(Command cmd, fd_t stdin, fd_t stdout);
+uint64_t run_built_in_subshell(char** argv, int argc);
+uint64_t run_cmd(Command cmd, fd_t stdin, fd_t stdout, int num_cmds);
 void free_args(char **args);
 int get_commands(char *shell_input, Command *commands, int *num_cmds);
 int get_module_index(char *module_name);

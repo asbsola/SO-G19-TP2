@@ -62,19 +62,19 @@ void run_shell() {
 		if (ans == -1) continue;
 
 		if (num_cmds == 1) {
-			pids[0] = run_cmd(commands[0], sys_get_stdin(), sys_get_stdout());
+			pids[0] = run_cmd(commands[0], sys_get_stdin(), sys_get_stdout(), num_cmds);
 		} else {
 			int i;
 			for (i = 0; i < num_cmds - 1; i++) {
 				pipes[i] = sys_pipe_open(NON_CANNONICAL);
 
 				if (i == 0) {
-					pids[i] = run_cmd(commands[i], sys_get_stdin(), pipes[i]);
+					pids[i] = run_cmd(commands[i], sys_get_stdin(), pipes[i], num_cmds);
 				} else {
-					pids[i] = run_cmd(commands[i], pipes[i - 1], pipes[i]);
+					pids[i] = run_cmd(commands[i], pipes[i - 1], pipes[i], num_cmds);
 				}
 			}
-			pids[i] = run_cmd(commands[num_cmds - 1], pipes[num_cmds - 2], sys_get_stdout());
+			pids[i] = run_cmd(commands[num_cmds - 1], pipes[num_cmds - 2], sys_get_stdout(), num_cmds);
 		}
 		for (int i = 0; i < num_cmds; i++) {
 			if (commands[i].argv[commands[i].argc - 1][0] != '&') { sys_wait_pid(pids[i], &ans); }
@@ -115,12 +115,6 @@ int get_commands(char *shell_input, Command *commands, int *num_cmds) {
 			free_commands_argv(commands, i + 1);
 			return -1;
 		}
-		if (modules[module_index].module_type == BUILT_IN && *num_cmds > 1) {
-			printf("Built-in command %s cannot be piped\n", commands[i].argv[0]);
-			free_args(cmds);
-			free_commands_argv(commands, i + 1);
-			return -1;
-		}
 		commands[i].module = modules[module_index];
 	}
 
@@ -128,7 +122,7 @@ int get_commands(char *shell_input, Command *commands, int *num_cmds) {
 	return 0;
 }
 
-uint64_t run_cmd(Command cmd, fd_t stdin, fd_t stdout) {
+uint64_t run_cmd(Command cmd, fd_t stdin, fd_t stdout, int num_cmds) {
 	pid_t pid = -1;
 
 	if (cmd.module.module_type == PROCESS) {
@@ -137,10 +131,23 @@ uint64_t run_cmd(Command cmd, fd_t stdin, fd_t stdout) {
 			puts_with_color("Error creating process\n", 0xFF0000);
 			return -1;
 		}
-	} else if (cmd.module.module_type == BUILT_IN)
+	} else if (cmd.module.module_type == BUILT_IN && num_cmds == 1) {
 		cmd.module.module(cmd.argv, cmd.argc);
+    } else {
+        pid = sys_create_process(run_built_in_subshell, cmd.argv, stdin, stdout);
+		if (pid == -1) {
+			puts_with_color("Error creating subshell\n", 0xFF0000);
+			return -1;
+		}
+    }
+
 
 	return pid;
+}
+
+uint64_t run_built_in_subshell(char** argv, int argc) {
+    int module_index = get_module_index(argv[0]);
+    return modules[module_index].module(argv, argc);
 }
 
 void free_args(char **args) {

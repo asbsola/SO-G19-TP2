@@ -174,14 +174,18 @@ uint64_t filter(char **argv, int argc) {
 
 	fd_t stdin = sys_get_stdin();
 	fd_t stdout = sys_get_stdout();
-	int i = 0;
-	char c = 0;
-	while (sys_read(stdin, &c, 1) != EOF && i < BUF_SIZE - 1) {
-		if (!isVowel(c)) filtered_buffer[i++] = c;
-	}
-	filtered_buffer[i] = 0;
-	sys_write(stdout, filtered_buffer, i + 1);
-	return 0;
+	int i = 1;
+    char c = 0;
+    while (i > 0) {
+        i = 0;
+        c = 0;
+        while (sys_read(stdin, &c, 1) != EOF && i < BUF_SIZE - 1) {
+            if (!isVowel(c)) filtered_buffer[i++] = c;
+        }
+        filtered_buffer[i] = 0;
+        sys_write(stdout, filtered_buffer, i + 1);
+    }
+    return 0;
 }
 
 uint64_t echo(char **argv, int argc) {
